@@ -1,0 +1,240 @@
+/* Custom styles for the layout and components */
+body {
+    font-family: 'Inter', sans-serif;
+}
+
+.flex {
+    display: flex;
+}
+
+.min-h-screen {
+    min-height: 100vh;
+}
+
+.bg-gray-100 {
+    background-color: #F7FAFC; /* bg-gray-100 */
+}
+
+/* Sidebar styles */
+.sidebar {
+    width: 280px; /* Fixed width for the sidebar */
+    background-color: #2D3748; /* Dark gray for sidebar */
+    color: #FFFFFF;
+    display: flex;
+    flex-direction: column;
+    padding: 1.5rem 0; /* py-6 */
+    border-top-right-radius: 1rem; /* rounded-tr-xl */
+    border-bottom-right-radius: 1rem; /* rounded-br-xl */
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1); /* shadow-md */
+}
+
+.sidebar-header {
+    font-size: 1.5rem; /* text-2xl */
+    font-weight: 700; /* font-bold */
+    padding: 0 1.5rem 1.5rem; /* px-6 pb-6 */
+    border-bottom: 1px solid #4A5568; /* border-gray-700 */
+    margin-bottom: 1.5rem; /* mb-6 */
+}
+
+.sidebar-nav ul {
+    list-style: none;
+    padding: 0;
+    margin: 0;
+    flex-grow: 1; /* Allows nav to take available space */
+}
+
+.nav-link {
+    display: block;
+    padding: 0.75rem 1.5rem; /* py-3 px-6 */
+    color: #CBD5E0; /* text-gray-300 */
+    font-weight: 500; /* font-medium */
+    transition: background-color 0.2s ease-in-out;
+    border-radius: 0.5rem; /* rounded-lg */
+    margin: 0 0.75rem 0.5rem; /* mx-3 mb-2 */
+}
+
+    .nav-link:hover {
+        background-color: #4A5568; /* bg-gray-700 */
+        color: #FFFFFF;
+    }
+
+    .nav-link.active {
+        background-color: #48BB78; /* bg-green-500 */
+        color: #FFFFFF;
+        font-weight: 600; /* font-semibold */
+    }
+
+.sidebar-footer {
+    padding: 1.5rem; /* p-6 */
+    border-top: 1px solid #4A5568; /* border-gray-700 */
+    margin-top: 1.5rem; /* mt-6 */
+}
+
+.logout-button {
+    width: 100%;
+    background-color: #E53E3E; /* bg-red-600 */
+    color: #FFFFFF;
+    padding: 0.75rem 1.5rem; /* py-3 px-6 */
+    border-radius: 0.5rem; /* rounded-lg */
+    font-weight: 600; /* font-semibold */
+    transition: background-color 0.2s ease-in-out;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1); /* shadow-sm */
+}
+
+    .logout-button:hover {
+        background-color: #C53030; /* bg-red-700 */
+    }
+
+/* Main Content Area styles */
+.main-content {
+    flex-grow: 1;
+    padding: 1.5rem; /* p-6 */
+    background-color: #F7FAFC; /* bg-gray-100 */
+    display: flex;
+    flex-direction: column;
+    gap: 1.5rem; /* gap-6 */
+}
+
+/* Specific styles for Pending Account main content */
+.pending-account-main-content {
+    background-color: #2D3748; /* Darker background as per image */
+    padding: 0; /* Remove overall padding from main-content to align header */
+    gap: 0; /* Remove gap */
+    display: flex;
+    flex-direction: column;
+}
+
+/* Header styles */
+.header {
+    background-color: #48BB78; /* Green background */
+    color: #FFFFFF;
+    padding: 1rem 1.5rem; /* py-4 px-6 */
+    border-radius: 0.75rem; /* rounded-xl */
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1); /* shadow-sm */
+}
+
+/* Specific styles for Pending Account header */
+.pending-account-header {
+    background-color: #48BB78; /* Green background */
+    border-radius: 0; /* No rounded corners as per image */
+    padding: 1.5rem; /* Adjusted padding */
+    box-shadow: none; /* No shadow */
+    color: #000; /* Black text for header title */
+    margin-bottom: 1.5rem; /* Space between header and table */
+}
+
+.header-title {
+    font-size: 1.75rem; /* text-3xl */
+    font-weight: 700; /* font-bold */
+}
+
+.header-buttons {
+    display: flex;
+    gap: 0.5rem; /* Space between buttons */
+}
+
+.action-button {
+    padding: 0.5rem 1rem; /* py-2 px-4 */
+    border-radius: 0.5rem; /* rounded-lg */
+    font-weight: 600; /* font-semibold */
+    transition: background-color 0.2s ease-in-out;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1); /* shadow */
+}
+
+.view-button-pending {
+    background-color: #48BB78; /* Green background */
+    color: #FFFFFF;
+}
+
+    .view-button-pending:hover {
+        background-color: #38A169; /* Darker green on hover */
+    }
+
+.approved-button {
+    background-color: #48BB78; /* Green background */
+    color: #FFFFFF;
+}
+
+    .approved-button:hover {
+        background-color: #38A169; /* Darker green on hover */
+    }
+
+.denied-button {
+    background-color: #E53E3E; /* Red background */
+    color: #FFFFFF;
+}
+
+    .denied-button:hover {
+        background-color: #C53030; /* Darker red on hover */
+    }
+
+/* Pending Account Table Section */
+.pending-account-table-section {
+    flex-grow: 1; /* Allows the table section to take up remaining vertical space */
+    margin: 0 1.5rem 1.5rem; /* Margin to align with header and provide bottom space */
+    background-color: #4A5568; /* Dark gray background for the table area */
+    display: flex;
+    flex-direction: column;
+    overflow: hidden; /* Important for containing scrollable body */
+}
+
+.pending-account-table-header {
+    display: grid;
+    grid-template-columns: 50px 3fr 2fr; /* Adjusted column widths for small column, NAME, DATE CREATED */
+    background-color: #2D3748; /* Darker gray for the table header */
+    color: #FFFFFF;
+    font-weight: 600;
+    padding: 1rem 0; /* Vertical padding */
+    border-bottom: none; /* No bottom border for header */
+}
+
+.table-header-cell {
+    text-align: left;
+    padding: 0 0.5rem; /* Horizontal padding */
+}
+
+    .table-header-cell.small-column {
+        padding-left: 1rem; /* Adjust padding for the small column if needed */
+    }
+
+.pending-account-table-body {
+    flex-grow: 1; /* Allows the body to take up remaining vertical space */
+    overflow-y: auto; /* Enables vertical scrolling if content overflows */
+    -webkit-overflow-scrolling: touch; /* Smooth scrolling on iOS */
+}
+
+.table-row {
+    display: grid;
+    grid-template-columns: 50px 3fr 2fr; /* Match header column widths */
+    border-bottom: 1px solid #6B7280; /* Darker border for rows */
+}
+
+    .table-row:last-child {
+        border-bottom: none; /* No border for the last row */
+    }
+
+.table-cell {
+    padding: 0.75rem 0.5rem; /* Padding for cells */
+    min-height: 2.5rem; /* Minimum height for cells */
+    display: flex;
+    align-items: center;
+    color: #FFFFFF; /* White text for cells */
+    background-color: #4A5568; /* Darker gray for table cells */
+    border-right: 1px solid #6B7280; /* Darker vertical border between cells */
+}
+
+    .table-cell.small-column {
+        padding-left: 1rem; /* Adjust padding for the small column if needed */
+    }
+
+    .table-cell:last-child {
+        border-right: none; /* No right border for the last cell in a row */
+    }
+
+/* Optional: Alternating row background for better readability */
+.table-row:nth-child(even) .table-cell {
+    background-color: #4A5568; /* Even rows remain dark gray, as per image */
+}

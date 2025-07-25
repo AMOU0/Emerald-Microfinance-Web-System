@@ -1,0 +1,229 @@
+/* Custom styles for the layout and components */
+body {
+    font-family: 'Inter', sans-serif;
+}
+
+.sidebar {
+    width: 280px; /* Fixed width for the sidebar */
+    background-color: #2D3748; /* Dark gray for sidebar */
+    color: #FFFFFF;
+    display: flex;
+    flex-direction: column;
+    padding: 1.5rem 0; /* py-6 */
+    border-top-right-radius: 1rem; /* rounded-tr-xl */
+    border-bottom-right-radius: 1rem; /* rounded-br-xl */
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1); /* shadow-md */
+}
+
+.sidebar-header {
+    font-size: 1.5rem; /* text-2xl */
+    font-weight: 700; /* font-bold */
+    padding: 0 1.5rem 1.5rem; /* px-6 pb-6 */
+    border-bottom: 1px solid #4A5568; /* border-gray-700 */
+    margin-bottom: 1.5rem; /* mb-6 */
+}
+
+.sidebar-nav ul {
+    list-style: none;
+    padding: 0;
+    margin: 0;
+    flex-grow: 1; /* Allows nav to take available space */
+}
+
+.nav-link {
+    display: block;
+    padding: 0.75rem 1.5rem; /* py-3 px-6 */
+    color: #CBD5E0; /* text-gray-300 */
+    font-weight: 500; /* font-medium */
+    transition: background-color 0.2s ease-in-out;
+    border-radius: 0.5rem; /* rounded-lg */
+    margin: 0 0.75rem 0.5rem; /* mx-3 mb-2 */
+}
+
+    .nav-link:hover {
+        background-color: #4A5568; /* bg-gray-700 */
+        color: #FFFFFF;
+    }
+
+    .nav-link.active {
+        background-color: #48BB78; /* bg-green-500 */
+        color: #FFFFFF;
+        font-weight: 600; /* font-semibold */
+    }
+
+.sidebar-footer {
+    padding: 1.5rem; /* p-6 */
+    border-top: 1px solid #4A5568; /* border-gray-700 */
+    margin-top: 1.5rem; /* mt-6 */
+}
+
+.logout-button {
+    width: 100%;
+    background-color: #E53E3E; /* bg-red-600 */
+    color: #FFFFFF;
+    padding: 0.75rem 1.5rem; /* py-3 px-6 */
+    border-radius: 0.5rem; /* rounded-lg */
+    font-weight: 600; /* font-semibold */
+    transition: background-color 0.2s ease-in-out;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1); /* shadow-sm */
+}
+
+    .logout-button:hover {
+        background-color: #C53030; /* bg-red-700 */
+    }
+
+.main-content {
+    flex-grow: 1;
+    padding: 1.5rem; /* p-6 */
+    background-color: #F7FAFC; /* bg-gray-100 */
+    border: 2px solid #597997; /* Blue border around main content */
+    border-radius: 0.75rem; /* rounded-xl */
+    margin: 1.5rem; /* m-6 */
+    display: flex;
+    flex-direction: column;
+    gap: 1.5rem; /* gap-6 */
+}
+
+/* Specific styles for the Ledger main content */
+.ledger-main-content {
+    border: none; /* Remove blue border for ledger page as per image */
+    margin: 0; /* Remove margin to expand full width in the main area */
+    border-radius: 0; /* Remove border-radius */
+    background-color: #ffffff; /* Darker background as per image */
+    display: flex;
+    flex-direction: column;
+}
+
+.header {
+    background-color: #48BB78; /* Green background */
+    color: #FFFFFF;
+    padding: 1rem 1.5rem; /* py-4 px-6 */
+    border-radius: 0.75rem; /* rounded-xl */
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1); /* shadow-sm */
+}
+
+/* Specific styles for the Ledger header */
+.ledger-header {
+    background-color: #48BB78; /* Green background */
+    border-radius: 0; /* No rounded corners as per image */
+    padding: 1.5rem 1.5rem; /* Increased padding */
+    box-shadow: none; /* No shadow */
+    color: #000; /* Black text for header title */
+}
+
+.header-title {
+    font-size: 1.75rem; /* text-3xl */
+    font-weight: 700; /* font-bold */
+}
+
+.view-button {
+    background-color: #FFFFFF;
+    color: #2D3748; /* Dark gray text */
+    padding: 0.5rem 1rem; /* py-2 px-4 */
+    border-radius: 0.5rem; /* rounded-lg */
+    font-weight: 600; /* font-semibold */
+    transition: background-color 0.2s ease-in-out;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1); /* shadow */
+}
+
+    .view-button:hover {
+        background-color: #EDF2F7; /* bg-gray-200 */
+    }
+
+/* New styles for Ledger Table */
+.ledger-table-section {
+    margin: 1.5rem; /* Margin to create space around it */
+    background-color: #FFFFFF; /* White background for the table */
+    border: 1px solid #CBD5E0; /* Light gray border */
+    border-radius: 0.5rem; /* Slightly rounded corners */
+    overflow: hidden; /* Ensures borders/background apply correctly */
+    flex-grow: 1; /* Allow table to fill available vertical space */
+    display: flex;
+    flex-direction: column;
+}
+
+.updated-ledger-table-section {
+    margin: 0 1.5rem 1.5rem; /* Adjust margin to align with header */
+    background-color: #4A5568; /* Dark gray background for the table area */
+    border: none; /* No border for the table area itself */
+    border-radius: 0; /* No rounded corners */
+}
+
+.ledger-table-header {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr); /* 3 columns for date, amount, balance */
+    background-color: #48BB78; /* Green header background */
+    color: #FFFFFF;
+    font-weight: 600;
+    padding: 0.75rem 1rem; /* Padding for header cells */
+    border-bottom: 1px solid #38A169; /* Darker green border */
+}
+
+.updated-ledger-table-header {
+    grid-template-columns: repeat(4, 1fr); /* 4 columns: Name, Contact Number, Date of Payment, Balance */
+    background-color: #2D3748; /* Darker gray for the table header */
+    color: #FFFFFF;
+    padding: 1rem 1.5rem; /* Increased padding */
+    border-bottom: none; /* No bottom border for header */
+}
+
+.ledger-header-cell {
+    text-align: left;
+    padding: 0 0.5rem;
+}
+
+.ledger-table-body {
+    display: flex;
+    flex-direction: column;
+}
+
+.updated-ledger-table-body {
+    flex-grow: 1; /* Allow table body to grow and fill space */
+}
+
+.ledger-table-row {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    border-bottom: 1px solid #E2E8F0; /* Light gray border between rows */
+}
+
+    .ledger-table-row:last-child {
+        border-bottom: none; /* No border for the last row */
+    }
+
+.updated-ledger-table-body .ledger-table-row {
+    grid-template-columns: repeat(4, 1fr); /* 4 columns for table rows */
+    border-bottom: 1px solid #6B7280; /* Darker border for rows */
+}
+
+.ledger-cell {
+    padding: 0.75rem 1rem;
+    min-height: 2.5rem; /* Minimum height for cells */
+    display: flex;
+    align-items: center;
+    color: #2D3748; /* Dark text color */
+    background-color: #FFFFFF; /* White cell background */
+    border-right: 1px solid #E2E8F0; /* Vertical border between cells */
+}
+
+.updated-ledger-table-body .ledger-cell {
+    background-color: #4A5568; /* Darker gray for table cells */
+    color: #FFFFFF; /* White text for cells */
+    border-right: 1px solid #6B7280; /* Darker vertical border */
+}
+
+.ledger-cell:last-child {
+    border-right: none; /* No right border for the last cell in a row */
+}
+
+/* Alternating row background for better readability (optional) */
+.ledger-table-row:nth-child(even) .ledger-cell {
+    background-color: #F7FAFC; /* Slightly lighter background for even rows */
+}
+
+.updated-ledger-table-body .ledger-table-row:nth-child(even) .ledger-cell {
+    background-color: #4A5568; /* Even rows remain dark gray, as per image */
+}
