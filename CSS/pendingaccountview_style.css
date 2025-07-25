@@ -1,0 +1,345 @@
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap');
+
+body {
+    font-family: 'Inter', sans-serif;
+    display: flex;
+    min-height: 100vh;
+    background-color: #333333; /* Dark background as per screenshot */
+    margin: 0;
+    padding: 0;
+    overflow-x: hidden;
+}
+
+/* Sidebar Styling */
+.sidebar {
+    width: 250px;
+    background-color: #2b2b2b; /* Darker sidebar */
+    color: #ffffff;
+    display: flex;
+    flex-direction: column;
+    padding: 20px 0;
+    box-shadow: 2px 0 5px rgba(0,0,0,0.2);
+    position: fixed;
+    height: 100%;
+    overflow-y: auto;
+}
+
+.sidebar-header {
+    font-size: 1.5rem;
+    font-weight: 700;
+    text-align: center;
+    padding: 20px 0;
+    color: #4CAF50; /* Green color for header */
+    border-bottom: 1px solid #444;
+    margin-bottom: 20px;
+}
+
+.sidebar-nav ul {
+    list-style: none;
+    padding: 0;
+    margin: 0;
+}
+
+.sidebar-nav li {
+    margin-bottom: 5px;
+}
+
+.nav-link {
+    display: block;
+    padding: 12px 20px;
+    color: #ffffff;
+    text-decoration: none;
+    font-size: 0.95rem;
+    transition: background-color 0.2s, color 0.2s;
+    border-radius: 5px;
+    margin: 0 15px; /* Add margin to center slightly */
+}
+
+    .nav-link:hover {
+        background-color: #444;
+        color: #4CAF50;
+    }
+
+    .nav-link.active {
+        background-color: #4CAF50; /* Active link background green */
+        color: #ffffff;
+        font-weight: 600;
+    }
+
+.sidebar-footer {
+    margin-top: auto; /* Pushes the logout button to the bottom */
+    padding: 20px;
+    text-align: center;
+}
+
+.logout-button {
+    background-color: #555;
+    color: #ffffff;
+    padding: 10px 20px;
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+    font-size: 0.9rem;
+    transition: background-color 0.2s;
+}
+
+    .logout-button:hover {
+        background-color: #777;
+    }
+
+/* Main Content Styling */
+.main-content {
+    margin-left: 250px; /* Offset for the fixed sidebar */
+    flex-grow: 1;
+    padding: 20px;
+    background-color: #cccccc; /* Lighter grey for main content */
+    display: flex;
+    flex-direction: column;
+}
+
+.header {
+    background-color: #4CAF50; /* Green header */
+    color: #ffffff;
+    padding: 15px 30px;
+    margin: -20px -20px 20px -20px; /* Negative margin to fill width */
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+}
+
+.header-title {
+    font-size: 1.8rem;
+    font-weight: 600;
+    margin: 0;
+}
+
+.save-button {
+    background-color: #66BB6A; /* Lighter green for save button */
+    color: #ffffff;
+    padding: 8px 18px;
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+    font-size: 1rem;
+    font-weight: 500;
+    transition: background-color 0.2s;
+}
+
+    .save-button:hover {
+        background-color: #4CAF50;
+    }
+
+/* Form Section Styling */
+.form-section {
+    background-color: #ffffff;
+    padding: 25px;
+    border-radius: 8px;
+    box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+    margin-bottom: 20px;
+}
+
+.section-title {
+    font-size: 1.25rem;
+    font-weight: 600;
+    color: #333333;
+    margin-bottom: 20px;
+    padding-bottom: 10px;
+    border-bottom: 2px solid #eee;
+}
+
+.grid-container {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr); /* 3 columns by default */
+    gap: 20px 30px; /* Row and column gap */
+}
+
+.form-group {
+    display: flex;
+    flex-direction: column;
+}
+
+.form-label {
+    font-size: 0.85rem;
+    color: #555555;
+    margin-bottom: 6px;
+    font-weight: 500;
+}
+
+.form-input,
+.form-select {
+    width: 100%;
+    padding: 10px 12px;
+    border: 1px solid #cccccc;
+    border-radius: 5px;
+    font-size: 0.9rem;
+    color: #333333;
+    background-color: #f7f7f7;
+    box-sizing: border-box; /* Include padding in width */
+}
+
+    .form-input:focus,
+    .form-select:focus {
+        outline: none;
+        border-color: #4CAF50;
+        box-shadow: 0 0 0 2px rgba(76, 175, 80, 0.2);
+    }
+
+.form-select {
+    appearance: none; /* Remove default arrow */
+    -webkit-appearance: none;
+    -moz-appearance: none;
+    background-image: url('data:image/svg+xml;charset=US-ASCII,%3Csvg%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%20width%3D%22292.4%22%20height%3D%22292.4%22%3E%3Cpath%20fill%3D%22%23666666%22%20d%3D%22M287%2C114.7L159.2%2C242.5c-3.2%2C3.2-8.3%2C3.2-11.6%2C0L5.4%2C114.7c-3.2-3.2-3.2-8.3%2C0-11.6l10.3-10.3c3.2-3.2%2C8.3-3.2%2C11.6%2C0l126.9%2C126.9l126.9-126.9c3.2-3.2%2C8.3-3.2%2C11.6%2C0l10.3%2C10.3C290.2%2C106.4%2C290.2%2C111.5%2C287%2C114.7z%22%2F%3E%3C%2Fsvg%3E');
+    background-repeat: no-repeat;
+    background-position: right 10px top 50%;
+    background-size: 12px;
+    padding-right: 30px;
+}
+
+.full-width {
+    grid-column: span 3; /* Spans all 3 columns */
+}
+
+.date-input .input-with-icon {
+    position: relative;
+}
+
+    .date-input .input-with-icon .form-input {
+        padding-right: 35px; /* Make space for the icon */
+    }
+
+    .date-input .input-with-icon i {
+        position: absolute;
+        right: 12px;
+        top: 50%;
+        transform: translateY(-50%);
+        color: #777;
+        pointer-events: none; /* Allow clicks to pass through to the input */
+    }
+
+.checkbox-group {
+    display: flex;
+    align-items: center;
+    gap: 8px; /* Space between checkbox and label */
+}
+
+.form-checkbox {
+    /* Existing Tailwind classes might handle this, but if not: */
+    width: 18px;
+    height: 18px;
+    border: 1px solid #cccccc;
+    border-radius: 4px;
+    appearance: none;
+    -webkit-appearance: none;
+    -moz-appearance: none;
+    cursor: pointer;
+    position: relative;
+    outline: none;
+}
+
+    .form-checkbox:checked {
+        background-color: #4CAF50;
+        border-color: #4CAF50;
+    }
+
+        .form-checkbox:checked::after {
+            content: '\2713'; /* Checkmark character */
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            color: #ffffff;
+            font-size: 12px;
+        }
+
+.form-checkbox-label {
+    font-size: 0.9rem;
+    color: #333333;
+    cursor: pointer;
+    font-weight: normal;
+}
+
+.grid-container-requirements {
+    grid-template-columns: repeat(2, 1fr); /* 2 columns for this section */
+}
+
+
+/* Bottom Create Button */
+.form-actions-bottom {
+    display: flex;
+    justify-content: flex-end;
+    padding-top: 20px;
+    margin-right: 10px; /* Adjust margin to align with content */
+}
+
+.create-button {
+    background-color: #4CAF50; /* Green create button */
+    color: #ffffff;
+    padding: 12px 25px;
+    border: none;
+    border-radius: 8px;
+    cursor: pointer;
+    font-size: 1.1rem;
+    font-weight: 600;
+    transition: background-color 0.2s;
+    box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+}
+
+    .create-button:hover {
+        background-color: #45a049;
+    }
+
+/* Responsive adjustments */
+@media (max-width: 1024px) {
+    .grid-container {
+        grid-template-columns: repeat(2, 1fr); /* 2 columns on medium screens */
+    }
+
+    .full-width {
+        grid-column: span 2;
+    }
+
+    .grid-container-requirements {
+        grid-template-columns: 1fr; /* 1 column on medium screens */
+    }
+}
+
+@media (max-width: 768px) {
+    .sidebar {
+        width: 100%;
+        height: auto;
+        position: static;
+        padding-bottom: 0;
+    }
+
+    .main-content {
+        margin-left: 0;
+        padding-top: 0;
+    }
+
+    .header {
+        flex-direction: column;
+        align-items: flex-start;
+        padding: 15px 20px;
+    }
+
+    .header-title {
+        margin-bottom: 10px;
+    }
+
+    .save-button {
+        align-self: flex-end;
+    }
+
+    .grid-container {
+        grid-template-columns: 1fr; /* Single column on small screens */
+    }
+
+    .full-width {
+        grid-column: span 1;
+    }
+
+    .section-title {
+        text-align: center;
+    }
+}

@@ -1,0 +1,269 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Client Creation</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="CSS/clientcreationform_style.css">
+</head>
+<body class="flex min-h-screen bg-gray-100">
+    <aside class="sidebar">
+        <div class="sidebar-header">
+            Emerald Microfinance
+        </div>
+        <nav class="sidebar-nav">
+            <ul>
+                <li><a href="#" class="nav-link">Dashboard</a></li>
+                <li><a href="#" class="nav-link active">Client Creation</a></li>
+                <li><a href="#" class="nav-link">Pending Accounts</a></li>
+                <li><a href="#" class="nav-link">Accounts Receivable</a></li>
+                <li><a href="#" class="nav-link">Ledger</a></li>
+                <li><a href="#" class="nav-link">Amortization Calculator</a></li>
+                <li><a href="#" class="nav-link">Reports</a></li>
+                <li><a href="#" class="nav-link">User Management</a></li>
+                <li><a href="#" class="nav-link">Tools</a></li>
+            </ul>
+        </nav>
+        <div class="sidebar-footer">
+            <button class="logout-button">
+                Logout
+            </button>
+        </div>
+    </aside>
+
+    <main class="main-content">
+        <header class="header">
+            <h1 class="header-title">Client Creation</h1>
+        </header>
+
+        <section class="form-section">
+            <h2 class="section-title">Personal Information</h2>
+            <div class="grid-container">
+                <div class="form-group">
+                    <label for="lastName" class="form-label">Last Name *</label>
+                    <input type="text" id="lastName" name="lastName" class="form-input">
+                </div>
+                <div class="form-group">
+                    <label for="firstName" class="form-label">First Name *</label>
+                    <input type="text" id="firstName" name="firstName" class="form-input">
+                </div>
+                <div class="form-group">
+                    <label for="middleName" class="form-label">Middle Name *</label>
+                    <input type="text" id="middleName" name="middleName" class="form-input">
+                </div>
+                <div class="form-group">
+                    <label for="maritalStatus" class="form-label">Marital Status *</label>
+                    <select id="maritalStatus" name="maritalStatus" class="form-select">
+                        <option value="">Select...</option>
+                        <option value="single">Single</option>
+                        <option value="married">Married</option>
+                        <option value="divorced">Divorced</option>
+                        <option value="widowed">Widowed</option>
+                    </select>
+                </div>
+                <div class="form-group">
+                    <label for="gender" class="form-label">Gender *</label>
+                    <select id="gender" name="gender" class="form-select">
+                        <option value="">Select...</option>
+                        <option value="male">Male</option>
+                        <option value="female">Female</option>
+                        <option value="other">Other</option>
+                    </select>
+                </div>
+                <div class="form-group date-input">
+                    <label for="dateOfBirth" class="form-label">Date of Birth *</label>
+                    <input type="date" id="dateOfBirth" name="dateOfBirth" class="form-input">
+                </div>
+                <div class="form-group">
+                    <label for="city" class="form-label">City *</label>
+                    <select id="city" name="city" class="form-select">
+                        <option value="">Select...</option>
+                        <option value="tarlac">Tarlac City</option>
+                        <option value="manila">Manila</option>
+                    </select>
+                </div>
+                <div class="form-group">
+                    <label for="barangay" class="form-label">Barangay *</label>
+                    <select id="barangay" name="barangay" class="form-select">
+                        <option value="">Select...</option>
+                        <option value="sanroque">San Roque</option>
+                        <option value="poblacion">Poblacion</option>
+                    </select>
+                </div>
+                <div class="form-group">
+                    <label for="postalCode" class="form-label">Postal Code *</label>
+                    <input type="text" id="postalCode" name="postalCode" class="form-input">
+                </div>
+                <div class="form-group full-width">
+                    <label for="streetAddress" class="form-label">Street Address *</label>
+                    <input type="text" id="streetAddress" name="streetAddress" class="form-input">
+                </div>
+                <div class="form-group">
+                    <label for="phoneNumber" class="form-label">Phone Number *</label>
+                    <input type="tel" id="phoneNumber" name="phoneNumber" class="form-input">
+                </div>
+                <div class="form-group">
+                    <label for="email" class="form-label">Email</label>
+                    <input type="email" id="email" name="email" class="form-input">
+                </div>
+                <div class="form-group">
+                    <label for="employmentStatus" class="form-label">Employment Status</label>
+                    <input type="text" id="employmentStatus" name="employmentStatus" class="form-input">
+                </div>
+                <div class="form-group">
+                    <label for="occupationPosition" class="form-label">Occupation/Position</label>
+                    <input type="text" id="occupationPosition" name="occupationPosition" class="form-input">
+                </div>
+                <div class="form-group">
+                    <label for="yearsInJob" class="form-label">Years in Job</label>
+                    <input type="number" id="yearsInJob" name="yearsInJob" class="form-input">
+                </div>
+                <div class="form-group">
+                    <label for="incomeSalary" class="form-label">Income/Salary *</label>
+                    <input type="text" id="incomeSalary" name="incomeSalary" class="form-input">
+                </div>
+            </div>
+        </section>
+
+        <section class="form-section">
+            <h2 class="section-title">Guarantor Information</h2>
+            <div class="grid-container">
+                <div class="form-group">
+                    <label for="guarantorLastName" class="form-label">Last Name *</label>
+                    <input type="text" id="guarantorLastName" name="guarantorLastName" class="form-input">
+                </div>
+                <div class="form-group">
+                    <label for="guarantorFirstName" class="form-label">First Name *</label>
+                    <input type="text" id="guarantorFirstName" name="guarantorFirstName" class="form-input">
+                </div>
+                <div class="form-group">
+                    <label for="guarantorMiddleName" class="form-label">Middle Name *</label>
+                    <input type="text" id="guarantorMiddleName" name="guarantorMiddleName" class="form-input">
+                </div>
+                <div class="form-group">
+                    <label for="guarantorMaritalStatus" class="form-label">Marital Status *</label>
+                    <select id="guarantorMaritalStatus" name="guarantorMaritalStatus" class="form-select">
+                        <option value="">Select...</option>
+                        <option value="single">Single</option>
+                        <option value="married">Married</option>
+                    </select>
+                </div>
+                <div class="form-group">
+                    <label for="guarantorGender" class="form-label">Gender *</label>
+                    <select id="guarantorGender" name="guarantorGender" class="form-select">
+                        <option value="">Select...</option>
+                        <option value="male">Male</option>
+                        <option value="female">Female</option>
+                    </select>
+                </div>
+                <div class="form-group date-input">
+                    <label for="guarantorDateOfBirth" class="form-label">Date of Birth *</label>
+                    <input type="date" id="guarantorDateOfBirth" name="guarantorDateOfBirth" class="form-input">
+                </div>
+                <div class="form-group">
+                    <label for="guarantorCity" class="form-label">City *</label>
+                    <select id="guarantorCity" name="guarantorCity" class="form-select">
+                        <option value="">Select...</option>
+                        <option value="tarlac">Tarlac City</option>
+                        <option value="manila">Manila</option>
+                    </select>
+                </div>
+                <div class="form-group">
+                    <label for="guarantorBarangay" class="form-label">Barangay *</label>
+                    <select id="guarantorBarangay" name="guarantorBarangay" class="form-select">
+                        <option value="">Select...</option>
+                        <option value="sanroque">San Roque</option>
+                        <option value="poblacion">Poblacion</option>
+                    </select>
+                </div>
+                <div class="form-group">
+                    <label for="guarantorPostalCode" class="form-label">Postal Code *</label>
+                    <input type="text" id="guarantorPostalCode" name="guarantorPostalCode" class="form-input">
+                </div>
+                <div class="form-group full-width">
+                    <label for="guarantorStreetAddress" class="form-label">Street Address *</label>
+                    <input type="text" id="guarantorStreetAddress" name="guarantorStreetAddress" class="form-input">
+                </div>
+                <div class="form-group">
+                    <label for="guarantorPhoneNumber" class="form-label">Phone Number *</label>
+                    <input type="tel" id="guarantorPhoneNumber" name="guarantorPhoneNumber" class="form-input">
+                </div>
+                <div class="form-group">
+                    <label for="guarantorEmail" class="form-label">Email</label>
+                    <input type="email" id="guarantorEmail" name="guarantorEmail" class="form-input">
+                </div>
+                <div class="form-group">
+                    <label for="guarantorEmploymentStatus" class="form-label">Employment Status</label>
+                    <input type="text" id="guarantorEmploymentStatus" name="guarantorEmploymentStatus" class="form-input">
+                </div>
+                <div class="form-group">
+                    <label for="guarantorOccupationPosition" class="form-label">Occupation/Position</label>
+                    <input type="text" id="guarantorOccupationPosition" name="guarantorOccupationPosition" class="form-input">
+                </div>
+                <div class="form-group">
+                    <label for="guarantorYearsInJob" class="form-label">Years in Job</label>
+                    <input type="number" id="guarantorYearsInJob" name="guarantorYearsInJob" class="form-input">
+                </div>
+                <div class="form-group">
+                    <label for="guarantorIncomeSalary" class="form-label">Income/Salary *</label>
+                    <input type="text" id="guarantorIncomeSalary" name="guarantorIncomeSalary" class="form-input">
+                </div>
+                <div class="form-group checkbox-group">
+                    <input type="checkbox" id="validId" name="validId" class="form-checkbox">
+                    <label for="validId" class="form-checkbox-label">Valid ID *</label>
+                </div>
+                <div class="form-group">
+                    <label for="idNumber" class="form-label">ID Number</label>
+                    <input type="text" id="idNumber" name="idNumber" class="form-input">
+                </div>
+                <div class="form-group checkbox-group">
+                    <input type="checkbox" id="barangayClearance" name="barangayClearance" class="form-checkbox">
+                    <label for="barangayClearance" class="form-checkbox-label">Barangay Clearance</label>
+                </div>
+                <div class="form-group">
+                    <label for="collateral" class="form-label">Collateral</label>
+                    <input type="text" id="collateral" name="collateral" class="form-input">
+                </div>
+                <div class="form-group checkbox-group third-span">
+                    <input type="checkbox" id="cr" name="cr" class="form-checkbox">
+                    <label for="cr" class="form-checkbox-label">CR / OR / Verification</label>
+                </div>
+            </div>
+        </section>
+
+        <section class="form-section">
+            <h2 class="section-title">Client Action Plan</h2>
+            <div class="grid-container">
+                <div class="form-group">
+                    <label for="loanAmount" class="form-label">Loan Amount *</label>
+                    <input type="text" id="loanAmount" name="loanAmount" class="form-input">
+                </div>
+                <div class="form-group">
+                    <label for="interestRate" class="form-label">Interest Rate *</label>
+                    <input type="text" id="interestRate" name="interestRate" class="form-input">
+                </div>
+                <div class="form-group">
+                    <label for="paymentFrequency" class="form-label">Payment Frequency</label>
+                    <input type="text" id="paymentFrequency" name="paymentFrequency" class="form-input">
+                </div>
+                <div class="form-group date-input">
+                    <label for="startDate" class="form-label">Start Date *</label>
+                    <input type="date" id="startDate" name="startDate" class="form-input">
+                </div>
+                <div class="form-group">
+                    <label for="durationOfPayment" class="form-label">Duration of Payment</label>
+                    <input type="text" id="durationOfPayment" name="durationOfPayment" class="form-input">
+                </div>
+            </div>
+        </section>
+
+        <div class="form-actions">
+            <button class="create-button">
+                Create
+            </button>
+        </div>
+    </main>
+</body>
+</html>
