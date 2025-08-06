@@ -6,10 +6,11 @@
     <title>Log In</title>
     <link rel="stylesheet" href="CSS/login_style.css">
 </head>
+
 <body>
     <div class="login-container">
         <h1>Log In</h1>
-        <form action="#" method="post">
+        <form id="loginForm">
             <div class="form-group">
                 <label for="username">Username</label>
                 <input type="text" id="username" name="username" placeholder="USERNAME" required>
@@ -22,7 +23,9 @@
                 <a href="#">Forgot Password?</a>
             </div>
             <button type="submit">LOG IN</button>
+            <div id="message" class="message"></div>
         </form>
     </div>
+    <script src="JS/login_function.js"></script>
 </body>
 </html>
