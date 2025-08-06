@@ -1,129 +1,95 @@
 /* General Body and Container Styling */
 body {
-    font-family: 'Inter', sans-serif; /* Using Inter font as per previous design */
-    background-color: #333; /* Dark background */
+    font-family: 'Inter', sans-serif;
+    background-color: #333;
     margin: 0;
     padding: 0;
-    display: flex; /* Flexbox for main layout */
-    min-height: 100vh; /* Full viewport height */
-    color: #fff; /* Default text color */
+    display: flex;
+    min-height: 100vh;
+    color: #fff;
 }
 
-/* Responsive adjustments for main layout */
-@media (max-width: 768px) {
-    body {
-        flex-direction: column; /* Stack sidebar and main content vertically on small screens */
-    }
-}
-
-/* Sidebar Styling */
-aside {
-    width: 250px; /* Fixed width for sidebar on larger screens */
-    background-color: #222; /* Darker background for sidebar */
-    padding: 1.5rem;
+.sidebar {
+    width: 280px;
+    background-color: #2D3748;
+    color: #FFFFFF;
     display: flex;
     flex-direction: column;
-    align-items: center; /* Center items horizontally */
-    box-shadow: 4px 0 10px rgba(233, 231, 231, 0.3); /* Subtle shadow */
-    border-radius: 0 10px 10px 0; /* Rounded right corners */
+    padding: 1.5rem 0;
+    border-top-right-radius: 1rem;
+    border-bottom-right-radius: 1rem;
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
 }
 
-@media (max-width: 768px) {
-    aside {
-        width: 100%; /* Full width on small screens */
-        padding: 1rem;
-        border-radius: 0 0 10px 10px; /* Rounded bottom corners */
-        box-shadow: 0 4px 10px rgba(0, 0, 0, 0.3);
-    }
-}
-
-/* Logo/Brand Section in Sidebar */
-aside > div:first-child { /* Targets the div containing the H1 */
-    background-color: #4CAF50; /* Green background */
-    color: white;
-    text-align: center;
-    padding: 1rem 0;
-    border-radius: 8px;
+.sidebar-header {
+    font-size: 1.5rem;
+    font-weight: 700;
+    padding: 0 1.5rem 1.5rem;
+    border-bottom: 1px solid #4A5568;
     margin-bottom: 1.5rem;
-    width: 100%; /* Full width within sidebar */
-    box-shadow: 0 2px 5px rgba(0, 0, 0, 0.2);
 }
 
-aside h1 {
-    font-size: 1.875rem; /* text-3xl */
-    font-weight: bold;
-    line-height: 1.2;
+.sidebar-nav ul {
+    list-style: none;
+    padding: 0;
+    margin: 0;
+    flex-grow: 1;
 }
 
-/* Navigation Buttons in Sidebar */
-nav {
-    width: 100%;
-    display: flex;
-    flex-direction: column;
-    gap: 0.75rem; /* Gap between buttons */
-}
-
-nav button {
-    width: 100%;
-    padding: 0.75rem 1rem;
-    background-color: #ffffff; /* Darker grey for buttons */
-    color: rgb(0, 0, 0);
-    border-radius: 6px;
-    text-align: left;
+.nav-link {
+    display: block;
+    padding: 0.75rem 1.5rem;
+    color: #CBD5E0;
     font-weight: 500;
-    transition: background-color 0.2s ease;
-    border: none; /* Remove default button border */
-    cursor: pointer;
-    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+    transition: background-color 0.2s ease-in-out;
+    border-radius: 0.5rem;
+    margin: 0 0.75rem 0.5rem;
 }
 
-nav button:hover {
-    background-color: #555; /* Lighter grey on hover */
+.nav-link:hover {
+    background-color: #4A5568;
+    color: #FFFFFF;
 }
 
-/* Logout Button */
-aside > div:last-child { /* Targets the div containing the Logout button */
-    margin-top: auto; /* Pushes the logout button to the bottom */
+.nav-link.active {
+    background-color: #48BB78;
+    color: #FFFFFF;
+    font-weight: 600;
+}
+
+.sidebar-footer {
+    padding: 1.5rem;
+    border-top: 1px solid #4A5568;
+    margin-top: 1.5rem;
+}
+
+.logout-button {
     width: 100%;
-    padding-top: 1.5rem;
+    background-color: #E53E3E;
+    color: #FFFFFF;
+    padding: 0.75rem 1.5rem;
+    border-radius: 0.5rem;
+    font-weight: 600;
+    transition: background-color 0.2s ease-in-out;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
 }
 
-aside > div:last-child button {
-    width: 100%;
-    padding: 0.75rem 1rem;
-    background-color: #dc2626; /* Red background */
-    color: white;
-    border-radius: 6px;
-    text-align: left;
-    font-weight: 500;
-    transition: background-color 0.2s ease;
-    border: none;
-    cursor: pointer;
-    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
-}
-
-aside > div:last-child button:hover {
-    background-color: #ef4444; /* Lighter red on hover */
+.logout-button:hover {
+    background-color: #C53030;
 }
 
 /* Main Content Area */
 main {
-    flex: 1; /* Takes up remaining space */
+    flex: 1;
     padding: 1.5rem;
-    overflow-y: auto; /* Enable vertical scrolling if content overflows */
-}
-
-@media (max-width: 768px) {
-    main {
-        padding: 1rem;
-    }
+    overflow-y: auto;
 }
 
 /* Dashboard Header */
 main > header {
-    background-color: #4CAF50; /* Green background */
+    background-color: #4CAF50;
     color: white;
-    font-size: 2.25rem; /* text-4xl */
+    font-size: 2.25rem;
     font-weight: bold;
     padding: 1rem 1.5rem;
     border-radius: 8px;
@@ -132,28 +98,22 @@ main > header {
 }
 
 /* Main Content Layout (Client's Due and Info Cards) */
-main > div { /* This div wraps Client's Due and Right Column */
+main > div {
     display: flex;
-    gap: 1.5rem; /* Gap between sections */
-}
-
-@media (max-width: 1024px) { /* Adjust for medium to large screens (lg breakpoint) */
-    main > div {
-        flex-direction: column; /* Stack sections vertically */
-    }
+    gap: 1.5rem;
 }
 
 /* Client's Due Section */
 section {
-    flex: 1; /* Takes up available space */
-    background-color: #2d3748; /* bg-gray-800 */
+    flex: 1;
+    background-color: #2d3748;
     padding: 1.5rem;
     border-radius: 8px;
     box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
 }
 
 /* Client's Due Header and Legend */
-section > div:first-child { /* Div containing H2 and legend */
+section > div:first-child {
     display: flex;
     flex-direction: column;
     justify-content: space-between;
@@ -161,104 +121,76 @@ section > div:first-child { /* Div containing H2 and legend */
     margin-bottom: 1rem;
 }
 
-@media (min-width: 640px) { /* sm breakpoint */
-    section > div:first-child {
-        flex-direction: row;
-        align-items: center;
-    }
-}
-
 section h2 {
-    font-size: 1.25rem; /* text-xl */
+    font-size: 1.25rem;
     font-weight: 600;
     color: white;
-    margin-bottom: 0.5rem; /* Margin below H2 on small screens */
+    margin-bottom: 0.5rem;
 }
 
-@media (min-width: 640px) {
-    section h2 {
-        margin-bottom: 0; /* Remove margin on larger screens */
-    }
-}
-
-section > div:first-child > div { /* Div containing the legend items */
+section > div:first-child > div {
     display: flex;
     flex-direction: column;
     gap: 0.5rem;
-    font-size: 0.875rem; /* text-sm */
+    font-size: 0.875rem;
     color: white;
 }
 
-@media (min-width: 640px) {
-    section > div:first-child > div {
-        flex-direction: row;
-        gap: 0.75rem;
-    }
-}
-
-section > div:first-child > div > div { /* Individual legend item */
+section > div:first-child > div > div {
     display: flex;
     align-items: center;
 }
 
-section > div:first-child span { /* Color circles in legend */
-    width: 0.75rem; /* w-3 */
-    height: 0.75rem; /* h-3 */
-    border-radius: 9999px; /* rounded-full */
+section > div:first-child span {
+    width: 0.75rem;
+    height: 0.75rem;
+    border-radius: 9999px;
     margin-right: 0.5rem;
 }
 
 /* Specific legend colors */
-section > div:first-child span:nth-child(1) { background-color: #22c55e; /* green-500 */ }
-section > div:first-child span:nth-child(2) { background-color: #eab308; /* yellow-500 */ }
-section > div:first-child span:nth-child(3) { background-color: #ef4444; /* red-500 */ }
-
+section > div:first-child span:nth-child(1) { background-color: #22c55e; }
+section > div:first-child span:nth-child(2) { background-color: #eab308; }
+section > div:first-child span:nth-child(3) { background-color: #ef4444; }
 
 /* Table Styling */
 table {
-    min-width: 100%; /* Ensure table takes full width */
-    background-color: #4a5568; /* bg-gray-700 */
+    min-width: 100%;
+    background-color: #4a5568;
     border-radius: 8px;
-    overflow: hidden; /* Hides overflow for rounded corners */
+    overflow: hidden;
     color: white;
-    border-collapse: collapse; /* Collapse borders for clean look */
+    border-collapse: collapse;
 }
 
 table thead tr {
-    background-color: #4a5568; /* bg-gray-600 */
+    background-color: #4a5568;
     text-align: left;
 }
 
 table th,
 table td {
     padding: 0.75rem 1rem;
-    border-bottom: 1px solid #6b7280; /* border-gray-500/600 */
+    border-bottom: 1px solid #6b7280;
 }
 
 /* Specific row colors */
-table tbody tr:nth-child(1) { background-color: #166534; /* green-700 */ }
-table tbody tr:nth-child(2) { background-color: #a16207; /* yellow-700 */ }
-table tbody tr:nth-child(3) { background-color: #b91c1c; /* red-700 */ }
-table tbody tr:not(:nth-child(-n+3)) { background-color: #4a5568; /* bg-gray-700 for empty rows */ }
-
+table tbody tr:nth-child(1) { background-color: #166534; }
+table tbody tr:nth-child(2) { background-color: #a16207; }
+table tbody tr:nth-child(3) { background-color: #b91c1c; }
+table tbody tr:not(:nth-child(-n+3)) { background-color: #4a5568; }
 
 /* Right Column (Info Cards) */
-aside:last-of-type { /* Targets the second aside, which is the right column */
-    width: 320px; /* lg:w-80 */
+aside:last-of-type {
+    width: 320px;
     display: flex;
     flex-direction: column;
     gap: 1.5rem;
 }
 
-@media (max-width: 1024px) {
-    aside:last-of-type {
-        width: 100%; /* Full width on smaller screens */
-    }
-}
-
 /* Individual Info Card Styling */
 aside:last-of-type > div {
-    background-color: #2d3748; /* bg-gray-800 */
+    background-color: #2d3748;
     padding: 1.5rem;
     border-radius: 8px;
     box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
@@ -266,34 +198,58 @@ aside:last-of-type > div {
 }
 
 aside:last-of-type h3 {
-    font-size: 1.125rem; /* text-lg */
+    font-size: 1.125rem;
     font-weight: 600;
     margin-bottom: 0.5rem;
 }
 
-aside:last-of-type > div > div { /* Inner div for placeholder content */
-    background-color: #4a5568; /* bg-gray-700 */
-    height: 6rem; /* h-24 */
+aside:last-of-type > div > div {
+    background-color: #4a5568;
+    height: 6rem;
     border-radius: 6px;
     display: flex;
     align-items: center;
     justify-content: center;
-    color: #a0aec0; /* text-gray-400 */
-    font-size: 1.25rem; /* text-xl */
+    color: #a0aec0;
+    font-size: 1.25rem;
 }
 
 /* Custom Scrollbar for aesthetic */
 ::-webkit-scrollbar {
     width: 8px;
 }
+
 ::-webkit-scrollbar-track {
     background: #444;
     border-radius: 10px;
 }
+
 ::-webkit-scrollbar-thumb {
     background: #888;
     border-radius: 10px;
 }
+
 ::-webkit-scrollbar-thumb:hover {
     background: #555;
+}
+
+/* Responsive adjustments */
+@media (max-width: 1024px) {
+    main > div {
+        flex-direction: column;
+    }
+
+    aside:last-of-type {
+        width: 100%;
+    }
+}
+
+@media (max-width: 768px) {
+    body {
+        flex-direction: column;
+    }
+
+    main {
+        padding: 1rem;
+    }
 }
