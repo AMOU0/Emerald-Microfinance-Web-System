@@ -1,0 +1,186 @@
+/* General Body and Container Styling */
+body {
+    font-family: 'Inter', sans-serif;
+    background-color: #333;
+    margin: 0;
+    padding: 0;
+    display: flex;
+    min-height: 100vh;
+    color: #fff;
+}
+
+.sidebar {
+    width: 280px;
+    background-color: #2D3748;
+    color: #FFFFFF;
+    display: flex;
+    flex-direction: column;
+    padding: 1.5rem 0;
+    border-top-right-radius: 1rem;
+    border-bottom-right-radius: 1rem;
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+}
+
+.sidebar-header {
+    font-size: 1.5rem;
+    font-weight: 700;
+    padding: 0 1.5rem 1.5rem;
+    border-bottom: 1px solid #4A5568;
+    margin-bottom: 1.5rem;
+}
+
+.sidebar-nav ul {
+    list-style: none;
+    padding: 0;
+    margin: 0;
+    flex-grow: 1;
+}
+
+.nav-link {
+    display: block;
+    padding: 0.75rem 1.5rem;
+    color: #CBD5E0;
+    font-weight: 500;
+    transition: background-color 0.2s ease-in-out;
+    border-radius: 0.5rem;
+    margin: 0 0.75rem 0.5rem;
+}
+
+.nav-link:hover {
+    background-color: #4A5568;
+    color: #FFFFFF;
+}
+
+.nav-link.active {
+    background-color: #48BB78;
+    color: #FFFFFF;
+    font-weight: 600;
+}
+
+.sidebar-footer {
+    padding: 1.5rem;
+    border-top: 1px solid #4A5568;
+    margin-top: 1.5rem;
+}
+
+.logout-button {
+    width: 100%;
+    background-color: #E53E3E;
+    color: #FFFFFF;
+    padding: 0.75rem 1.5rem;
+    border-radius: 0.5rem;
+    font-weight: 600;
+    transition: background-color 0.2s ease-in-out;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+}
+
+.logout-button:hover {
+    background-color: #C53030;
+}
+
+/* Main Content */
+.main-content {
+    flex-grow: 1;
+    display: flex;
+    flex-direction: column;
+}
+
+.header {
+    background-color: #48BB78;
+    color: #333;
+    padding: 20px;
+    border-bottom: 1px solid #ccc;
+}
+
+.header h1 {
+    margin: 0;
+    font-size: 28px;
+    font-weight: normal;
+}
+
+.content-panel {
+    display: flex;
+    flex-grow: 1;
+    background-color: #f0f0f0;
+}
+
+.user-management-menu {
+    width: 200px;
+    background-color: #ccc;
+    display: flex;
+    flex-direction: column;
+    padding: 20px;
+    box-sizing: border-box;
+}
+
+.user-management-menu button {
+    width: 100%;
+    padding: 10px;
+    margin-bottom: 10px;
+    background-color: #f0f0f0;
+    border: none;
+    cursor: pointer;
+    text-align: left;
+    font-size: 14px;
+    transition: background-color 0.3s;
+}
+
+.user-management-menu button:hover,
+.user-management-menu button.active {
+    background-color: #48BB78;
+    border: 1px solid #ccc;
+}
+
+.account-creation-panel {
+    flex-grow: 1;
+    background-color: #f0f0f0;
+    padding: 20px;
+    border: 1px solid #ccc;
+    margin: 20px;
+}
+
+.account-creation-panel h2 {
+    font-size: 24px;
+    font-weight: normal;
+    margin-top: 0;    
+    color: #333;
+}
+
+.form-group {
+    margin-bottom: 15px;
+}
+
+.form-group label {
+    display: block;
+    margin-bottom: 5px;
+    font-weight: bold;
+    color: #333;
+}
+
+.form-group input,
+.form-group select {
+    width: 100%;
+    padding: 10px;
+    box-sizing: border-box;
+    border: 1px solid #ccc;
+    background-color: #fff;
+}
+
+.form-actions {
+    margin-top: 20px;
+    text-align: right;
+}
+
+.create-btn {
+    padding: 10px 20px;
+    background-color: #8db88d;
+    color: #fff;
+    border: none;
+    cursor: pointer;
+    font-size: 16px;
+    border-radius: 5px;
+}
+
+.create-btn:hover {
+    background-color: #7ca87c;
+}
