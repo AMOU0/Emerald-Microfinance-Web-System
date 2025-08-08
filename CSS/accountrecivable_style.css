@@ -81,83 +81,121 @@ body {
     background-color: #C53030;
 }
 
-
-/* Main Content Styling (Modified) */
+/* Main Content Styling */
 .main-content {
     flex-grow: 1;
     display: flex;
     flex-direction: column;
-}
-
-.header {
-    background-color: #A8C6AE; /* Light green header color from the image */
+    background-color: #E2E8F0;
+    padding: 32px;
     color: #000;
-    padding: 20px;
-    font-weight: bold;
 }
 
-.header h1 {
+.main-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    background-color: #A0D3B4; /* Lighter green color from the image */
+    padding: 16px 24px;
+    border-radius: 12px;
+    margin-bottom: 24px;
+}
+
+.main-header h1 {
+    font-size: 32px;
+    font-weight: 700;
     margin: 0;
-    font-size: 28px;
-    font-weight: bold;
+    color: #2D3748;
 }
 
-.content-panel {
+.action-buttons {
     display: flex;
-    flex-grow: 1;
-    background-color: #E0E0E0; /* Light gray background color */
-}
-
-.tools-menu {
-    width: 250px; /* Width of the submenu panel */
-    padding: 20px 0;
-    box-sizing: border-box;
-    display: flex;
-    flex-direction: column;
-}
-
-.menu-button {
-    width: 90%;
-    margin: 0 auto;
-    padding: 10px;
-    background-color: #E0E0E0;
-    border: 1px solid #000;
-    cursor: pointer;
-    text-align: center;
-    font-size: 14px;
-    font-weight: bold;
-    border-radius: 20px; /* Pill shape */
-}
-
-.menu-button.active {
-    border: 1px solid #000;
-    color: #000;
-    background-color: #E0E0E0;
-}
-
-.content-area {
-    flex-grow: 1;
-    background-color: #fff;
-    padding: 20px;
-    margin: 20px;
-    border: 1px solid #ccc;
-    display: flex;
-    gap: 15px; /* Spacing between buttons */
-    align-items: flex-start; /* Aligns buttons at the top */
+    gap: 16px;
 }
 
 .action-button {
-    width: 150px;
-    padding: 10px;
-    background-color: #333; /* Dark button color */
-    color: #fff;
-    border-radius: 10px;
-    font-weight: bold;
+    padding: 10px 20px;
     border: none;
+    border-radius: 8px;
+    font-size: 16px;
+    font-weight: 600;
     cursor: pointer;
     transition: background-color 0.2s ease-in-out;
 }
 
-.action-button:hover {
-    background-color: #555;
+.reconstruct-button {
+    background-color: #fff;
+    color: #4A5568;
+}
+
+.reconstruct-button:hover {
+    background-color: #E2E8F0;
+}
+
+.select-button {
+    background-color: #48BB78;
+    color: #fff;
+}
+
+.select-button:hover {
+    background-color: #38A169;
+}
+
+/* Table Styling */
+.account-receivable-table-section {
+    flex-grow: 1;
+}
+
+.table-container {
+    background-color: #fff;
+    border-radius: 12px;
+    overflow: hidden;
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+}
+
+.table-header {
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    background-color: #A0D3B4; /* Match the header color */
+    font-weight: 600;
+    padding: 12px 0;
+}
+
+.table-header-cell {
+    text-align: left;
+    padding: 12px 24px;
+    border-right: 1px solid #E2E8F0;
+}
+
+.table-header-cell:last-child {
+    border-right: none;
+}
+
+.table-body {
+    display: flex;
+    flex-direction: column;
+}
+
+.table-row {
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    border-bottom: 1px solid #E2E8F0;
+}
+
+.table-row:last-child {
+    border-bottom: none;
+}
+
+.table-cell {
+    padding: 12px 24px;
+    border-right: 1px solid #E2E8F0;
+    min-height: 40px; /* Adjust as needed */
+}
+
+.table-cell:last-child {
+    border-right: none;
+}
+
+.even-row {
+    background-color: #F7FAFC;
 }
