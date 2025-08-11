@@ -7,15 +7,12 @@ $username = "root"; // XAMPP default username
 $password = "";     // XAMPP default password
 $dbname = "emerald_microfinance";
 
-// Create connection
 $conn = new mysqli($servername, $username, $password, $dbname);
 
-// Check connection
 if ($conn->connect_error) {
     die(json_encode(['success' => false, 'message' => "Connection failed: " . $conn->connect_error]));
 }
 
-// Get POST data
 $input_data = file_get_contents('php://input');
 $data = json_decode($input_data, true);
 
@@ -27,7 +24,6 @@ if (empty($user_username) || empty($user_password)) {
     exit();
 }
 
-// Prepare SQL statement to prevent SQL injection
 $stmt = $conn->prepare("SELECT password FROM users WHERE username = ?");
 $stmt->bind_param("s", $user_username);
 $stmt->execute();
@@ -37,7 +33,6 @@ if ($result->num_rows > 0) {
     $row = $result->fetch_assoc();
     $db_password = $row['password'];
 
-    // Compare the user-provided string with the database string
     if ($user_password === $db_password) {
         echo json_encode(['success' => true, 'message' => 'Login successful!']);
     } else {
