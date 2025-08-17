@@ -1,141 +1,117 @@
 <?php
-ob_start();
-
-error_reporting(E_ALL & ~E_NOTICE & ~E_WARNING);
-
-// Database Configuration 
-$servername = "localhost";
-$username = "root"; // XAMPP default username
-$password = "";     // XAMPP default password
-$dbname = "emerald_microfinance";
-
+// Enable detailed error reporting
+ini_set('display_errors', 1);
+ini_set('display_startup_errors', 1);
+error_reporting(E_ALL);
 header('Content-Type: application/json');
 
-function handleError($message) {
-    ob_end_clean();
-    echo json_encode(['success' => false, 'message' => $message]);
-    exit();
+// Database credentials
+$servername = "localhost";
+$username = "root";
+$password = "";
+$dbname = "emerald_microfinance";
+
+// Create a new database connection
+$conn = new mysqli($servername, $username, $password, $dbname);
+
+// Check for connection errors
+if ($conn->connect_error) {
+    die(json_encode(['success' => false, 'message' => "Connection failed: " . $conn->connect_error]));
 }
 
+// Log and decode the incoming JSON data
+$json_data = file_get_contents('php://input');
+$data = json_decode($json_data, true);
+
+// Check if JSON decoding was successful and data is not null
+if ($data === null) {
+    die(json_encode(['success' => false, 'message' => 'Invalid JSON data.']));
+}
+
+// Start a transaction
+$conn->begin_transaction();
+
 try {
-    if ($_SERVER['REQUEST_METHOD'] !== 'POST' || empty($_POST)) {
-        handleError("Invalid request. This script only accepts POST requests with form data.");
-    }
+    // Insert into 'clients' table
+    // Store optional values in variables to pass by reference
+    $email = $data['email'] ?? null;
+    $employmentStatus = $data['employmentStatus'] ?? null;
+    $occupationPosition = $data['occupationPosition'] ?? null;
+    $yearsInJob = $data['yearsInJob'] ?? null;
 
-    $conn = new PDO("mysql:host=$servername;dbname=$dbname", $username, $password);
-    $conn->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);
+    $stmt_client = $conn->prepare("INSERT INTO clients (last_name, first_name, middle_name, marital_status, gender, date_of_birth, city, barangay, postal_code, street_address, phone_number, email, employment_status, occupation, years_in_job, income) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)");
+    $stmt_client->bind_param("sssssssssssssssd",
+        $data['lastName'],
+        $data['firstName'],
+        $data['middleName'],
+        $data['maritalStatus'],
+        $data['gender'],
+        $data['dateOfBirth'],
+        $data['city'],
+        $data['barangay'],
+        $data['postalCode'],
+        $data['streetAddress'],
+        $data['phoneNumber'],
+        $email,
+        $employmentStatus,
+        $occupationPosition,
+        $yearsInJob,
+        $data['incomeSalary']
+    );
+    $stmt_client->execute();
+    $client_ID = $stmt_client->insert_id;
+    $stmt_client->close();
 
-    $conn->beginTransaction();
+    // Insert into 'guarantor' table
+    // Store optional values in variables to pass by reference
+    $guarantorEmail = $data['guarantorEmail'] ?? null;
+    $guarantorEmploymentStatus = $data['guarantorEmploymentStatus'] ?? null;
+    $guarantorOccupationPosition = $data['guarantorOccupationPosition'] ?? null;
+    $guarantorYearsInJob = $data['guarantorYearsInJob'] ?? null;
 
-    // --- 1. Insert into the `clients` table ---
-    $client_sql = "INSERT INTO clients (
-        last_name, first_name, middle_name, marital_status, gender, date_of_birth,
-        city, barangay, postal_code, street_address, phone_number, email,
-        employment_status, occupation, years_in_job, income
-    ) VALUES (
-        :lastName, :firstName, :middleName, :maritalStatus, :gender, :dateOfBirth,
-        :city, :barangay, :postalCode, :streetAddress, :phoneNumber, :email,
-        :employmentStatus, :occupation, :yearsInJob, :income
-    )";
-    $client_stmt = $conn->prepare($client_sql);
-    $client_stmt->execute([
-        ':lastName' => $_POST['lastName'],
-        ':firstName' => $_POST['firstName'],
-        ':middleName' => $_POST['middleName'],
-        ':maritalStatus' => $_POST['maritalStatus'],
-        ':gender' => $_POST['gender'],
-        ':dateOfBirth' => $_POST['dateOfBirth'],
-        ':city' => $_POST['city'],
-        ':barangay' => $_POST['barangay'],
-        ':postalCode' => $_POST['postalCode'],
-        ':streetAddress' => $_POST['streetAddress'],
-        ':phoneNumber' => $_POST['phoneNumber'],
-        ':email' => $_POST['email'],
-        ':employmentStatus' => $_POST['employmentStatus'],
-        ':occupation' => $_POST['occupationPosition'],
-        ':yearsInJob' => $_POST['yearsInJob'],
-        ':income' => $_POST['incomeSalary']
-    ]);
+    $stmt_guarantor = $conn->prepare("INSERT INTO guarantor (last_name, first_name, middle_name, marital_status, gender, date_of_birth, city, barangay, postal_code, street_address, phone_number, email, employment_status, occupation, years_in_job, income, client_ID) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)");
+    $stmt_guarantor->bind_param("ssssssssssssssdsi",
+        $data['guarantorLastName'],
+        $data['guarantorFirstName'],
+        $data['guarantorMiddleName'],
+        $data['guarantorMaritalStatus'],
+        $data['guarantorGender'],
+        $data['guarantorDateOfBirth'],
+        $data['guarantorCity'],
+        $data['guarantorBarangay'],
+        $data['guarantorPostalCode'],
+        $data['guarantorStreetAddress'],
+        $data['guarantorPhoneNumber'],
+        $guarantorEmail,
+        $guarantorEmploymentStatus,
+        $guarantorOccupationPosition,
+        $guarantorYearsInJob,
+        $data['guarantorIncomeSalary'],
+        $client_ID
+    );
+    $stmt_guarantor->execute();
+    $stmt_guarantor->close();
 
-    $client_ID = $conn->lastInsertId();
+    // Insert into 'client_requirements' table
+    $stmt_req = $conn->prepare("INSERT INTO client_requirements (has_valid_id, has_barangay_clearance, has_cr, client_ID) VALUES (?, ?, ?, ?)");
+    $stmt_req->bind_param("iiis", $data['validId'], $data['barangayClearance'], $data['cr'], $client_ID);
+    $stmt_req->execute();
+    $stmt_req->close();
 
-    // --- 2. Insert into the `guarantor` table ---
-    $guarantor_sql = "INSERT INTO guarantor (
-        last_name, first_name, middle_name, marital_status, gender, date_of_birth,
-        city, barangay, postal_code, street_address, phone_number, email,
-        employment_status, occupation, years_in_job, income, client_ID
-    ) VALUES (
-        :lastName, :firstName, :middleName, :maritalStatus, :gender, :dateOfBirth,
-        :city, :barangay, :postalCode, :streetAddress, :phoneNumber, :email,
-        :employmentStatus, :occupation, :yearsInJob, :income, :clientID
-    )";
-    $guarantor_stmt = $conn->prepare($guarantor_sql);
-    $guarantor_stmt->execute([
-        ':lastName' => $_POST['guarantorLastName'],
-        ':firstName' => $_POST['guarantorFirstName'],
-        ':middleName' => $_POST['guarantorMiddleName'],
-        ':maritalStatus' => $_POST['guarantorMaritalStatus'],
-        ':gender' => $_POST['guarantorGender'],
-        ':dateOfBirth' => $_POST['guarantorDateOfBirth'],
-        ':city' => $_POST['guarantorCity'],
-        ':barangay' => $_POST['guarantorBarangay'],
-        ':postalCode' => $_POST['guarantorPostalCode'],
-        ':streetAddress' => $_POST['guarantorStreetAddress'],
-        ':phoneNumber' => $_POST['guarantorPhoneNumber'],
-        ':email' => $_POST['guarantorEmail'],
-        ':employmentStatus' => $_POST['guarantorEmploymentStatus'],
-        ':occupation' => $_POST['guarantorOccupationPosition'],
-        ':yearsInJob' => $_POST['guarantorYearsInJob'],
-        ':income' => $_POST['guarantorIncomeSalary'],
-        ':clientID' => $client_ID
-    ]);
-
-    // --- 3. Insert into the `client_loan` table ---
-    $loan_sql = "INSERT INTO client_loan (
-        loan_amount, interest_rate, payment_frequency, start_date, duration_of_payment, client_ID
-    ) VALUES (
-        :loanAmount, :interestRate, :paymentFrequency, :startDate, :durationOfPayment, :clientID
-    )";
-    $loan_stmt = $conn->prepare($loan_sql);
-    $loan_stmt->execute([
-        ':loanAmount' => $_POST['loanAmount'],
-        ':interestRate' => $_POST['interestRate'],
-        ':paymentFrequency' => $_POST['paymentFrequency'],
-        ':startDate' => $_POST['startDate'],
-        ':durationOfPayment' => $_POST['durationOfPayment'],
-        ':clientID' => $client_ID
-    ]);
-
-    // --- 4. Insert into the `client_requirements` table ---
-    $validId_pic = ($_POST['validId'] == '1') ? 'Valid ID provided' : 'Not provided';
-    $barangay_clearance_pic = ($_POST['barangayClearance'] == '1') ? 'Barangay clearance provided' : 'Not provided';
-    $cr_or_pic = ($_POST['cr'] == '1') ? 'CR/OR/Verification provided' : 'Not provided';
-    $collateral_pic = !empty($_POST['collateral']) ? 'Collateral provided' : 'Not provided';
-
-    $requirements_sql = "INSERT INTO client_requirements (
-        validID_pic, validID_number, barangay_clearance_pic, collateral_pic, or_cr_pic, client_ID
-    ) VALUES (
-        :validIDPic, :validIDNumber, :barangayClearancePic, :collateralPic, :orCrPic, :clientID
-    )";
-    $requirements_stmt = $conn->prepare($requirements_sql);
-    $requirements_stmt->execute([
-        ':validIDPic' => $validId_pic,
-        ':validIDNumber' => $_POST['idNumber'],
-        ':barangayClearancePic' => $barangay_clearance_pic,
-        ':collateralPic' => $collateral_pic,
-        ':orCrPic' => $cr_or_pic,
-        ':clientID' => $client_ID
-    ]);
-    
+    // If all queries are successful, commit the transaction
     $conn->commit();
-    
-    ob_end_clean();
-    echo json_encode(['success' => true, 'message' => 'Client created successfully.']);
+    echo json_encode(['success' => true, 'message' => 'Client and guarantor data saved successfully!']);
 
-} catch (PDOException $e) {
-    $conn->rollBack();
-    handleError("Database Error: " . $e->getMessage());
+} catch (mysqli_sql_exception $e) {
+    // If any query failed, rollback the transaction and log the error
+    $conn->rollback();
+    echo json_encode(['success' => false, 'message' => 'Database error: ' . $e->getMessage()]);
 } catch (Exception $e) {
-    handleError("An unexpected error occurred: " . $e->getMessage());
+    // Catch any other unexpected errors
+    $conn->rollback();
+    echo json_encode(['success' => false, 'message' => 'An unexpected error occurred: ' . $e->getMessage()]);
+} finally {
+    // Close the database connection
+    $conn->close();
 }
 ?>
