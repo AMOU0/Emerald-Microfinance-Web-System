@@ -1,5 +1,5 @@
 <?php
-// Enable detailed error reporting
+// Enable detailed error reporting for development
 ini_set('display_errors', 1);
 ini_set('display_startup_errors', 1);
 error_reporting(E_ALL);
@@ -28,19 +28,46 @@ if ($data === null) {
     die(json_encode(['success' => false, 'message' => 'Invalid JSON data.']));
 }
 
-// Start a transaction
+// Start a transaction to ensure all operations are atomic
 $conn->begin_transaction();
 
 try {
-    // Insert into 'clients' table
-    // Store optional values in variables to pass by reference
+    // 1. Generate the Client ID (YYYY-XXXXX format)
+    $currentYear = date('Y');
+
+    // Find the last client ID for the current year
+    $sql = "SELECT client_ID FROM clients WHERE client_ID LIKE ? ORDER BY client_ID DESC LIMIT 1";
+    $stmt = $conn->prepare($sql);
+    $searchPattern = $currentYear . '%';
+    $stmt->bind_param("s", $searchPattern);
+    $stmt->execute();
+    $result = $stmt->get_result();
+
+    $nextClientNumber = 1;
+    if ($result->num_rows > 0) {
+        $row = $result->fetch_assoc();
+        // Extract the numeric part and increment it
+        $lastIdNumber = intval(substr($row['client_ID'], 4));
+        $nextClientNumber = $lastIdNumber + 1;
+    }
+    
+    // Format the number with leading zeros
+    $formattedNumber = sprintf("%05d", $nextClientNumber);
+    $newClientId = $currentYear . $formattedNumber;
+    
+    // 2. Insert into 'clients' table with the custom ID
     $email = $data['email'] ?? null;
     $employmentStatus = $data['employmentStatus'] ?? null;
     $occupationPosition = $data['occupationPosition'] ?? null;
     $yearsInJob = $data['yearsInJob'] ?? null;
 
-    $stmt_client = $conn->prepare("INSERT INTO clients (last_name, first_name, middle_name, marital_status, gender, date_of_birth, city, barangay, postal_code, street_address, phone_number, email, employment_status, occupation, years_in_job, income) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)");
-    $stmt_client->bind_param("sssssssssssssssd",
+    $stmt_client = $conn->prepare("INSERT INTO clients (
+                client_ID, last_name, first_name, middle_name, marital_status, gender, date_of_birth,
+                city, barangay, postal_code, street_address, phone_number, email, employment_status,
+                occupation, years_in_job, income
+            ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)");
+    $stmt_client->bind_param("sssssssssssssssss",
+        $newClientId,
         $data['lastName'],
         $data['firstName'],
         $data['middleName'],
@@ -59,48 +86,23 @@ try {
         $data['incomeSalary']
     );
     $stmt_client->execute();
-    $client_ID = $stmt_client->insert_id;
     $stmt_client->close();
 
-    // Insert into 'guarantor' table
-    // Store optional values in variables to pass by reference
-    $guarantorEmail = $data['guarantorEmail'] ?? null;
-    $guarantorEmploymentStatus = $data['guarantorEmploymentStatus'] ?? null;
-    $guarantorOccupationPosition = $data['guarantorOccupationPosition'] ?? null;
-    $guarantorYearsInJob = $data['guarantorYearsInJob'] ?? null;
-
-    $stmt_guarantor = $conn->prepare("INSERT INTO guarantor (last_name, first_name, middle_name, marital_status, gender, date_of_birth, city, barangay, postal_code, street_address, phone_number, email, employment_status, occupation, years_in_job, income, client_ID) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)");
-    $stmt_guarantor->bind_param("ssssssssssssssdsi",
-        $data['guarantorLastName'],
-        $data['guarantorFirstName'],
-        $data['guarantorMiddleName'],
-        $data['guarantorMaritalStatus'],
-        $data['guarantorGender'],
-        $data['guarantorDateOfBirth'],
-        $data['guarantorCity'],
-        $data['guarantorBarangay'],
-        $data['guarantorPostalCode'],
-        $data['guarantorStreetAddress'],
-        $data['guarantorPhoneNumber'],
-        $guarantorEmail,
-        $guarantorEmploymentStatus,
-        $guarantorOccupationPosition,
-        $guarantorYearsInJob,
-        $data['guarantorIncomeSalary'],
-        $client_ID
+    // 3. Insert into 'client_requirements' table
+    // The client_ID will also serve as the primary key for this table.
+    $stmt_req = $conn->prepare("INSERT INTO client_requirements (client_ID, has_valid_id, has_barangay_clearance, has_cr) VALUES (?, ?, ?, ?)");
+    $stmt_req->bind_param("siii", 
+        $newClientId,
+        $data['validId'], 
+        $data['barangayClearance'], 
+        $data['cr']
     );
-    $stmt_guarantor->execute();
-    $stmt_guarantor->close();
-
-    // Insert into 'client_requirements' table
-    $stmt_req = $conn->prepare("INSERT INTO client_requirements (has_valid_id, has_barangay_clearance, has_cr, client_ID) VALUES (?, ?, ?, ?)");
-    $stmt_req->bind_param("iiis", $data['validId'], $data['barangayClearance'], $data['cr'], $client_ID);
     $stmt_req->execute();
     $stmt_req->close();
 
     // If all queries are successful, commit the transaction
     $conn->commit();
-    echo json_encode(['success' => true, 'message' => 'Client and guarantor data saved successfully!']);
+    echo json_encode(['success' => true, 'message' => 'Client and guarantor data saved successfully!', 'clientId' => $newClientId]);
 
 } catch (mysqli_sql_exception $e) {
     // If any query failed, rollback the transaction and log the error

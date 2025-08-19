@@ -6,16 +6,21 @@ document.addEventListener('DOMContentLoaded', function() {
         link.addEventListener('click', function(event) {
             // Prevent the default link behavior
             event.preventDefault(); 
+            // Remove 'active' class from all links
+            navLinks.forEach(nav => nav.classList.remove('active'));
+            // Add 'active' class to the clicked link
+            this.classList.add('active');
+
             // Get the text from the link
             const linkText = this.textContent.toLowerCase().replace(/\s/g, ''); 
             // Define the URL based on the link's text
             const urlMapping = {
                 'dashboard': 'Dashboard.html',
                 'clientcreation': 'ClientCreationForm.html',
+                'loanapplication': 'LoanApplication.html',
                 'pendingaccounts': 'PendingAccount.html',
                 'accountsreceivable': 'AccountsReceivable.html',
                 'ledger': 'Ledgers.html',
-                'amortizationcalculator': 'AmortizationCalculator.html',
                 'reports': 'Reports.html',
                 'usermanagement': 'UserManagement.html',
                 'tools': 'Tools.html'

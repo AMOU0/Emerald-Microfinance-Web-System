@@ -1,5 +1,65 @@
+document.addEventListener('DOMContentLoaded', function() {
+    const navLinks = document.querySelectorAll('.nav-link');
+    const logoutButton = document.querySelector('.logout-button');
+
+    navLinks.forEach(link => {
+        link.addEventListener('click', function(event) {
+            // Prevent the default link behavior
+            event.preventDefault(); 
+            // Remove 'active' class from all links
+            navLinks.forEach(nav => nav.classList.remove('active'));
+            // Add 'active' class to the clicked link
+            this.classList.add('active');
+
+            // Get the text from the link
+            const linkText = this.textContent.toLowerCase().replace(/\s/g, ''); 
+            // Define the URL based on the link's text
+            const urlMapping = {
+                'dashboard': 'Dashboard.html',
+                'clientcreation': 'ClientCreationForm.html',
+                'loanapplication': 'LoanApplication.html',
+                'pendingaccounts': 'PendingAccount.html',
+                'accountsreceivable': 'AccountsReceivable.html',
+                'ledger': 'Ledgers.html',
+                'reports': 'Reports.html',
+                'usermanagement': 'UserManagement.html',
+                'tools': 'Tools.html'
+            };
+
+            // Navigate to the correct page
+            if (urlMapping[linkText]) {
+                window.location.href = urlMapping[linkText];
+            } else {
+                console.error('No page defined for this link:', linkText);
+            }
+        });
+    });
+
+    // Handle the logout button separately
+    logoutButton.addEventListener('click', function() {
+        // You would typically handle a logout process here (e.g., clearing session data)
+        window.location.href = 'login.html'; // Redirect to the login page
+    });
+});
+
 document.addEventListener('DOMContentLoaded', () => {
     const form = document.getElementById('clientCreationForm');
+
+    // Function to generate the new client ID
+    function generateClientId() {
+        // Get the current year
+        const currentYear = new Date().getFullYear();
+        // A placeholder for the next client number. This would need to be fetched from a database.
+        // For this example, we'll use a hardcoded value, but you would replace this with a dynamic number.
+        // The first client of the year would be 1, the next 2, and so on.
+        const nextClientNumber = 1; 
+        
+        // Pad the number with leading zeros to make it 5 digits long
+        const paddedNumber = String(nextClientNumber).padStart(5, '0');
+        
+        // Combine the year and the padded number to create the client ID
+        return `${currentYear}${paddedNumber}`;
+    }
 
     form.addEventListener('submit', async (e) => {
         e.preventDefault();
@@ -11,20 +71,19 @@ document.addEventListener('DOMContentLoaded', () => {
         createButton.disabled = true;
         createButton.textContent = 'Creating...';
 
-        // Add checkbox values to the data object
-        data.validId = form.elements.validId.checked;
-        data.barangayClearance = form.elements.barangayClearance.checked;
-        data.cr = form.elements.cr.checked;
+        // Add checkbox values and convert them to 1 or 0
+        data.barangayClearance = form.elements.barangayClearance.checked ? 1 : 0;
+        data.validId = form.elements.validId.checked ? 1 : 0;
+        
+        // The 'cr' field is a text input, not a checkbox.
+        // Let's ensure it's handled as a string.
+        data.cr = data.cr || null;
 
         // Basic validation for required fields
         const requiredFields = [
             'lastName', 'firstName', 'middleName', 'maritalStatus', 'gender',
             'dateOfBirth', 'city', 'barangay', 'postalCode', 'streetAddress',
-            'phoneNumber', 'incomeSalary', 'guarantorLastName', 'guarantorFirstName',
-            'guarantorMiddleName', 'guarantorMaritalStatus', 'guarantorGender',
-            'guarantorDateOfBirth', 'guarantorCity', 'guarantorBarangay',
-            'guarantorPostalCode', 'guarantorStreetAddress', 'guarantorPhoneNumber',
-            'guarantorIncomeSalary'
+            'phoneNumber', 'incomeSalary', 'cr'
         ];
 
         for (const field of requiredFields) {
@@ -35,14 +94,17 @@ document.addEventListener('DOMContentLoaded', () => {
                 return;
             }
         }
-
-        // Validate if at least one requirement checkbox is checked
-        if (!data.validId && !data.barangayClearance && !data.cr) {
+        
+        // Client requirements should have at least one of the following: a collateral, a valid ID, or a barangay clearance.
+        if (!data.cr && !data.validId && !data.barangayClearance) {
             alert('Please select at least one requirement.');
             createButton.disabled = false;
             createButton.textContent = 'Create';
             return;
         }
+
+        // Generate the new client ID and add it to the data
+        data.clientId = generateClientId();
 
         try {
             const response = await fetch('PHP/clientcreationform_handler.php', {
@@ -55,8 +117,8 @@ document.addEventListener('DOMContentLoaded', () => {
 
             const result = await response.json();
 
-            if (result.success) {
-                alert('Client created successfully!');
+            if (response.ok && result.success) {
+                alert('Client created successfully! Client ID: ' + data.clientId);
                 form.reset();
             } else {
                 alert(`Error: ${result.message}`);

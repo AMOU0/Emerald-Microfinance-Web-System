@@ -4,7 +4,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Emerald Microfinance Dashboard</title>
-        <link rel="stylesheet" href="CSS/loanapplication_style.css">
+    <link rel="stylesheet" href="CSS/loanapplication_style.css">
 </head>
 <body>
      <aside class="sidebar">
@@ -13,12 +13,12 @@
         </div>
         <nav class="sidebar-nav">
             <ul>
-                <li><a href="#" class="nav-link active">Dashboard</a></li>
+                <li><a href="#" class="nav-link">Dashboard</a></li>
                 <li><a href="#" class="nav-link">Client Creation</a></li>
+                <li><a href="#" class="nav-link active">Loan Application</a></li>
                 <li><a href="#" class="nav-link">Pending Accounts</a></li>
                 <li><a href="#" class="nav-link">Accounts Receivable</a></li>
                 <li><a href="#" class="nav-link">Ledger</a></li>
-                <li><a href="#" class="nav-link">Amortization Calculator</a></li>
                 <li><a href="#" class="nav-link">Reports</a></li>
                 <li><a href="#" class="nav-link">User Management</a></li>
                 <li><a href="#" class="nav-link">Tools</a></li>
@@ -30,82 +30,77 @@
             </button>
         </div>
     </aside>
-    <!-- Main Content Area -->
-<div class="main-content">
-  <div class="loan-application-container">
-    <header class="form-header">
-      <h2>Loan Application</h2>
-      <button class="search-client-button">Search client</button>
-    </header>
-    <div class="form-section client-info">
-      <div class="input-group">
-        <label for="client-id">Client ID</label>
-        <input type="text" id="client-id">
-      </div>
-      <div class="input-group">
-        <label for="last-name">Last name</label>
-        <input type="text" id="last-name">
-      </div>
-      <div class="input-group">
-        <label for="first-name">First name</label>
-        <input type="text" id="first-name">
-      </div>
-      <div class="input-group">
-        <label for="middle-initial">Middle Initial</label>
-        <input type="text" id="middle-initial">
-      </div>
-      <div class="input-group">
-        <label for="mobile-number">Mobile number</label>
-        <input type="text" id="mobile-number">
-      </div>
-      <div class="input-group full-width">
-        <label for="address">Address</label>
-        <input type="text" id="address">
-      </div>
+
+    <div class="main-content">
+        <form class="loan-application-container" id="loanApplicationForm">
+            <header class="form-header">
+                <h2>Loan Application</h2>
+                <button class="search-client-button">Search client</button>
+            </header>
+
+            <section class="form-section">
+                <h2 class="section-title">Guarantor Information</h2>
+                <div class="grid-container">
+                    <div class="form-group">
+                        <label for="guarantorLastName" class="form-label">Last Name *</label>
+                        <input type="text" id="guarantorLastName" name="guarantorLastName" class="form-input" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="guarantorFirstName" class="form-label">First Name *</label>
+                        <input type="text" id="guarantorFirstName" name="guarantorFirstName" class="form-input" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="guarantorMiddleName" class="form-label">Middle Name *</label>
+                        <input type="text" id="guarantorMiddleName" name="guarantorMiddleName" class="form-input" required>
+                    </div>
+                    <div class="form-group full-width">
+                        <label for="guarantorStreetAddress" class="form-label">Street Address *</label>
+                        <input type="text" id="guarantorStreetAddress" name="guarantorStreetAddress" class="form-input" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="guarantorPhoneNumber" class="form-label">Phone Number *</label>
+                        <input type="tel" id="guarantorPhoneNumber" name="guarantorPhoneNumber" class="form-input" required>
+                    </div>
+                </div>
+            </section>
+
+            <section class="form-section">
+                <h2 class="section-title">Loan Details</h2>
+                <div class="grid-container">
+                    <div class="input-group">
+                        <label for="loan-amount" class="form-label">Loan Amount</label>
+                        <input type="text" id="loan-amount" class="form-input">
+                    </div>
+                    <div class="input-group">
+                        <label for="payment-frequency" class="form-label">Payment Frequency</label>
+                        <select id="payment-frequency" class="form-select">
+                            <option value="">Select...</option>
+                            <option value="daily">Daily</option>
+                            <option value="weekly">Weekly</option>
+                            <option value="monthly">Monthly</option>
+                        </select>
+                    </div>
+                    <div class="input-group">
+                        <label for="date-start" class="form-label">Date Start</label>
+                        <input type="date" id="date-start" class="form-input">
+                    </div>
+                    <div class="input-group">
+                        <label for="duration-of-loan" class="form-label">Duration of Loan</label>
+                        <input type="text" id="duration-of-loan" class="form-input">
+                    </div>
+                    <div class="input-group">
+                    <label for="date-end" class="form-label">Date End</label>
+                    <input type="date" id="date-end" class="form-input">
+                    </div>
+                </div>
+            </section>
+
+            <div class="form-actions">
+                <button class="clear-button">Clear</button>
+                <button class="apply-button">Apply</button>
+            </div>
+        </form>
     </div>
-    <div class="form-section guarantor-info">
-      <div class="input-group">
-        <label for="guarantor-name">Guarantor Name</label>
-        <input type="text" id="guarantor-name">
-      </div>
-      <div class="input-group">
-        <label for="guarantor-mobile">Mobile Number</label>
-        <input type="text" id="guarantor-mobile">
-      </div>
-      <div class="input-group full-width">
-        <label for="guarantor-address">Guarantor Address</label>
-        <input type="text" id="guarantor-address">
-      </div>
-    </div>
-    <div class="form-section loan-details">
-      <div class="input-group">
-        <label for="loan-amount">Loan Amount</label>
-        <input type="text" id="loan-amount">
-      </div>
-      <div class="input-group">
-        <label for="payment-frequency">Payment Frequency</label>
-        <select id="payment-frequency">
-          <option value="daily">Daily</option>
-          <option value="weekly">Weekly</option>
-          <option value="monthly">Monthly</option>
-        </select>
-      </div>
-      <div class="input-group">
-        <label for="date-start">Date Start</label>
-        <input type="date" id="date-start">
-      </div>
-      <div class="input-group">
-        <label for="duration-of-loan">Duration of Loan</label>
-        <input type="text" id="duration-of-loan">
-      </div>
-    </div>
-    <div class="form-actions">
-      <button class="cancel-button">Cancel</button>
-      <button class="apply-button">Apply</button>
-    </div>
-  </div>
-</div>
-    <main>
-                <script src="JS/dashboard_function.js"></script>
+    <script src="JS/loanapplication_function.js"></script>
 </body>
 </html>
