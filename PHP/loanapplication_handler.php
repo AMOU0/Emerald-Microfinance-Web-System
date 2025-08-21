@@ -23,8 +23,6 @@ if ($conn->connect_error) {
 }
 
 // --- Start a database transaction ---
-// This ensures that either both inserts are successful, or none of them are.
-// If any query fails, we can rollback all changes.
 $conn->begin_transaction();
 
 // Get the raw POST data and decode it
@@ -39,7 +37,7 @@ if ($data === null) {
 }
 
 // Extract data from the POST request
-// Note: It's good practice to sanitize input before using it in queries.
+$clientID = $data['clientID']; 
 $guarantorLastName = $data['guarantorLastName'];
 $guarantorFirstName = $data['guarantorFirstName'];
 $guarantorMiddleName = $data['guarantorMiddleName'];
@@ -52,26 +50,26 @@ $durationOfLoan = $data['duration-of-loan'];
 $dateEnd = $data['date-end'];
 
 // --- Step 1: Insert into loan_applications table ---
-// Prepare the SQL statement for the loan applications table
 $sql_loan_app = "INSERT INTO loan_applications (
+    client_ID,
     loan_amount, 
     payment_frequency, 
     date_start, 
     duration_of_loan, 
     date_end
-) VALUES (?, ?, ?, ?, ?)";
+) VALUES (?, ?, ?, ?, ?, ?)";
 
 $stmt_loan_app = $conn->prepare($sql_loan_app);
 if ($stmt_loan_app === false) {
-    $conn->rollback(); // Rollback on prepare failure
+    $conn->rollback();
     echo json_encode(['status' => 'error', 'message' => 'Prepare failed for loan_applications: ' . $conn->error]);
     exit();
 }
 
 // Bind parameters and execute the statement
-// 'sdsss' stands for string (dateStart), double (loanAmount), string, string, string.
-// Assuming loan_amount is a float/double and others are strings. Adjust if needed.
-$stmt_loan_app->bind_param("dssss", 
+// 'sdssss' stands for string (clientID), double (loanAmount), string, string, string, string.
+$stmt_loan_app->bind_param("sdssss", 
+    $clientID,
     $loanAmount, 
     $paymentFrequency, 
     $dateStart, 
@@ -80,7 +78,7 @@ $stmt_loan_app->bind_param("dssss",
 );
 
 if (!$stmt_loan_app->execute()) {
-    $conn->rollback(); // Rollback on execute failure
+    $conn->rollback();
     echo json_encode(['status' => 'error', 'message' => 'Execute failed for loan_applications: ' . $stmt_loan_app->error]);
     $stmt_loan_app->close();
     exit();
@@ -91,27 +89,27 @@ $loan_application_id = $conn->insert_id;
 $stmt_loan_app->close();
 
 // --- Step 2: Insert into guarantor table ---
-// Prepare the SQL statement for the guarantor table, including the foreign key
-// The guarantor table must have a column (e.g., 'loan_application_id') to link it to the loan_applications table.
 $sql_guarantor = "INSERT INTO guarantor (
+    client_ID,
     guarantor_last_name, 
     guarantor_first_name, 
     guarantor_middle_name, 
     guarantor_street_address, 
     guarantor_phone_number,
     loan_application_id
-) VALUES (?, ?, ?, ?, ?, ?)";
+) VALUES (?, ?, ?, ?, ?, ?, ?)";
 
 $stmt_guarantor = $conn->prepare($sql_guarantor);
 if ($stmt_guarantor === false) {
-    $conn->rollback(); // Rollback on prepare failure
+    $conn->rollback();
     echo json_encode(['status' => 'error', 'message' => 'Prepare failed for guarantor: ' . $conn->error]);
     exit();
 }
 
 // Bind parameters and execute the statement
-// We now have 6 variables to bind.
-$stmt_guarantor->bind_param("sssssi", 
+// 'ssssssi' stands for string (clientID), string, string, string, string, string, integer.
+$stmt_guarantor->bind_param("ssssssi", 
+    $clientID,
     $guarantorLastName, 
     $guarantorFirstName, 
     $guarantorMiddleName, 

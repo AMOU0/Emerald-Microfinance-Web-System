@@ -35,10 +35,13 @@
         <form class="loan-application-container" id="loanApplicationForm">
             <header class="form-header">
                 <h2>Loan Application</h2>
-                <button class="search-client-button">Search client</button>
+                <input type="hidden" id="clientID" name="clientID">
+                <button type="button" class="search-client-button" id="showClientsBtn">Search client</button>
             </header>
 
             <section class="form-section">
+                    <div id="clientList">
+                    </div>
                 <h2 class="section-title">Guarantor Information</h2>
                 <div class="grid-container">
                     <div class="form-group">
@@ -69,7 +72,15 @@
                 <div class="grid-container">
                     <div class="input-group">
                         <label for="loan-amount" class="form-label">Loan Amount</label>
-                        <input type="text" id="loan-amount" class="form-input">
+                        <select id="loan-amount" class="form-input">
+                            <option value="">Select...</option>
+                            <option value="5000">PHP 5000</option>
+                            <option value="10000">PHP 10,000</option>
+                            <option value="15000">PHP 15,000</option>
+                            <option value="20000">PHP 20,000</option>
+                            <option value="25000">PHP 25,000</option>
+                            <option value="30000">PHP 30,000</option>
+                        </select>
                     </div>
                     <div class="input-group">
                         <label for="payment-frequency" class="form-label">Payment Frequency</label>
