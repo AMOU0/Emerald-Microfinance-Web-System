@@ -91,7 +91,7 @@ document.addEventListener("DOMContentLoaded", () => {
         const selectedRadio = document.querySelector('input[name="selected"]:checked');
         if (selectedRadio) {
             const clientId = selectedRadio.value;
-            window.location.href = `PendingAccountView.php?id=${clientId}`;
+            window.location.href = `PendingAccountView.html?id=${clientId}`;
         } else {
             alert('Please select a client first.');
         }
