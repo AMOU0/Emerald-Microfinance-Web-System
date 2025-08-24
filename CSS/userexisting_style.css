@@ -81,6 +81,8 @@ body {
     background-color: #C53030;
 }
 
+
+/* Main Content */
 .main-content {
     flex-grow: 1;
     display: flex;
@@ -112,11 +114,13 @@ body {
     padding: 24px 0;
     border-top-right-radius: 16px;
     border-bottom-right-radius: 16px;
+    /* Add padding to the container instead of margin to the buttons */
     padding: 24px 12px;
 }
 
 .user-management-menu-button {
     width: 100%;
+    /* Remove horizontal margin from buttons */
     padding: 12px 12px; 
     margin-bottom: 8px;
     background-color: #2D3748;
@@ -141,4 +145,3 @@ body {
     color: #FFFFFF;
     font-weight: 600;
 }
-/*-------------------------------------*/

@@ -42,89 +42,84 @@ document.addEventListener('DOMContentLoaded', function() {
     });
 });
 
-document.addEventListener('DOMContentLoaded', () => {
-    const tableBody = document.querySelector('.pending-account-table-body');
-    const viewButton = document.querySelector('.view-button-pending');
-    const approvedButton = document.querySelector('.approved-button');
-    const deniedButton = document.querySelector('.denied-button');
-
+/*================================= */
+document.addEventListener("DOMContentLoaded", () => {
     // Function to fetch and display pending accounts
-    const fetchPendingAccounts = async () => {
-        try {
-            const response = await fetch('PHP/pendingaccount_handler.php');
-            if (!response.ok) {
-                throw new Error('Network response was not ok');
-            }
-            const data = await response.json();
+    const fetchPendingAccounts = () => {
+        fetch('PHP/pendingaccount_handler.php')
+            .then(response => {
+                if (!response.ok) {
+                    throw new Error('Network response was not ok');
+                }
+                return response.json();
+            })
+            .then(data => {
+                const tableBody = document.querySelector('.pending-account-table-body');
+                tableBody.innerHTML = ''; // Clear existing rows
 
-            // Clear existing rows
-            tableBody.innerHTML = ''; 
-
-            if (data.length === 0) {
-                // Display a message if no pending accounts are found
-                tableBody.innerHTML = '<div class="table-row no-data"><div class="table-cell" colspan="3">No pending accounts found.</div></div>';
-                return;
-            }
-
-            // Iterate over the data and create new table rows
-            data.forEach(account => {
-                const row = document.createElement('div');
-                row.classList.add('table-row');
-                row.setAttribute('data-client-id', account.id);
-
-                // Add a radio button for selection
-                row.innerHTML = `
-                    <div class="table-cell small-column">
-                        <input type="radio" name="pending_account_select" value="${account.id}">
-                    </div>
-                    <div class="table-cell">${account.name}</div>
-                    <div class="table-cell">${account.date_created}</div>
-                `;
-                tableBody.appendChild(row);
+                if (data.length > 0) {
+                    data.forEach(client => {
+                        const row = document.createElement('div');
+                        row.classList.add('table-row');
+                        row.innerHTML = `
+                            <div class="table-cell small-column">
+                                <input type="radio" id="select-${client.client_ID}" name="selected" value="${client.client_ID}">
+                            </div>
+                            <div class="table-cell">${client.last_name}, ${client.first_name}</div>
+                            <div class="table-cell">${client.created_at}</div>
+                        `;
+                        tableBody.appendChild(row);
+                    });
+                } else {
+                    const emptyRow = document.createElement('div');
+                    emptyRow.classList.add('table-row');
+                    emptyRow.innerHTML = `<div class="table-cell" style="text-align: center;">No pending clients found.</div>`;
+                    tableBody.appendChild(emptyRow);
+                }
+            })
+            .catch(error => {
+                console.error('Error fetching data:', error);
+                alert('Failed to load pending accounts. Please try again later.');
             });
-        } catch (error) {
-            console.error('There was a problem fetching the accounts:', error);
-            tableBody.innerHTML = '<div class="table-row error-row"><div class="table-cell" colspan="3">Failed to load data. Please try again.</div></div>';
-        }
     };
 
-    // Load accounts on page load
+    // Call the function to load data when the page loads
     fetchPendingAccounts();
 
-    // Event listeners for action buttons
-    approvedButton.addEventListener('click', () => {
-        const selectedRadio = document.querySelector('input[name="pending_account_select"]:checked');
+    // Event listeners for the action buttons
+    document.querySelector('.view-button-pending').addEventListener('click', () => {
+        const selectedRadio = document.querySelector('input[name="selected"]:checked');
         if (selectedRadio) {
             const clientId = selectedRadio.value;
-            alert(`Account with ID ${clientId} has been approved.`);
-            // Implement AJAX call to a PHP script to update the status in the database
-            // and then call fetchPendingAccounts() to refresh the list.
+            window.location.href = `PendingAccountView.php?id=${clientId}`;
         } else {
-            alert('Please select an account to approve.');
+            alert('Please select a client first.');
         }
     });
 
-    deniedButton.addEventListener('click', () => {
-        const selectedRadio = document.querySelector('input[name="pending_account_select"]:checked');
+    document.querySelector('.approved-button').addEventListener('click', () => {
+        const selectedRadio = document.querySelector('input[name="selected"]:checked');
         if (selectedRadio) {
             const clientId = selectedRadio.value;
-            alert(`Account with ID ${clientId} has been denied.`);
-            // Implement AJAX call to a PHP script to update the status in the database
-            // and then call fetchPendingAccounts() to refresh the list.
+            // Add AJAX call here to update the client's status in the database
+            alert(`Client ID ${clientId} has been approved.`);
+            // After successful update, re-fetch the data to refresh the table
+            fetchPendingAccounts();
         } else {
-            alert('Please select an account to deny.');
+            alert('Please select a client to approve.');
         }
     });
-    
-    // The "View" button's logic would be similar, opening a modal or new page.
-    viewButton.addEventListener('click', () => {
-        const selectedRadio = document.querySelector('input[name="pending_account_select"]:checked');
+
+    document.querySelector('.denied-button').addEventListener('click', () => {
+        const selectedRadio = document.querySelector('input[name="selected"]:checked');
         if (selectedRadio) {
             const clientId = selectedRadio.value;
-            alert(`Viewing details for account ID: ${clientId}`);
-            // You can fetch and display the detailed information for this client ID
+            // Add AJAX call here to update the client's status in the database
+            alert(`Client ID ${clientId} has been denied.`);
+            // After successful update, re-fetch the data to refresh the table
+            fetchPendingAccounts();
         } else {
-            alert('Please select an account to view.');
+            alert('Please select a client to deny.');
         }
     });
 });

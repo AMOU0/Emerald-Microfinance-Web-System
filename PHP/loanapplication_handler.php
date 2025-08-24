@@ -37,7 +37,7 @@ if ($data === null) {
 }
 
 // Extract data from the POST request
-$clientID = $data['clientID']; 
+$clientID = $data['clientID'];
 $guarantorLastName = $data['guarantorLastName'];
 $guarantorFirstName = $data['guarantorFirstName'];
 $guarantorMiddleName = $data['guarantorMiddleName'];
@@ -52,12 +52,14 @@ $dateEnd = $data['date-end'];
 // --- Step 1: Insert into loan_applications table ---
 $sql_loan_app = "INSERT INTO loan_applications (
     client_ID,
-    loan_amount, 
-    payment_frequency, 
-    date_start, 
-    duration_of_loan, 
-    date_end
-) VALUES (?, ?, ?, ?, ?, ?)";
+    loan_amount,
+    payment_frequency,
+    date_start,
+    duration_of_loan,
+    date_end,
+    status,
+    paid
+) VALUES (?, ?, ?, ?, ?, ?, ?, ?)";
 
 $stmt_loan_app = $conn->prepare($sql_loan_app);
 if ($stmt_loan_app === false) {
@@ -67,14 +69,18 @@ if ($stmt_loan_app === false) {
 }
 
 // Bind parameters and execute the statement
-// 'sdssss' stands for string (clientID), double (loanAmount), string, string, string, string.
-$stmt_loan_app->bind_param("sdssss", 
+// 'sdsssssi' stands for string, double, string, string, string, string, string, integer.
+$status = "pending";
+$paid = 0;
+$stmt_loan_app->bind_param("sdsssssi",
     $clientID,
-    $loanAmount, 
-    $paymentFrequency, 
-    $dateStart, 
-    $durationOfLoan, 
-    $dateEnd
+    $loanAmount,
+    $paymentFrequency,
+    $dateStart,
+    $durationOfLoan,
+    $dateEnd,
+    $status,
+    $paid
 );
 
 if (!$stmt_loan_app->execute()) {
@@ -89,12 +95,13 @@ $loan_application_id = $conn->insert_id;
 $stmt_loan_app->close();
 
 // --- Step 2: Insert into guarantor table ---
+// Corrected SQL query to match the table schema. Removed the incorrect 'pending' value.
 $sql_guarantor = "INSERT INTO guarantor (
     client_ID,
-    guarantor_last_name, 
-    guarantor_first_name, 
-    guarantor_middle_name, 
-    guarantor_street_address, 
+    guarantor_last_name,
+    guarantor_first_name,
+    guarantor_middle_name,
+    guarantor_street_address,
     guarantor_phone_number,
     loan_application_id
 ) VALUES (?, ?, ?, ?, ?, ?, ?)";
@@ -108,12 +115,12 @@ if ($stmt_guarantor === false) {
 
 // Bind parameters and execute the statement
 // 'ssssssi' stands for string (clientID), string, string, string, string, string, integer.
-$stmt_guarantor->bind_param("ssssssi", 
+$stmt_guarantor->bind_param("ssssssi",
     $clientID,
-    $guarantorLastName, 
-    $guarantorFirstName, 
-    $guarantorMiddleName, 
-    $guarantorStreetAddress, 
+    $guarantorLastName,
+    $guarantorFirstName,
+    $guarantorMiddleName,
+    $guarantorStreetAddress,
     $guarantorPhoneNumber,
     $loan_application_id
 );

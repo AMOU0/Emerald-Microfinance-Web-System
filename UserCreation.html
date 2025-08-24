@@ -1,0 +1,89 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Emerald Microfinance</title>
+    <link rel="stylesheet" href="CSS/usercreation_style.css">
+</head>
+<body>
+     <aside class="sidebar">
+        <div class="sidebar-header">
+            Emerald Microfinance
+        </div>
+        <nav class="sidebar-nav">
+            <ul>
+                <li><a href="#" class="nav-link">Dashboard</a></li>
+                <li><a href="#" class="nav-link">Client Creation</a></li>
+                <li><a href="#" class="nav-link">Loan Application</a></li>
+                <li><a href="#" class="nav-link">Pending Accounts</a></li>
+                <li><a href="#" class="nav-link">Accounts Receivable</a></li>
+                <li><a href="#" class="nav-link">Ledger</a></li>
+                <li><a href="#" class="nav-link">Reports</a></li>
+                <li><a href="#" class="nav-link active">User Management</a></li>
+                <li><a href="#" class="nav-link">Tools</a></li>
+            </ul>
+        </nav>
+        <div class="sidebar-footer">
+            <button class="logout-button">
+                Logout
+            </button>
+        </div>
+    </aside>
+
+
+    <main class="main-content">
+        <header class="main-header">
+            <h1>User Management</h1>
+        </header>
+        <div class="content-panel">
+            <div class="user-management-menu">
+                <button id="password-change-btn" class="user-management-menu-button">Password Change</button>
+                <button id="username-change-btn" class="user-management-menu-button">Username Change</button>
+                <button id="account-creation-btn" class="user-management-menu-button active">Account Creation</button>
+                <button id="existing-accounts-btn" class="user-management-menu-button">Existing Accounts</button>
+            </div>
+            <div class="account-creation-form-panel">
+                <h2>Account Creation</h2>
+                <form class="account-creation-form">
+                    <div class="form-field">
+                        <label for="account-name" class="form-label">Name</label>
+                        <input type="text" id="account-name" name="name" class="form-input">
+                    </div>
+                    <div class="form-field">
+                        <label for="account-email" class="form-label">Email</label>
+                        <input type="email" id="account-email" name="email" class="form-input">
+                    </div>
+                    <div class="form-field">
+                        <label for="account-username" class="form-label">Username</label>
+                        <input type="text" id="account-username" name="username" class="form-input">
+                    </div>
+                    <div class="form-field">
+                        <label for="account-password" class="form-label">Password</label>
+                        <input type="password" id="account-password" name="password" class="form-input">
+                    </div>
+                    <div class="form-field">
+                        <label for="account-confirm-password" class="form-label">Confirm Password</label>
+                        <input type="password" id="account-confirm-password" name="confirm-password" class="form-input">
+                    </div>
+                    <div class="form-field">
+                        <label for="account-role" class="form-label">Role</label>
+                        <select id="account-role" name="role" class="form-select">
+                            <option value="" disabled selected>Select a role</option>
+                            <option value="manager">Manager</option>
+                            <option value="loan-officer">Loan Officer</option>
+                            <option value="accountant">Accountant</option>
+                        </select>
+                    </div>
+                    <div class="form-actions">
+                        <button type="submit" class="create-account-button">
+                            Create
+                        </button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </main>
+    <script src="JS/usercreation_function.js"></script>
+</body>
+</html>
