@@ -7,7 +7,7 @@
     <link rel="stylesheet" href="CSS/usercreation_style.css">
 </head>
 <body>
-     <aside class="sidebar">
+    <aside class="sidebar">
         <div class="sidebar-header">
             Emerald Microfinance
         </div>
@@ -31,7 +31,6 @@
         </div>
     </aside>
 
-
     <main class="main-content">
         <header class="main-header">
             <h1>User Management</h1>
@@ -45,6 +44,7 @@
             </div>
             <div class="account-creation-form-panel">
                 <h2>Account Creation</h2>
+                <div id="status-message" class="mb-4 text-center"></div>
                 <form class="account-creation-form">
                     <div class="form-field">
                         <label for="account-name" class="form-label">Name</label>
@@ -70,9 +70,9 @@
                         <label for="account-role" class="form-label">Role</label>
                         <select id="account-role" name="role" class="form-select">
                             <option value="" disabled selected>Select a role</option>
-                            <option value="manager">Manager</option>
+                            <option value="Admin">Admin</option>
                             <option value="loan-officer">Loan Officer</option>
-                            <option value="accountant">Accountant</option>
+                            <option value="Recruiter">Recruiter</option>
                         </select>
                     </div>
                     <div class="form-actions">
