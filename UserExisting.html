@@ -42,8 +42,24 @@
                 <button id="account-creation-btn" class="user-management-menu-button">Account Creation</button>
                 <button id="existing-accounts-btn" class="user-management-menu-button active">Existing Accounts</button>
             </div>
-            <div class="account-creation-form-panel">
+           
+            <!-- This is the existing-user-panel with the table of user accounts -->
+            <div class="existing-user-panel flex flex-col flex-grow">
+                    <div class="header-buttons">
+                        <button class="action-button view-button-pending">View</button>
+                    </div>
 
+                <section class="pending-account-table-section">
+                <div class="pending-account-table-header">
+                <div class="table-header-cell small-column"></div>
+                <div class="table-header-cell">USER ID</div>
+                <div class="table-header-cell">NAME</div>
+                <div class="table-header-cell">USERNAME</div>
+                <div class="table-header-cell">ROLE</div>
+            </div>
+    <div class="pending-account-table-body">
+    </div>
+</section>
             </div>
         </div>
     </main>

@@ -1,12 +1,12 @@
 /* General Body and Container Styling */
 body {
     font-family: 'Inter', sans-serif;
-    background-color: #333;
+    background-color: #f7fafc; /* Lighter background color to match the image */
     margin: 0;
     padding: 0;
     display: flex;
     min-height: 100vh;
-    color: #fff;
+    color: #333; /* Darker text for the main content */
 }
 
 .sidebar {
@@ -44,7 +44,7 @@ body {
     transition: background-color 0.2s ease-in-out;
     border-radius: 8px;
     margin: 0 12px 8px;
-    text-decoration: none; /* Add this to remove the underline */
+    text-decoration: none;
 }
 
 .nav-link:hover {
@@ -52,6 +52,7 @@ body {
     color: #FFFFFF;
 }
 
+/* Updated active link for "Client Creation" */
 .nav-link.active {
     background-color: #48BB78;
     color: #FFFFFF;
@@ -79,55 +80,51 @@ body {
 
 .logout-button:hover {
     background-color: #C53030;
-}.main-content {
+}
+
+.main-content {
     flex-grow: 1;
-    padding: 20px;
+    padding: 24px;
     display: flex;
-    justify-content: center;
+    flex-direction: column;
+    background-color: #f7fafc;
+}
+
+.header {
+    background-color: #48BB78; /* Green header to match the image */
+    color: white;
+    padding: 16px 24px;
+    border-radius: 8px;
+    margin-bottom: 24px;
+}
+
+.header-title {
+    margin: 0;
+    font-size: 1.5rem;
+    font-weight: 600;
 }
 
 .loan-application-container {
     background-color: white;
-    padding: 20px;
+    padding: 24px;
     border-radius: 8px;
-    width: 900px;
+    width: 100%;
+    max-width: 900px;
     box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
     box-sizing: border-box;
     color: #333;
 }
 
+/* Removed form-header since the image doesn't have a "Search client" button */
 .form-header {
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    margin-bottom: 20px;
-}
-
-.form-header h2 {
-    margin: 0;
-    font-weight: 600;
-    font-size: 1.5rem;
-    color: #1f2937;
-}
-
-.search-client-button {
-    padding: 8px 16px;
-    border: 1px solid #d1d5db;
-    border-radius: 4px;
-    background-color: #f7f7f7;
-    cursor: pointer;
-    transition: background-color 0.2s;
-}
-
-.search-client-button:hover {
-    background-color: #e5e7eb;
+    display: none; /* Hide this section to match the image */
 }
 
 .form-section {
     background-color: #f9fafb;
-    padding: 1.5rem;
-    margin-bottom: 1rem;
-    border-radius: 0.5rem;
+    padding: 24px;
+    margin-bottom: 24px;
+    border-radius: 8px;
     box-shadow: 0 2px 4px rgba(0, 0, 0, 0.05);
     border: 1px solid #e5e7eb;
 }
@@ -136,15 +133,15 @@ body {
     font-size: 1.125rem;
     font-weight: 600;
     color: #1f2937;
-    margin-bottom: 1rem;
-    padding-bottom: 0.5rem;
+    margin-bottom: 16px;
+    padding-bottom: 8px;
     border-bottom: 1px solid #e5e7eb;
 }
 
 .grid-container {
     display: grid;
     grid-template-columns: repeat(3, 1fr);
-    gap: 15px;
+    gap: 20px; /* Increased gap for better spacing */
 }
 
 .input-group, .form-group {
@@ -156,16 +153,16 @@ body {
     font-size: 0.875rem;
     font-weight: 500;
     color: #374151;
-    margin-bottom: 0.25rem;
+    margin-bottom: 4px; /* Reduced margin to tighten the label-input pair */
 }
 
 .input-group input,
 .input-group select,
 .form-input,
 .form-select {
-    padding: 0.5rem 0.75rem;
+    padding: 12px; /* Increased padding for larger input fields */
     border: 1px solid #d1d5db;
-    border-radius: 0.375rem;
+    border-radius: 6px; /* Slightly larger border-radius */
     font-size: 0.875rem;
     color: #1f2937;
     background-color: #ffffff;
@@ -177,17 +174,18 @@ body {
 .form-input:focus,
 .form-select:focus {
     outline: none;
-    border-color: #34d399;
-    box-shadow: 0 0 0 2px rgba(52, 211, 153, 0.2);
+    border-color: #48BB78; /* Changed focus color to match green theme */
+    box-shadow: 0 0 0 2px rgba(72, 187, 120, 0.2);
 }
 
+/* Adjust select arrow color */
 .form-select {
     appearance: none;
-    background-image: url("data:image/svg+xml,%3csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 20 20' fill='none'%3e%3cpath d='M7 7l3-3 3 3m0 6l-3 3-3-3' stroke='%236B7280' stroke-width='1.5' stroke-linecap='round' stroke-linejoin='round'/%3e%3c/svg%3e");
+    background-image: url("data:image/svg+xml,%3csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 20 20' fill='none'%3e%3cpath d='M7 7l3-3 3 3m0 6l-3 3-3-3' stroke='%234B5563' stroke-width='1.5' stroke-linecap='round' stroke-linejoin='round'/%3e%3c/svg%3e");
     background-repeat: no-repeat;
-    background-position: right 0.75rem center;
-    background-size: 0.8em 0.8em;
-    padding-right: 2.5rem;
+    background-position: right 1rem center;
+    background-size: 1em 1em;
+    padding-right: 3rem;
 }
 
 .full-width {
@@ -197,79 +195,25 @@ body {
 .form-actions {
     display: flex;
     justify-content: flex-end;
-    gap: 10px;
-    margin-top: 20px;
+    gap: 12px;
+    margin-top: 24px;
 }
 
 .clear-button,
 .apply-button {
-    padding: 10px 20px;
+    padding: 12px 24px;
     border: none;
-    border-radius: 4px;
+    border-radius: 6px;
     color: white;
-    font-weight: bold;
+    font-weight: 600;
     cursor: pointer;
+    transition: background-color 0.2s;
 }
 
 .clear-button {
-    background-color: #f44336;
+    background-color: #A0AEC0; /* Gray-ish color to match the image's "Clear" button */
 }
 
 .apply-button {
-    background-color: #4caf50;
+    background-color: #48BB78; /* Green color to match the image's "Create" button */
 }
-        /* Custom styles for the modal overlay and content */
-        .modal-overlay {
-            position: fixed;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
-            background-color: rgba(0, 0, 0, 0.6);
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            z-index: 1000;
-        }
-
-        .modal-content {
-            background-color: #4A5568;
-            padding: 24px;
-            border-radius: 12px;
-            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
-            max-width: 90%;
-            max-height: 80%;
-            overflow-y: auto;
-            position: relative;
-        }
-        
-        /* Transition for a smooth appearance */
-        .modal-content-transition {
-            transition: all 0.3s ease-in-out;
-            transform: scale(0.9);
-            opacity: 0;
-        }
-
-        .modal-content-transition.is-active {
-            transform: scale(1);
-            opacity: 1;
-        }
-
-        .client-list {
-            list-style-type: none;
-            padding: 0;
-        }
-        
-        .client-list-item {
-            padding: 12px;
-            cursor: pointer;
-            border-bottom: 1px solid #0046d3; /* tailwind's gray-200 */
-        }
-        
-        .client-list-item:hover {
-            background-color: #839bcb; /* tailwind's gray-100 */
-        }
-        
-        .client-list-item:last-child {
-            border-bottom: none;
-        }
