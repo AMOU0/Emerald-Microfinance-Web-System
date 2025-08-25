@@ -32,14 +32,14 @@
     </aside>
     <main class="main-content">
         <header class="header">
-            <h1 class="header-title">Client Creation</h1>
+            <h1 class="header-title">Loan Application</h1>
+                <input type="input" id="clientID" name="clientID" placeholder="Client ID">
+                <button type="button" class="search-client-button" id="showClientsBtn">Search client</button>
         </header>
-    <div class="main-content">
+    <div class="main-content-form">
         <form class="loan-application-container" id="loanApplicationForm">
             <header class="form-header">
                 <h2>Loan Application</h2>
-                <input type="hidden" id="clientID" name="clientID">
-                <button type="button" class="search-client-button" id="showClientsBtn">Search client</button>
             </header>
 
             <section class="form-section">
@@ -100,18 +100,18 @@
                     </div>
                     <div class="input-group">
                         <label for="duration-of-loan" class="form-label">Duration of Loan</label>
-                        <input type="text" id="duration-of-loan" class="form-input">
+                        <input type="text" id="duration-of-loan" class="form-input" readonly>
                     </div>
                     <div class="input-group">
                     <label for="date-end" class="form-label">Date End</label>
-                    <input type="date" id="date-end" class="form-input">
+                    <input type="date" id="date-end" class="form-input" readonly>
                     </div>
                 </div>
             </section>
 
             <div class="form-actions">
                 <button class="clear-button">Clear</button>
-                <button class="apply-button">Apply</button>
+                <button type="submit" class="apply-button">Apply</button>
             </div>
         </form>
     </div>

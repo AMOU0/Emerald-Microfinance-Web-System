@@ -96,12 +96,35 @@ body {
     padding: 16px 24px;
     border-radius: 8px;
     margin-bottom: 24px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
 }
 
 .header-title {
     margin: 0;
     font-size: 1.5rem;
     font-weight: 600;
+    flex-grow: 1;
+}
+
+.header input {
+    margin-right: 12px;
+}
+
+.search-client-button {
+    background-color: #f0f4f8;
+    color: #1f2937;
+    border: 1px solid #d1d5db;
+    padding: 8px 16px;
+    border-radius: 6px;
+    cursor: pointer;
+    font-weight: 500;
+}
+
+.main-content-form {
+    display: flex;
+    justify-content: center;
 }
 
 .loan-application-container {
@@ -115,10 +138,6 @@ body {
     color: #333;
 }
 
-/* Removed form-header since the image doesn't have a "Search client" button */
-.form-header {
-    display: none; /* Hide this section to match the image */
-}
 
 .form-section {
     background-color: #f9fafb;
@@ -217,3 +236,133 @@ body {
 .apply-button {
     background-color: #48BB78; /* Green color to match the image's "Create" button */
 }
+
+/* Modal and Message Box Styles */
+.modal-overlay {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background-color: rgba(0, 0, 0, 0.5);
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    z-index: 1000;
+}
+
+.modal-content {
+    background-color: white;
+    padding: 30px;
+    border-radius: 12px;
+    width: 90%;
+    max-width: 500px;
+    box-shadow: 0 10px 25px rgba(0, 0, 0, 0.2);
+    transform: scale(0.9);
+    opacity: 0;
+    transition: transform 0.3s ease-out, opacity 0.3s ease-out;
+}
+
+.modal-content.is-active {
+    transform: scale(1);
+    opacity: 1;
+}
+
+.modal-content h2 {
+    font-size: 1.5rem;
+    font-weight: 600;
+    color: #2D3748;
+}
+
+.close-button {
+    background: none;
+    border: none;
+    font-size: 1.5rem;
+    cursor: pointer;
+    color: #A0AEC0;
+    transition: color 0.2s ease-in-out;
+}
+
+.close-button:hover {
+    color: #4A5568;
+}
+
+.client-list {
+    list-style: none;
+    padding: 0;
+    margin: 0;
+    max-height: 400px;
+    overflow-y: auto;
+}
+
+.client-list-item {
+    padding: 12px 16px;
+    border: 1px solid #E2E8F0;
+    margin-bottom: 8px;
+    border-radius: 8px;
+    cursor: pointer;
+    transition: background-color 0.15s ease-in-out, transform 0.1s ease-in-out;
+}
+
+.client-list-item:hover {
+    background-color: #F7FAFC;
+    transform: translateY(-2px);
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.05);
+}
+
+.client-list-item span.font-medium {
+    font-weight: 600;
+    color: #2D3748;
+    display: block;
+}
+
+.client-list-item span.text-gray-500 {
+    color: #718096;
+    font-size: 0.8rem;
+    margin-top: 4px;
+}
+
+.message-box {
+    z-index: 1050;
+    transition: transform 0.4s ease-out, opacity 0.4s ease-out;
+    transform: translateY(0);
+}
+
+.message-box.translate-y-full {
+    transform: translateY(150px);
+    opacity: 0;
+}
+
+.bg-red-500 {
+    background-color: #E53E3E;
+}
+
+.bg-green-500 {
+    background-color: #48BB78;
+}
+
+/* Tailwind-like utility classes for flexibility */
+.flex { display: flex; }
+.justify-between { justify-content: space-between; }
+.items-center { align-items: center; }
+.pb-4 { padding-bottom: 1rem; }
+.border-b { border-bottom: 1px solid; }
+.border-gray-200 { border-color: #E2E8F0; }
+.mb-4 { margin-bottom: 1rem; }
+.text-xl { font-size: 1.25rem; }
+.font-semibold { font-weight: 600; }
+.close-button { background: none; border: none; }
+.text-gray-400 { color: #A0AEC0; }
+.hover\:text-gray-600:hover { color: #718096; }
+.transition-colors { transition-property: background-color, border-color, color, fill, stroke; transition-timing-function: cubic-bezier(0.4, 0, 0.2, 1); transition-duration: 150ms; }
+.duration-200 { transition-duration: 200ms; }
+.h-6 { height: 1.5rem; }
+.w-6 { width: 1.5rem; }
+.client-list-item { padding: 0.75rem 1rem; }
+.rounded-lg { border-radius: 0.5rem; }
+.hover\:bg-gray-100:hover { background-color: #F7FAFC; }
+.duration-150 { transition-duration: 150ms; }
+.font-medium { font-weight: 500; }
+.text-gray-500 { color: #A0AEC0; }
+.text-sm { font-size: 0.875rem; }
+.block { display: block; }

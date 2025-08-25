@@ -174,7 +174,7 @@ document.addEventListener('DOMContentLoaded', function() {
             endDateInput.value = formattedEndDate;
 
             // Update the loan duration input field
-            document.getElementById('duration-of-loan').value = loanDuration;
+            document.getElementById('duration-of-loan').value = loanDuration + ' days';
         } else {
             endDateInput.value = '';
             document.getElementById('duration-of-loan').value = '';
@@ -182,7 +182,8 @@ document.addEventListener('DOMContentLoaded', function() {
     });
 
     // Handle the "Clear" button
-    clearButton.addEventListener('click', function() {
+    clearButton.addEventListener('click', function(event) {
+        event.preventDefault();
         form.reset();
         endDateInput.value = '';
     });
