@@ -1,20 +1,21 @@
 <?php
+error_reporting(E_ALL);
+ini_set('display_errors', 1);
 header('Content-Type: application/json');
 
+// Database credentials
 $servername = "localhost";
-$username = "root"; // XAMPP default username
-$password = "";     // XAMPP default password
+$username = "root";
+$password = "";
 $dbname = "emerald_microfinance";
 
-// Create connection
 $conn = new mysqli($servername, $username, $password, $dbname);
 
 if ($conn->connect_error) {
     die(json_encode(["error" => "Connection failed: " . $conn->connect_error]));
 }
 
-// Get the client ID from the GET request
-if (isset($_GET['id'])) {
+if (isset($_GET['id']) && !empty($_GET['id'])) {
     $clientId = (int) $_GET['id'];
 
     $sqlget = "SELECT
@@ -64,7 +65,6 @@ WHERE
     $result = $stmt->get_result();
     $row = $result->fetch_assoc();
     
-    // Close the statement and connection
     $stmt->close();
     $conn->close();
 
@@ -74,6 +74,6 @@ WHERE
         echo json_encode(["error" => "No client data found for this ID."]);
     }
 } else {
-    echo json_encode(["error" => "Client ID not provided."]);
+    echo json_encode(["error" => "Client ID not provided or is empty."]);
 }
 ?>

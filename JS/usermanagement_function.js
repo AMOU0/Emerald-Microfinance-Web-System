@@ -41,6 +41,8 @@ document.addEventListener('DOMContentLoaded', function() {
         window.location.href = 'login.html'; // Redirect to the login page
     });
 });
+/*================================= */
+
 document.addEventListener('DOMContentLoaded', () => {
     // Get references to all the buttons by their IDs
     const passwordChangeBtn = document.getElementById('password-change-btn');

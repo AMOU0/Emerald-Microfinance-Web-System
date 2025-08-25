@@ -43,83 +43,105 @@ document.addEventListener('DOMContentLoaded', function() {
 });
 
 /*================================= */
-document.addEventListener("DOMContentLoaded", () => {
-    // Function to fetch and display pending accounts
-    const fetchPendingAccounts = () => {
-        fetch('PHP/pendingaccount_handler.php')
-            .then(response => {
-                if (!response.ok) {
-                    throw new Error('Network response was not ok');
-                }
-                return response.json();
-            })
-            .then(data => {
-                const tableBody = document.querySelector('.pending-account-table-body');
-                tableBody.innerHTML = ''; // Clear existing rows
+// Corrected fetchPendingAccounts function
+const fetchPendingAccounts = () => {
+    fetch('PHP/pendingaccount_handler.php')
+        .then(response => {
+            if (!response.ok) {
+                throw new Error('Network response was not ok');
+            }
+            return response.json();
+        })
+        .then(data => {
+            const tableBody = document.querySelector('.pending-account-table-body');
+            tableBody.innerHTML = ''; 
 
-                if (data.length > 0) {
-                    data.forEach(client => {
-                        const row = document.createElement('div');
-                        row.classList.add('table-row');
-                        row.innerHTML = `
-                            <div class="table-cell small-column">
-                                <input type="radio" id="select-${client.client_ID}" name="selected" value="${client.client_ID}">
-                            </div>
-                            <div class="table-cell">${client.last_name}, ${client.first_name}</div>
-                            <div class="table-cell">${client.created_at}</div>
-                        `;
-                        tableBody.appendChild(row);
-                    });
-                } else {
-                    const emptyRow = document.createElement('div');
-                    emptyRow.classList.add('table-row');
-                    emptyRow.innerHTML = `<div class="table-cell" style="text-align: center;">No pending clients found.</div>`;
-                    tableBody.appendChild(emptyRow);
-                }
-            })
-            .catch(error => {
-                console.error('Error fetching data:', error);
-                alert('Failed to load pending accounts. Please try again later.');
-            });
+            if (data.length > 0) {
+                data.forEach(client => {
+                    const row = document.createElement('div');
+                    row.classList.add('table-row');
+                    row.innerHTML = `
+                        <div class="table-cell small-column">
+                            <input type="radio" 
+                                   id="select-${client.loan_application_id}" 
+                                   name="selected" 
+                                   value="${client.loan_application_id}"
+                                   data-client-id="${client.client_ID}">
+                        </div>
+                        <div class="table-cell">${client.client_ID}</div>
+                        <div class="table-cell">${client.last_name}, ${client.first_name}</div>
+                        <div class="table-cell">${client.created_at}</div>
+                    `;
+                    tableBody.appendChild(row);
+                });
+            } else {
+                const emptyRow = document.createElement('div');
+                emptyRow.classList.add('table-row');
+                emptyRow.innerHTML = `<div class="table-cell" style="text-align: center;">No pending clients found.</div>`;
+                tableBody.appendChild(emptyRow);
+            }
+        })
+        .catch(error => {
+            console.error('Error fetching data:', error);
+            alert('Failed to load pending accounts. Please try again later.');
+        });
+};
+   fetchPendingAccounts();
+    // Function to update loan status on the server
+    const updateLoanStatus = (loanApplicationId, status) => {
+        fetch('PHP/updateloanstatus_handler.php', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/x-www-form-urlencoded',
+            },
+            body: `loan_application_id=${loanApplicationId}&status=${status}`
+        })
+        .then(response => response.json())
+        .then(data => {
+            if (data.success) {
+                alert(data.message);
+                fetchPendingAccounts();
+            } else {
+                alert(data.message);
+            }
+        })
+        .catch(error => {
+            console.error('Error:', error);
+            alert('Failed to update loan status.');
+        });
     };
 
-    // Call the function to load data when the page loads
-    fetchPendingAccounts();
-
-    // Event listeners for the action buttons
-    document.querySelector('.view-button-pending').addEventListener('click', () => {
-        const selectedRadio = document.querySelector('input[name="selected"]:checked');
-        if (selectedRadio) {
-            const clientId = selectedRadio.value;
-            window.location.href = `PendingAccountView.html?id=${clientId}`;
-        } else {
-            alert('Please select a client first.');
-        }
-    });
-
+    // Event listener for the "Approved" button
     document.querySelector('.approved-button').addEventListener('click', () => {
         const selectedRadio = document.querySelector('input[name="selected"]:checked');
         if (selectedRadio) {
-            const clientId = selectedRadio.value;
-            // Add AJAX call here to update the client's status in the database
-            alert(`Client ID ${clientId} has been approved.`);
-            // After successful update, re-fetch the data to refresh the table
-            fetchPendingAccounts();
+            const loanApplicationId = selectedRadio.value;
+            updateLoanStatus(loanApplicationId, 'approved');
         } else {
-            alert('Please select a client to approve.');
+            alert('Please select a loan application to approve.');
         }
     });
 
+    // Event listener for the "Denied" button
     document.querySelector('.denied-button').addEventListener('click', () => {
         const selectedRadio = document.querySelector('input[name="selected"]:checked');
         if (selectedRadio) {
-            const clientId = selectedRadio.value;
-            // Add AJAX call here to update the client's status in the database
-            alert(`Client ID ${clientId} has been denied.`);
-            // After successful update, re-fetch the data to refresh the table
-            fetchPendingAccounts();
+            const loanApplicationId = selectedRadio.value;
+            updateLoanStatus(loanApplicationId, 'denied');
         } else {
-            alert('Please select a client to deny.');
+            alert('Please select a loan application to deny.');
         }
     });
+    
+// Corrected event listener for the "View" button
+document.querySelector('.view-button-pending').addEventListener('click', () => {
+    const selectedRadio = document.querySelector('input[name="selected"]:checked');
+    if (selectedRadio) {
+        // Get the client ID from the new data attribute
+        const clientId = selectedRadio.getAttribute('data-client-id');
+        window.location.href = `PendingAccountView.html?id=${clientId}`;
+    } else {
+        alert('Please select a client first.');
+    }
+
 });

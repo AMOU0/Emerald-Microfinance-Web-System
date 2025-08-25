@@ -41,3 +41,4 @@ document.addEventListener('DOMContentLoaded', function() {
         window.location.href = 'login.html'; // Redirect to the login page
     });
 });
+/*================================= */

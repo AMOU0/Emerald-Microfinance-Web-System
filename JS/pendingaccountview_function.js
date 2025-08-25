@@ -1,19 +1,18 @@
+// Wait for the entire HTML document to be fully loaded and parsed before running the script.
 document.addEventListener('DOMContentLoaded', function() {
     const navLinks = document.querySelectorAll('.nav-link');
     const logoutButton = document.querySelector('.logout-button');
+    const updateForm = document.getElementById('pendingAccountForm');
+    const clientIdInput = document.getElementById('clientIdInput');
 
+    // Navigation handling
     navLinks.forEach(link => {
         link.addEventListener('click', function(event) {
-            // Prevent the default link behavior
-            event.preventDefault(); 
-            // Remove 'active' class from all links
+            event.preventDefault();
             navLinks.forEach(nav => nav.classList.remove('active'));
-            // Add 'active' class to the clicked link
             this.classList.add('active');
 
-            // Get the text from the link
-            const linkText = this.textContent.toLowerCase().replace(/\s/g, ''); 
-            // Define the URL based on the link's text
+            const linkText = this.textContent.toLowerCase().replace(/\s/g, '');
             const urlMapping = {
                 'dashboard': 'Dashboard.html',
                 'clientcreation': 'ClientCreationForm.html',
@@ -22,11 +21,10 @@ document.addEventListener('DOMContentLoaded', function() {
                 'accountsreceivable': 'AccountsReceivable.html',
                 'ledger': 'Ledgers.html',
                 'reports': 'Reports.html',
-                'usermanagement': 'UserManagement.html',
+                'usermanagement': 'User Management.html',
                 'tools': 'Tools.html'
             };
 
-            // Navigate to the correct page
             if (urlMapping[linkText]) {
                 window.location.href = urlMapping[linkText];
             } else {
@@ -35,49 +33,17 @@ document.addEventListener('DOMContentLoaded', function() {
         });
     });
 
-    // Handle the logout button separately
+    // Logout handling
     logoutButton.addEventListener('click', function() {
-        // You would typically handle a logout process here (e.g., clearing session data)
-        window.location.href = 'login.html'; // Redirect to the login page
+        window.location.href = 'login.html';
     });
-});
-
-/*================================= */
-document.addEventListener('DOMContentLoaded', () => {
+    
+    /*================================ */
     // Function to get a URL query parameter by name
     const getQueryParam = (param) => {
         const urlParams = new URLSearchParams(window.location.search);
         return urlParams.get(param);
     };
-
-    // Get the client ID from the URL
-    const clientId = getQueryParam('id');
-
-    if (clientId) {
-        // Fetch data from the new PHP script
-        fetch(`PHP/pendingaccountview_handler.php?id=${clientId}`)
-            .then(response => {
-                if (!response.ok) {
-                    throw new Error('Network response was not ok');
-                }
-                return response.json();
-            })
-            .then(data => {
-                if (data.error) {
-                    console.error('Server error:', data.error);
-                    alert(data.error);
-                } else {
-                    populateForm(data);
-                }
-            })
-            .catch(error => {
-                console.error('There was a problem with the fetch operation:', error);
-                alert('Failed to load client data. Please try again.');
-            });
-    } else {
-        console.warn('No client ID found in the URL. Cannot load data.');
-        alert('No client ID found in the URL. Please return to the previous page and select a client.');
-    }
 
     // Function to populate the form with fetched data
     const populateForm = (data) => {
@@ -112,12 +78,111 @@ document.addEventListener('DOMContentLoaded', () => {
         document.getElementById('guarantorMiddleName').value = data.guarantor_middle_name || '';
         document.getElementById('guarantorStreetAddress').value = data.guarantor_street_address || '';
         document.getElementById('guarantorPhoneNumber').value = data.guarantor_phone_number || '';
-        
+
         // Loan Details
-        document.getElementById('loan-amount').value = data.loan_amount || '';
+        const loanAmountSelect = document.getElementById('loan-amount');
+        if (loanAmountSelect && data.loan_amount) {
+            loanAmountSelect.value = String(data.loan_amount);
+        }
         document.getElementById('payment-frequency').value = data.payment_frequency || '';
         document.getElementById('date-start').value = data.date_start || '';
         document.getElementById('duration-of-loan').value = data.duration_of_loan || '';
         document.getElementById('date-end').value = data.date_end || '';
     };
+
+    // Get the client ID from the URL
+    const clientId = getQueryParam('id');
+
+    if (clientId) {
+        // Populate the hidden input field with the ID
+        clientIdInput.value = clientId;
+
+        // Fetch data from the PHP script to populate the form
+        fetch(`PHP/pendingaccountview_handler.php?id=${clientId}`)
+            .then(response => {
+                if (!response.ok) {
+                    throw new Error('Network response was not ok');
+                }
+                return response.json();
+            })
+            .then(data => {
+                if (data.error) {
+                    console.error('Server error:', data.error);
+                    alert(data.error);
+                } else {
+                    populateForm(data);
+                }
+            })
+            .catch(error => {
+                console.error('There was a problem with the fetch operation:', error);
+                alert('Failed to load client data. Please try again.');
+            });
+    } else {
+        console.warn('No client ID found in the URL. Cannot load data.');
+        alert('No client ID found in the URL. Please return to the previous page and select a client.');
+    }
+    
+    /*================================ */
+    // Select the button using a more specific CSS selector to avoid conflicts.
+    const saveButton = document.querySelector('.form-actions-bottom button[type="submit"]');
+
+    // Check if the button was successfully found on the page.
+    if (saveButton) {
+        // Add a click event listener to the button.
+        saveButton.addEventListener('click', (event) => {
+            // Prevent the default form submission behavior, which would cause a page reload.
+            event.preventDefault();
+
+            // Check for form validity before submitting
+            const form = document.getElementById('pendingAccountForm');
+            if (!form.checkValidity()) {
+                form.reportValidity();
+                return;
+            }
+
+            // --- Start of "Saving" UI feedback ---
+
+            // Disable the button to prevent multiple clicks while the action is in progress.
+            saveButton.disabled = true;
+
+            // Change the button text to provide a visual cue to the user.
+            saveButton.textContent = 'Saving...';
+
+            // Use FormData to get all form inputs automatically
+            const formData = new FormData(form);
+
+            // Send the data to the PHP handler using fetch API
+            fetch('PHP/updatependingaccount_handler.php', {
+                method: 'POST',
+                body: formData
+            })
+            .then(response => {
+                if (!response.ok) {
+                    throw new Error('Network response was not ok.');
+                }
+                return response.json();
+            })
+            .then(result => {
+                if (result.success) {
+                    console.log(result.success);
+                    alert('Client data updated successfully!');
+                } else if (result.error) {
+                    console.error('Server error:', result.error);
+                    alert('Failed to update client data: ' + result.error);
+                }
+            })
+            .catch(error => {
+                console.error('There was a problem with the update operation:', error);
+                alert('Failed to update client data. Please check your connection and try again.');
+            })
+            .finally(() => {
+                // Re-enable and reset the button state, regardless of success or failure.
+                saveButton.disabled = false;
+                saveButton.textContent = 'Save Changes';
+            });
+        });
+    } else {
+        // Log a message if the button element was not found.
+        console.error('Could not find the "Save Changes" button. Please check the HTML selector.');
+    }
 });

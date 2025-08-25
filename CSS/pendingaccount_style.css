@@ -171,68 +171,70 @@ body {
 
 /* Pending Account Table Section */
 .pending-account-table-section {
-    flex-grow: 1; /* Allows the table section to take up remaining vertical space */
-    margin: 0 1.5rem 1.5rem; /* Margin to align with header and provide bottom space */
-    background-color: #4A5568; /* Dark gray background for the table area */
+    flex-grow: 1;
+    margin: 0 1.5rem 1.5rem;
+    background-color: #4A5568;
     display: flex;
     flex-direction: column;
-    overflow: hidden; /* Important for containing scrollable body */
+    overflow: hidden;
+    border-radius: 0.5rem; /* Add border-radius to match image */
 }
 
 .pending-account-table-header {
+    /* Corrected: Added a fourth column for 'DATE CREATED' */
+    grid-template-columns: 50px minmax(150px, 3fr) minmax(150px, 2fr) minmax(150px, 2fr);
     display: grid;
-    grid-template-columns: 50px 3fr 2fr; /* Adjusted column widths for small column, NAME, DATE CREATED */
-    background-color: #2D3748; /* Darker gray for the table header */
+    background-color: #2D3748;
     color: #FFFFFF;
     font-weight: 600;
-    padding: 1rem 0; /* Vertical padding */
-    border-bottom: none; /* No bottom border for header */
+    padding: 1rem 0;
+    border-bottom: none;
+    border-top-left-radius: 0.5rem; /* Match parent container's radius */
+    border-top-right-radius: 0.5rem; /* Match parent container's radius */
 }
 
 .table-header-cell {
     text-align: left;
-    padding: 0 0.5rem; /* Horizontal padding */
+    padding: 0 1rem; /* Consistent horizontal padding for all header cells */
 }
 
-    .table-header-cell.small-column {
-        padding-left: 1rem; /* Adjust padding for the small column if needed */
-    }
-
 .pending-account-table-body {
-    flex-grow: 1; /* Allows the body to take up remaining vertical space */
-    overflow-y: auto; /* Enables vertical scrolling if content overflows */
-    -webkit-overflow-scrolling: touch; /* Smooth scrolling on iOS */
+    flex-grow: 1;
+    overflow-y: auto;
+    -webkit-overflow-scrolling: touch;
+    background-color: #4A5568; /* Set background for the body */
+    border-bottom-left-radius: 0.5rem;
+    border-bottom-right-radius: 0.5rem;
 }
 
 .table-row {
+    /* Corrected: Added a fourth column to match the header */
+    grid-template-columns: 50px minmax(150px, 3fr) minmax(150px, 2fr) minmax(150px, 2fr);
     display: grid;
-    grid-template-columns: 50px 3fr 2fr; /* Match header column widths */
-    border-bottom: 1px solid #6B7280; /* Darker border for rows */
+    border-bottom: 1px solid #6B7280;
 }
 
-    .table-row:last-child {
-        border-bottom: none; /* No border for the last row */
-    }
+.table-row:last-child {
+    border-bottom: none;
+}
 
 .table-cell {
-    padding: 0.75rem 0.5rem; /* Padding for cells */
-    min-height: 2.5rem; /* Minimum height for cells */
+    padding: 0.75rem 1rem;
+    min-height: 2.5rem;
     display: flex;
     align-items: center;
-    color: #FFFFFF; /* White text for cells */
-    background-color: #4A5568; /* Darker gray for table cells */
-    border-right: 1px solid #6B7280; /* Darker vertical border between cells */
+    color: #FFFFFF;
+    background-color: #4A5568;
+    border-right: none; /* Removed the right border */
 }
-
-    .table-cell.small-column {
-        padding-left: 1rem; /* Adjust padding for the small column if needed */
-    }
-
-    .table-cell:last-child {
-        border-right: none; /* No right border for the last cell in a row */
-    }
 
 /* Optional: Alternating row background for better readability */
 .table-row:nth-child(even) .table-cell {
-    background-color: #4A5568; /* Even rows remain dark gray, as per image */
+    background-color: #4A5568;
+}
+
+/* Fix for the small column padding */
+.table-header-cell:first-child,
+.table-cell:first-child {
+    padding-left: 1.5rem; /* Match the padding of the main content area */
 }

@@ -34,6 +34,8 @@ document.addEventListener('DOMContentLoaded', function() {
         window.location.href = 'login.html';
     });
 
+    /*================================= */
+
     // --- Client Search Modal Logic ---
     const showClientsBtn = document.getElementById('showClientsBtn');
     const clientIDInput = document.getElementById('clientID');
