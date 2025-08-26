@@ -104,14 +104,14 @@ body {
 }
 
 .content-panel {
-    display: flex;
     flex-grow: 1;
+    display: flex;
     gap: 24px; /* Space between the menu and the table */
 }
 
 .user-management-menu {
     max-width: 280px;
-    background-color: #2D3748; /* Changed to white to match the image */
+    background-color: #2D3748;
     display: flex;
     flex-direction: column;
     padding: 24px;
@@ -183,9 +183,9 @@ body {
 
 .pending-account-table-header {
     display: grid;
-    grid-template-columns: 50px auto auto auto auto 1fr; /* Added an empty column at the end */
-    background-color: #edf2f7; /* Light gray header background */
-    color: #4a5568; /* Dark text for header */
+    grid-template-columns: 50px 100px 1fr 150px 100px;
+    background-color: #edf2f7;
+    color: #4a5568;
     font-weight: 600;
     padding: 12px 0;
     border-bottom: 1px solid #e2e8f0;
@@ -193,8 +193,8 @@ body {
 
 .table-row {
     display: grid;
-    grid-template-columns: 50px auto auto auto auto 1fr;
-    border-bottom: 1px solid #e2e8f0; /* Lighter divider lines */
+    grid-template-columns: 50px 100px 1fr 150px 100px;
+    border-bottom: 1px solid #e2e8f0;
 }
 
 .table-header-cell {
@@ -211,6 +211,12 @@ body {
     display: flex;
     align-items: center;
     color: #4a5568;
+}
+
+.table-cell.small-column {
+    padding: 0 16px;
+    display: flex;
+    align-items: center;
 }
 
 .pending-account-table-body {

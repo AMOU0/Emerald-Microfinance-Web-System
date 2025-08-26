@@ -1,13 +1,12 @@
-
 /* General Body and Container Styling */
 body {
     font-family: 'Inter', sans-serif;
-    background-color: #333;
+    background-color: #f7fafc; /* Lighter background color */
     margin: 0;
     padding: 0;
     display: flex;
     min-height: 100vh;
-    color: #fff;
+    color: #333;
 }
 
 .sidebar {
@@ -45,7 +44,7 @@ body {
     transition: background-color 0.2s ease-in-out;
     border-radius: 8px;
     margin: 0 12px 8px;
-    text-decoration: none; /* Add this to remove the underline */
+    text-decoration: none;
 }
 
 .nav-link:hover {
@@ -82,137 +81,121 @@ body {
     background-color: #C53030;
 }
 
-
-
 /* Main Content Area styles */
 .main-content {
     flex-grow: 1;
-    padding: 1.5rem; /* p-6 */
-    background-color: #F7FAFC; /* bg-gray-100 */
     display: flex;
     flex-direction: column;
-    gap: 1.5rem; /* gap-6 */
-}
-
-/* Specific styles for Pending Account main content */
-.pending-account-main-content {
-    background-color: #2D3748; /* Darker background as per image */
-    padding: 0; /* Remove overall padding from main-content to align header */
-    gap: 0; /* Remove gap */
-    display: flex;
-    flex-direction: column;
+    background-color: #f7fafc;
+    padding: 24px;
 }
 
 /* Header styles */
-.header {
-    background-color: #48BB78; /* Green background */
+.header.pending-account-header {
+    background-color: #48BB78; /* Green banner as per the image */
     color: #FFFFFF;
-    padding: 1rem 1.5rem; /* py-4 px-6 */
-    border-radius: 0.75rem; /* rounded-xl */
+    padding: 1.5rem 2rem; /* Adjusted padding to create a larger banner */
+    border-radius: 0.5rem;
     display: flex;
     justify-content: space-between;
     align-items: center;
-    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1); /* shadow-sm */
-}
-
-/* Specific styles for Pending Account header */
-.pending-account-header {
-    background-color: #48BB78; /* Green background */
-    border-radius: 0; /* No rounded corners as per image */
-    padding: 1.5rem; /* Adjusted padding */
-    box-shadow: none; /* No shadow */
-    color: #000; /* Black text for header title */
-    margin-bottom: 1.5rem; /* Space between header and table */
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+    margin-bottom: 24px; /* Space between header and table */
 }
 
 .header-title {
-    font-size: 1.75rem; /* text-3xl */
-    font-weight: 700; /* font-bold */
+    font-size: 1.75rem;
+    font-weight: 700;
+    color: #FFFFFF; /* White text for the title */
+    margin: 0;
 }
 
 .header-buttons {
     display: flex;
-    gap: 0.5rem; /* Space between buttons */
+    gap: 0.5rem;
 }
 
 .action-button {
-    padding: 0.5rem 1rem; /* py-2 px-4 */
-    border-radius: 0.5rem; /* rounded-lg */
-    font-weight: 600; /* font-semibold */
+    padding: 0.5rem 1rem;
+    border-radius: 0.5rem;
+    font-weight: 600;
     transition: background-color 0.2s ease-in-out;
-    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1); /* shadow */
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+    border: none;
+    cursor: pointer;
+    font-size: 0.875rem;
+    color: white;
 }
 
 .view-button-pending {
-    background-color: #48BB78; /* Green background */
+    background-color: #48BB78;
     color: #FFFFFF;
 }
 
-    .view-button-pending:hover {
-        background-color: #38A169; /* Darker green on hover */
-    }
+.view-button-pending:hover {
+    background-color: #38A169;
+}
 
 .approved-button {
-    background-color: #48BB78; /* Green background */
+    background-color: #48BB78;
     color: #FFFFFF;
 }
 
-    .approved-button:hover {
-        background-color: #38A169; /* Darker green on hover */
-    }
+.approved-button:hover {
+    background-color: #38A169;
+}
 
 .denied-button {
-    background-color: #E53E3E; /* Red background */
+    background-color: #E53E3E;
     color: #FFFFFF;
 }
 
-    .denied-button:hover {
-        background-color: #C53030; /* Darker red on hover */
-    }
+.denied-button:hover {
+    background-color: #C53030;
+}
 
 /* Pending Account Table Section */
 .pending-account-table-section {
     flex-grow: 1;
-    margin: 0 1.5rem 1.5rem;
-    background-color: #4A5568;
+    background-color: #FFFFFF; /* White background for the table panel */
     display: flex;
     flex-direction: column;
     overflow: hidden;
-    border-radius: 0.5rem; /* Add border-radius to match image */
+    border-radius: 0.5rem;
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1); /* Add shadow to the panel */
 }
 
 .pending-account-table-header {
-    /* Corrected: Added a fourth column for 'DATE CREATED' */
-    grid-template-columns: 50px minmax(150px, 3fr) minmax(150px, 2fr) minmax(150px, 2fr);
     display: grid;
-    background-color: #2D3748;
-    color: #FFFFFF;
+    grid-template-columns: 50px 100px minmax(150px, 3fr) minmax(150px, 2fr);
+    background-color: #edf2f7;
+    color: #718096;
     font-weight: 600;
-    padding: 1rem 0;
-    border-bottom: none;
-    border-top-left-radius: 0.5rem; /* Match parent container's radius */
-    border-top-right-radius: 0.5rem; /* Match parent container's radius */
+    padding: 1rem 1.5rem;
+    border-bottom: 1px solid #e2e8f0;
+    border-top-left-radius: 0.5rem;
+    border-top-right-radius: 0.5rem;
 }
 
 .table-header-cell {
     text-align: left;
-    padding: 0 1rem; /* Consistent horizontal padding for all header cells */
+    padding: 0;
+    font-size: 0.875rem;
+    text-transform: uppercase;
+    color: #718096;
 }
 
 .pending-account-table-body {
     flex-grow: 1;
     overflow-y: auto;
     -webkit-overflow-scrolling: touch;
-    background-color: #4A5568; /* Set background for the body */
-    border-bottom-left-radius: 0.5rem;
-    border-bottom-right-radius: 0.5rem;
+    background-color: white;
 }
 
 .table-row {
-    /* Corrected: Added a fourth column to match the header */
-    grid-template-columns: 50px minmax(150px, 3fr) minmax(150px, 2fr) minmax(150px, 2fr);
     display: grid;
-    border-bottom: 1px solid #6B7280;
+    grid-template-columns: 50px 100px minmax(150px, 3fr) minmax(150px, 2fr);
+    border-bottom: 1px solid #e2e8f0;
 }
 
 .table-row:last-child {
@@ -224,18 +207,17 @@ body {
     min-height: 2.5rem;
     display: flex;
     align-items: center;
-    color: #FFFFFF;
-    background-color: #4A5568;
-    border-right: none; /* Removed the right border */
+    color: #4a5568;
+    background-color: transparent;
+}
+
+/* Fix for the small column padding to align with header */
+.table-header-cell:first-child,
+.table-cell:first-child {
+    padding-left: 1rem;
 }
 
 /* Optional: Alternating row background for better readability */
-.table-row:nth-child(even) .table-cell {
-    background-color: #4A5568;
-}
-
-/* Fix for the small column padding */
-.table-header-cell:first-child,
-.table-cell:first-child {
-    padding-left: 1.5rem; /* Match the padding of the main content area */
+.table-row:nth-child(even) {
+    background-color: #f7fafc;
 }
