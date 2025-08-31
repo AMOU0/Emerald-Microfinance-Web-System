@@ -1,13 +1,7 @@
 <?php
-// Enable detailed error reporting for development
-ini_set('display_errors', 1);
-ini_set('display_startup_errors', 1);
-error_reporting(E_ALL);
-
-// Set content type to JSON
 header('Content-Type: application/json');
 
-// --- Database Credentials ---
+// Database credentials
 $servername = "localhost";
 $username = "root";
 $password = "";
@@ -18,123 +12,91 @@ $conn = new mysqli($servername, $username, $password, $dbname);
 
 // Check connection
 if ($conn->connect_error) {
-    echo json_encode(['status' => 'error', 'message' => 'Connection failed: ' . $conn->connect_error]);
+    echo json_encode(['status' => 'error', 'message' => "Connection failed: " . $conn->connect_error]);
     exit();
 }
 
-// --- Start a database transaction ---
+// Get the raw POST data
+$jsonData = file_get_contents("php://input");
+$data = json_decode($jsonData, true);
+
+// Check if data is valid
+if ($data === null) {
+    echo json_encode(['status' => 'error', 'message' => "Invalid JSON data received."]);
+    exit();
+}
+
+// Start a transaction to ensure data integrity
 $conn->begin_transaction();
 
-// Get the raw POST data and decode it
-$json_data = file_get_contents('php://input');
-$data = json_decode($json_data, true);
+try {
+    // 1. Insert into loan_applications table
+    $sql_loan = "INSERT INTO loan_applications (client_ID, loan_amount, payment_frequency, date_start, date_end, duration_of_loan, status, paid) VALUES (?, ?, ?, ?, ?, ?, ?, ?)";
+    $stmt_loan = $conn->prepare($sql_loan);
+    if ($stmt_loan === false) {
+        throw new Exception("Loan prepare failed: " . $conn->error);
+    }
+    
+    // Set default status and paid values
+    $status = 'pending';
+    $paid = 0;
+    
+    $stmt_loan->bind_param("issssssi", 
+        $data['clientID'],
+        $data['loan-amount'],
+        $data['payment-frequency'],
+        $data['date-start'],
+        $data['date-end'],
+        $data['duration-of-loan'],
+        $status,
+        $paid
+    );
+    
+    if (!$stmt_loan->execute()) {
+        throw new Exception("Loan execute failed: " . $stmt_loan->error);
+    }
 
-if ($data === null) {
-    // If JSON decoding fails, rollback the transaction and exit
-    $conn->rollback();
-    echo json_encode(['status' => 'error', 'message' => 'Invalid JSON data received.']);
-    exit();
-}
+    $loanApplicationID = $conn->insert_id;
 
-// Extract data from the POST request
-$clientID = $data['clientID'];
-$guarantorLastName = $data['guarantorLastName'];
-$guarantorFirstName = $data['guarantorFirstName'];
-$guarantorMiddleName = $data['guarantorMiddleName'];
-$guarantorStreetAddress = $data['guarantorStreetAddress'];
-$guarantorPhoneNumber = $data['guarantorPhoneNumber'];
-$loanAmount = $data['loan-amount'];
-$paymentFrequency = $data['payment-frequency'];
-$dateStart = $data['date-start'];
-$durationOfLoan = $data['duration-of-loan'];
-$dateEnd = $data['date-end'];
+    // 2. Insert into guarantor table
+    // Corrected column names to match the database schema
+    $sql_guarantor = "INSERT INTO guarantor (client_ID, loan_application_id, guarantor_last_name, guarantor_first_name, guarantor_middle_name, guarantor_street_address, guarantor_phone_number) VALUES (?, ?, ?, ?, ?, ?, ?)";
+    $stmt_guarantor = $conn->prepare($sql_guarantor);
+    if ($stmt_guarantor === false) {
+        throw new Exception("Guarantor prepare failed: " . $conn->error);
+    }
 
-// --- Step 1: Insert into loan_applications table ---
-$sql_loan_app = "INSERT INTO loan_applications (
-    client_ID,
-    loan_amount,
-    payment_frequency,
-    date_start,
-    duration_of_loan,
-    date_end,
-    status,
-    paid
-) VALUES (?, ?, ?, ?, ?, ?, ?, ?)";
+    $stmt_guarantor->bind_param("iisssss",
+        $data['clientID'],
+        $loanApplicationID,
+        $data['guarantorLastName'],
+        $data['guarantorFirstName'],
+        $data['guarantorMiddleName'],
+        $data['guarantorStreetAddress'],
+        $data['guarantorPhoneNumber']
+    );
 
-$stmt_loan_app = $conn->prepare($sql_loan_app);
-if ($stmt_loan_app === false) {
-    $conn->rollback();
-    echo json_encode(['status' => 'error', 'message' => 'Prepare failed for loan_applications: ' . $conn->error]);
-    exit();
-}
+    if (!$stmt_guarantor->execute()) {
+        throw new Exception("Guarantor execute failed: " . $stmt_guarantor->error);
+    }
 
-// Bind parameters and execute the statement
-// 'sdsssssi' stands for string, double, string, string, string, string, string, integer.
-$status = "pending";
-$paid = 0;
-$stmt_loan_app->bind_param("sdsssssi",
-    $clientID,
-    $loanAmount,
-    $paymentFrequency,
-    $dateStart,
-    $durationOfLoan,
-    $dateEnd,
-    $status,
-    $paid
-);
-
-if (!$stmt_loan_app->execute()) {
-    $conn->rollback();
-    echo json_encode(['status' => 'error', 'message' => 'Execute failed for loan_applications: ' . $stmt_loan_app->error]);
-    $stmt_loan_app->close();
-    exit();
-}
-
-// Get the ID of the newly inserted loan application record
-$loan_application_id = $conn->insert_id;
-$stmt_loan_app->close();
-
-// --- Step 2: Insert into guarantor table ---
-// Corrected SQL query to match the table schema. Removed the incorrect 'pending' value.
-$sql_guarantor = "INSERT INTO guarantor (
-    client_ID,
-    guarantor_last_name,
-    guarantor_first_name,
-    guarantor_middle_name,
-    guarantor_street_address,
-    guarantor_phone_number,
-    loan_application_id
-) VALUES (?, ?, ?, ?, ?, ?, ?)";
-
-$stmt_guarantor = $conn->prepare($sql_guarantor);
-if ($stmt_guarantor === false) {
-    $conn->rollback();
-    echo json_encode(['status' => 'error', 'message' => 'Prepare failed for guarantor: ' . $conn->error]);
-    exit();
-}
-
-// Bind parameters and execute the statement
-// 'ssssssi' stands for string (clientID), string, string, string, string, string, integer.
-$stmt_guarantor->bind_param("ssssssi",
-    $clientID,
-    $guarantorLastName,
-    $guarantorFirstName,
-    $guarantorMiddleName,
-    $guarantorStreetAddress,
-    $guarantorPhoneNumber,
-    $loan_application_id
-);
-
-if ($stmt_guarantor->execute()) {
-    // If both statements executed successfully, commit the transaction
+    // If everything is successful, commit the transaction
     $conn->commit();
-    echo json_encode(['status' => 'success', 'message' => 'Loan application and guarantor information submitted successfully!']);
-} else {
-    // If the second statement fails, rollback all changes
-    $conn->rollback();
-    echo json_encode(['status' => 'error', 'message' => 'Execute failed for guarantor: ' . $stmt_guarantor->error]);
-}
+    echo json_encode(['status' => 'success', 'message' => 'Loan application submitted successfully!', 'loan_application_id' => $loanApplicationID]);
 
-$stmt_guarantor->close();
-$conn->close();
+} catch (Exception $e) {
+    // Something went wrong, rollback the transaction
+    $conn->rollback();
+    echo json_encode(['status' => 'error', 'message' => "Transaction failed: " . $e->getMessage()]);
+
+} finally {
+    // Close statements and connection
+    if (isset($stmt_loan)) {
+        $stmt_loan->close();
+    }
+    if (isset($stmt_guarantor)) {
+        $stmt_guarantor->close();
+    }
+    $conn->close();
+}
 ?>

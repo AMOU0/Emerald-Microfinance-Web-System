@@ -366,3 +366,140 @@ body {
 .text-gray-500 { color: #A0AEC0; }
 .text-sm { font-size: 0.875rem; }
 .block { display: block; }
+/* General Modal Styling */
+.modal-overlay {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background-color: rgba(0, 0, 0, 0.5);
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    z-index: 1000;
+}
+
+.modal-overlay.hidden {
+    display: none;
+}
+
+.modal-content {
+    background-color: #fff;
+    padding: 2rem;
+    border-radius: 8px;
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+    max-width: 800px;
+    width: 90%;
+    max-height: 90vh;
+    overflow-y: auto;
+    display: flex;
+    flex-direction: column;
+}
+
+.modal-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    border-bottom: 1px solid #ddd;
+    padding-bottom: 1rem;
+    margin-bottom: 1rem;
+}
+
+.modal-header h2 {
+    margin: 0;
+}
+
+.close-modal-btn {
+    font-size: 2rem;
+    font-weight: bold;
+    border: none;
+    background: none;
+    cursor: pointer;
+}
+
+.modal-body {
+    flex-grow: 1;
+}
+
+.loan-info {
+    margin-bottom: 2rem;
+    padding-bottom: 1rem;
+    border-bottom: 1px solid #eee;
+}
+
+.loan-info h3 {
+    margin-top: 0;
+    font-size: 1.2rem;
+    color: #333;
+}
+
+.loan-info p {
+    margin: 0.5rem 0;
+    color: #555;
+}
+
+.loan-schedule table {
+    width: 100%;
+    border-collapse: collapse;
+}
+
+.loan-schedule th, .loan-schedule td {
+    border: 1px solid #ddd;
+    padding: 8px;
+    text-align: left;
+}
+
+.loan-schedule th {
+    background-color: #f2f2f2;
+    font-weight: bold;
+}
+
+.modal-footer {
+    padding-top: 1rem;
+    text-align: right;
+}
+
+#printBtn {
+    background-color: #007BFF;
+    color: white;
+    padding: 10px 20px;
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+    font-size: 1rem;
+}
+
+#printBtn:hover {
+    background-color: #0056b3;
+}
+
+/* Print Styles */
+@media print {
+    body > :not(.modal-overlay) {
+        display: none !important;
+    }
+    
+    .modal-overlay {
+        position: static;
+        display: block;
+        background: none;
+    }
+
+    .modal-content {
+        box-shadow: none;
+        max-width: none;
+        width: 100%;
+        height: auto;
+        overflow: visible;
+    }
+    
+    .modal-header, .modal-footer {
+        display: none;
+    }
+    
+    /* Show the main content of the modal for printing */
+    .modal-body {
+        display: block;
+    }
+}

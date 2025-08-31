@@ -36,9 +36,10 @@ document.addEventListener('DOMContentLoaded', function() {
 
     /*================================= */
 
-    // --- Client Search Modal Logic ---
+  // --- Client Search Modal Logic ---
     const showClientsBtn = document.getElementById('showClientsBtn');
     const clientIDInput = document.getElementById('clientID');
+    let clientName = ''; // Global variable to store client name
 
     showClientsBtn.addEventListener('click', async () => {
         try {
@@ -65,7 +66,7 @@ document.addEventListener('DOMContentLoaded', function() {
     });
 
     /**
-     * Dynamically creates and displays a modal with a list of clients.
+     * Dynamically creates and displays a modal with a list of clients, including a search bar.
      * @param {Array<Object>} clients - An array of client objects from the database.
      */
     function createClientModal(clients) {
@@ -85,9 +86,12 @@ document.addEventListener('DOMContentLoaded', function() {
                     </svg>
                 </button>
             </div>
-            <ul class="client-list">
+            <div class="search-container mb-4">
+                <input type="text" id="clientSearchInput" class="form-input w-full" placeholder="Search by name...">
+            </div>
+            <ul class="client-list overflow-y-auto max-h-64">
                 ${clients.map(client => `
-                    <li class="client-list-item rounded-lg hover:bg-gray-100 transition-colors duration-150" data-client-id="${client.id}">
+                    <li class="client-list-item rounded-lg hover:bg-gray-100 transition-colors duration-150" data-client-id="${client.id}" data-client-name="${client.name}">
                         <span class="font-medium">${client.name}</span>
                         <span class="text-gray-500 text-sm block">ID: ${client.id}</span>
                     </li>
@@ -103,15 +107,38 @@ document.addEventListener('DOMContentLoaded', function() {
         }, 10);
 
         const clientList = modal.querySelector('.client-list');
+        const searchInput = modal.querySelector('#clientSearchInput');
+
+        // Add event listener to the search input
+        searchInput.addEventListener('input', (event) => {
+            const searchTerm = event.target.value.toLowerCase();
+            const filteredClients = clients.filter(client =>
+                client.name.toLowerCase().includes(searchTerm)
+            );
+            renderClientList(filteredClients, clientList);
+        });
+
+        // Add event listener to handle client selection
         clientList.addEventListener('click', (event) => {
             const selectedItem = event.target.closest('li');
             if (selectedItem) {
                 const clientID = selectedItem.getAttribute('data-client-id');
+                clientName = selectedItem.getAttribute('data-client-name');
                 clientIDInput.value = clientID;
                 console.log(`Selected Client ID: ${clientID}`);
                 closeModal();
             }
         });
+
+        // Helper function to render the list of clients
+        function renderClientList(clientArray, ulElement) {
+            ulElement.innerHTML = clientArray.map(client => `
+                <li class="client-list-item rounded-lg hover:bg-gray-100 transition-colors duration-150" data-client-id="${client.id}" data-client-name="${client.name}">
+                    <span class="font-medium">${client.name}</span>
+                    <span class="text-gray-500 text-sm block">ID: ${client.id}</span>
+                </li>
+            `).join('');
+        }
 
         window.closeModal = () => {
             const modalOverlay = document.querySelector('.modal-overlay');
@@ -122,33 +149,6 @@ document.addEventListener('DOMContentLoaded', function() {
                 }, 300);
             }
         };
-    }
-
-    /**
-     * Displays a simple, custom message box instead of using alert().
-     * @param {string} message - The message to display.
-     * @param {string} type - The type of message ('success' or 'error').
-     */
-    function showMessageBox(message, type) {
-        const existingBox = document.querySelector('.message-box');
-        if (existingBox) existingBox.remove();
-
-        const box = document.createElement('div');
-        box.className = `message-box fixed top-4 right-4 p-4 rounded-lg text-white shadow-lg transition-transform duration-300 transform translate-y-0`;
-
-        if (type === 'error') {
-            box.classList.add('bg-red-500');
-        } else {
-            box.classList.add('bg-green-500');
-        }
-
-        box.textContent = message;
-        document.body.appendChild(box);
-
-        setTimeout(() => {
-            box.classList.add('translate-y-full');
-            setTimeout(() => box.remove(), 300);
-        }, 3000);
     }
 
     // --- Loan Application Form Logic ---
@@ -194,12 +194,14 @@ document.addEventListener('DOMContentLoaded', function() {
 
         const data = {
             clientID: document.getElementById('clientID').value,
+            clientName: clientName,
+            loanID: 'L' + Math.floor(Math.random() * 10000), // Placeholder Loan ID
             guarantorLastName: document.getElementById('guarantorLastName').value,
             guarantorFirstName: document.getElementById('guarantorFirstName').value,
             guarantorMiddleName: document.getElementById('guarantorMiddleName').value,
             guarantorStreetAddress: document.getElementById('guarantorStreetAddress').value,
             guarantorPhoneNumber: document.getElementById('guarantorPhoneNumber').value,
-            'loan-amount': document.getElementById('loan-amount').value,
+            'loan-amount': parseFloat(document.getElementById('loan-amount').value),
             'payment-frequency': document.getElementById('payment-frequency').value,
             'date-start': document.getElementById('date-start').value,
             'duration-of-loan': document.getElementById('duration-of-loan').value,
@@ -224,10 +226,11 @@ document.addEventListener('DOMContentLoaded', function() {
         });
 
         if (!isValid) {
-            alert('Please fill out all required fields.');
+            showMessageBox('Please fill out all required fields.', 'error');
             return;
         }
 
+        // Send data to PHP backend
         fetch('PHP/loanapplication_handler.php', {
             method: 'POST',
             headers: {
@@ -235,19 +238,189 @@ document.addEventListener('DOMContentLoaded', function() {
             },
             body: JSON.stringify(data)
         })
-        .then(response => response.json())
+        .then(response => {
+            if (!response.ok) {
+                throw new Error('Network response was not ok: ' + response.statusText);
+            }
+            return response.json();
+        })
         .then(result => {
             if (result.status === 'success') {
-                alert(result.message);
+                showMessageBox(result.message, 'success');
+                // You can clear the form or perform other actions here
                 form.reset();
                 endDateInput.value = '';
+                // Display the modal with the calculated information
+                createLoanDetailsModal(data);
             } else {
-                alert('Error: ' + result.message);
+                showMessageBox(result.message, 'error');
             }
         })
         .catch(error => {
-            console.error('Error:', error);
-            alert('An error occurred during submission.');
+            console.error('There was a problem with the fetch operation:', error);
+            showMessageBox('An error occurred. Please check the console for details.', 'error');
         });
     });
+
+    /**
+     * Dynamically creates and displays the loan details and schedule modal.
+     * @param {Object} data - The loan application data.
+     */
+    function createLoanDetailsModal(data) {
+        const modal = document.createElement('div');
+        modal.className = 'modal-overlay';
+
+        const modalContent = document.createElement('div');
+        modalContent.className = 'modal-content modal-content-transition';
+
+        // Generate the payment schedule table
+        const schedule = generateLoanSchedule(data['loan-amount'], data['payment-frequency'], data['date-start'], data['date-end']);
+        let scheduleTableHTML = `
+            <h3>Payment Schedule</h3>
+            <table>
+                <thead>
+                    <tr>
+                        <th>Date of Payment</th>
+                        <th>Amount to Pay</th>
+                        <th>Amount Paid</th>
+                        <th>Date of Amount Paid</th>
+                        <th>Remaining Balance</th>
+                    </tr>
+                </thead>
+                <tbody>
+        `;
+        schedule.forEach(row => {
+            scheduleTableHTML += `
+                <tr>
+                    <td>${row['date-of-payment']}</td>
+                    <td>PHP ${row['amount-to-pay'].toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}</td>
+                    <td></td>
+                    <td></td>
+                    <td>PHP ${row['remaining-balance'].toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}</td>
+                </tr>
+            `;
+        });
+        scheduleTableHTML += `
+                </tbody>
+            </table>
+        `;
+
+        modalContent.innerHTML = `
+            <div class="modal-header">
+                <h2>Loan Details</h2>
+                <button class="close-modal-btn">&times;</button>
+            </div>
+            <div class="modal-body">
+                <div class="loan-info">
+                    <h3>Client Information</h3>
+                    <p><strong>Client Name:</strong> ${data.clientName}</p>
+                    <p><strong>Client ID:</strong> ${data.clientID}</p>
+                    <h3>Loan Information</h3>
+                    <p><strong>Loan ID:</strong> ${data.loanID}</p>
+                    <p><strong>Loan Amount:</strong> PHP ${data['loan-amount'].toLocaleString('en-US')}</p>
+                    <p><strong>Start Date:</strong> ${data['date-start']}</p>
+                    <p><strong>End Date:</strong> ${data['date-end']}</p>
+                    <p><strong>Payment Frequency:</strong> ${data['payment-frequency']}</p>
+                </div>
+                <div class="loan-schedule">
+                    ${scheduleTableHTML}
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button class="print-btn">Print</button>
+            </div>
+        `;
+
+        modal.appendChild(modalContent);
+        document.body.appendChild(modal);
+
+        setTimeout(() => {
+            modalContent.classList.add('is-active');
+        }, 10);
+        
+        // Add event listeners for the new buttons
+        const closeBtn = modalContent.querySelector('.close-modal-btn');
+        const printBtn = modalContent.querySelector('.print-btn');
+
+        closeBtn.addEventListener('click', () => {
+            modalContent.classList.remove('is-active');
+            setTimeout(() => modal.remove(), 300);
+        });
+
+        printBtn.addEventListener('click', () => {
+            window.print();
+        });
+    }
+
+    /**
+     * Helper function to generate a loan payment schedule.
+     * This is a simplified calculation for demonstration purposes.
+     * @param {number} amount - Total loan amount.
+     * @param {string} frequency - 'daily', 'weekly', or 'monthly'.
+     * @param {string} startDate - The start date string 'YYYY-MM-DD'.
+     * @param {string} endDate - The end date string 'YYYY-MM-DD'.
+     * @returns {Array<Object>} An array of payment schedule objects.
+     */
+    function generateLoanSchedule(amount, frequency, startDateStr, endDateStr) {
+        const schedule = [];
+        let currentDate = new Date(startDateStr);
+        const endDate = new Date(endDateStr);
+        let remainingBalance = amount;
+        
+        let paymentAmount = 0;
+        let totalPayments = 0;
+
+        // Calculate total number of payments based on frequency
+        const oneDay = 24 * 60 * 60 * 1000;
+        const totalDays = Math.round((endDate - currentDate) / oneDay);
+
+        switch (frequency) {
+            case 'daily':
+                totalPayments = totalDays + 1;
+                paymentAmount = amount / totalPayments;
+                break;
+            case 'weekly':
+                totalPayments = Math.floor(totalDays / 7) + 1;
+                paymentAmount = amount / totalPayments;
+                break;
+            case 'monthly':
+                let months = (endDate.getFullYear() - currentDate.getFullYear()) * 12;
+                months -= currentDate.getMonth();
+                months += endDate.getMonth();
+                totalPayments = months + 1;
+                paymentAmount = amount / totalPayments;
+                break;
+            default:
+                paymentAmount = amount; // Handle single payment case
+                totalPayments = 1;
+        }
+
+        for (let i = 0; i < totalPayments; i++) {
+            if (remainingBalance <= 0) break;
+            
+            remainingBalance -= paymentAmount;
+            if (remainingBalance < 0) remainingBalance = 0; // Prevent negative balance
+
+            schedule.push({
+                'date-of-payment': currentDate.toISOString().split('T')[0],
+                'amount-to-pay': paymentAmount,
+                'remaining-balance': remainingBalance
+            });
+
+            // Advance the date based on frequency
+            switch (frequency) {
+                case 'daily':
+                    currentDate.setDate(currentDate.getDate() + 1);
+                    break;
+                case 'weekly':
+                    currentDate.setDate(currentDate.getDate() + 7);
+                    break;
+                case 'monthly':
+                    currentDate.setMonth(currentDate.getMonth() + 1);
+                    break;
+            }
+        }
+        
+        return schedule;
+    }
 });
