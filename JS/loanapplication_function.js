@@ -34,42 +34,58 @@ document.addEventListener('DOMContentLoaded', function() {
         window.location.href = 'login.html';
     });
 
-    /*================================= */
-
-  // --- Client Search Modal Logic ---
+    // --- Client Search Modal Logic ---
     const showClientsBtn = document.getElementById('showClientsBtn');
     const clientIDInput = document.getElementById('clientID');
     let clientName = ''; // Global variable to store client name
+    let globalInterestRate = 0; // Global variable to store interest rate
 
     showClientsBtn.addEventListener('click', async () => {
         try {
-            const response = await fetch('PHP/getclient_handler.php');
+            // Fetch both the client list and the active interest rate simultaneously
+            const [clientsResponse, interestResponse] = await Promise.all([
+                fetch('PHP/getclient_handler.php'),
+                fetch('PHP/getactiveinterest_handler.php')
+            ]);
 
-            if (!response.ok) {
-                throw new Error(`HTTP error! Status: ${response.status}`);
+            if (!clientsResponse.ok) {
+                throw new Error(`HTTP error! Status: ${clientsResponse.status}`);
+            }
+            if (!interestResponse.ok) {
+                throw new Error(`HTTP error! Status: ${interestResponse.status}`);
             }
 
-            const result = await response.json();
+            const clientsResult = await clientsResponse.json();
+            const interestResult = await interestResponse.json();
 
-            if (result.status === 'error') {
-                showMessageBox(result.message, 'error');
+            if (clientsResult.status === 'error') {
+                showMessageBox(clientsResult.message, 'error');
                 return;
             }
 
-            const clients = result.data;
-            createClientModal(clients);
+            if (interestResult.status === 'success') {
+                globalInterestRate = interestResult.interestRate;
+            } else {
+                console.error(interestResult.message);
+                showMessageBox('Could not load interest rate.', 'error');
+            }
+
+            const clients = clientsResult.data;
+            // Pass the interest rate to the modal creation function
+            createClientModal(clients, globalInterestRate);
 
         } catch (error) {
-            console.error('Error fetching clients:', error);
+            console.error('Error fetching data:', error);
             showMessageBox('Could not load client list. Please try again later.', 'error');
         }
     });
 
     /**
-     * Dynamically creates and displays a modal with a list of clients, including a search bar.
+     * Dynamically creates and displays a modal with a list of clients, including a search bar and interest rate.
      * @param {Array<Object>} clients - An array of client objects from the database.
+     * @param {number} interestRate - The active interest rate percentage from the database.
      */
-    function createClientModal(clients) {
+    function createClientModal(clients, interestRate) {
         const modal = document.createElement('div');
         modal.className = 'modal-overlay';
 
@@ -88,6 +104,9 @@ document.addEventListener('DOMContentLoaded', function() {
             </div>
             <div class="search-container mb-4">
                 <input type="text" id="clientSearchInput" class="form-input w-full" placeholder="Search by name...">
+            </div>
+            <div class="mb-4 text-center">
+                <h3 class="text-lg font-medium">Active Interest Rate: ${interestRate}%</h3>
             </div>
             <ul class="client-list overflow-y-auto max-h-64">
                 ${clients.map(client => `
@@ -181,13 +200,6 @@ document.addEventListener('DOMContentLoaded', function() {
         }
     });
 
-    // Handle the "Clear" button
-    clearButton.addEventListener('click', function(event) {
-        event.preventDefault();
-        form.reset();
-        endDateInput.value = '';
-    });
-
     // Handle the "Apply" button and form submission
     applyButton.addEventListener('click', function(event) {
         event.preventDefault();
@@ -205,7 +217,8 @@ document.addEventListener('DOMContentLoaded', function() {
             'payment-frequency': document.getElementById('payment-frequency').value,
             'date-start': document.getElementById('date-start').value,
             'duration-of-loan': document.getElementById('duration-of-loan').value,
-            'date-end': document.getElementById('date-end').value
+            'date-end': document.getElementById('date-end').value,
+            'interest-rate': globalInterestRate // Pass the interest rate
         };
 
         const requiredFields = [
@@ -274,7 +287,7 @@ document.addEventListener('DOMContentLoaded', function() {
         modalContent.className = 'modal-content modal-content-transition';
 
         // Generate the payment schedule table
-        const schedule = generateLoanSchedule(data['loan-amount'], data['payment-frequency'], data['date-start'], data['date-end']);
+        const schedule = generateLoanSchedule(data['loan-amount'], data['payment-frequency'], data['date-start'], data['date-end'], data['interest-rate']);
         let scheduleTableHTML = `
             <h3>Payment Schedule</h3>
             <table>
@@ -282,6 +295,7 @@ document.addEventListener('DOMContentLoaded', function() {
                     <tr>
                         <th>Date of Payment</th>
                         <th>Amount to Pay</th>
+                        <th>Interest Amount</th>
                         <th>Amount Paid</th>
                         <th>Date of Amount Paid</th>
                         <th>Remaining Balance</th>
@@ -294,6 +308,7 @@ document.addEventListener('DOMContentLoaded', function() {
                 <tr>
                     <td>${row['date-of-payment']}</td>
                     <td>PHP ${row['amount-to-pay'].toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}</td>
+                    <td>PHP ${row['interest-amount'].toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}</td>
                     <td></td>
                     <td></td>
                     <td>PHP ${row['remaining-balance'].toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}</td>
@@ -318,6 +333,7 @@ document.addEventListener('DOMContentLoaded', function() {
                     <h3>Loan Information</h3>
                     <p><strong>Loan ID:</strong> ${data.loanID}</p>
                     <p><strong>Loan Amount:</strong> PHP ${data['loan-amount'].toLocaleString('en-US')}</p>
+                    <p><strong>Interest Rate:</strong> ${data['interest-rate']}%</p>
                     <p><strong>Start Date:</strong> ${data['date-start']}</p>
                     <p><strong>End Date:</strong> ${data['date-end']}</p>
                     <p><strong>Payment Frequency:</strong> ${data['payment-frequency']}</p>
@@ -337,7 +353,7 @@ document.addEventListener('DOMContentLoaded', function() {
         setTimeout(() => {
             modalContent.classList.add('is-active');
         }, 10);
-        
+
         // Add event listeners for the new buttons
         const closeBtn = modalContent.querySelector('.close-modal-btn');
         const printBtn = modalContent.querySelector('.print-btn');
@@ -359,15 +375,20 @@ document.addEventListener('DOMContentLoaded', function() {
      * @param {string} frequency - 'daily', 'weekly', or 'monthly'.
      * @param {string} startDate - The start date string 'YYYY-MM-DD'.
      * @param {string} endDate - The end date string 'YYYY-MM-DD'.
+     * @param {number} interestRate - The active interest rate percentage.
      * @returns {Array<Object>} An array of payment schedule objects.
      */
-    function generateLoanSchedule(amount, frequency, startDateStr, endDateStr) {
+    function generateLoanSchedule(amount, frequency, startDateStr, endDateStr, interestRate) {
         const schedule = [];
         let currentDate = new Date(startDateStr);
         const endDate = new Date(endDateStr);
-        let remainingBalance = amount;
-        
-        let paymentAmount = 0;
+
+        // Calculate the total amount to be paid, including interest
+        const totalInterest = amount * (interestRate / 100);
+        const totalRepaymentAmount = amount + totalInterest;
+
+        let remainingBalance = totalRepaymentAmount;
+
         let totalPayments = 0;
 
         // Calculate total number of payments based on frequency
@@ -377,33 +398,33 @@ document.addEventListener('DOMContentLoaded', function() {
         switch (frequency) {
             case 'daily':
                 totalPayments = totalDays + 1;
-                paymentAmount = amount / totalPayments;
                 break;
             case 'weekly':
                 totalPayments = Math.floor(totalDays / 7) + 1;
-                paymentAmount = amount / totalPayments;
                 break;
             case 'monthly':
                 let months = (endDate.getFullYear() - currentDate.getFullYear()) * 12;
                 months -= currentDate.getMonth();
                 months += endDate.getMonth();
                 totalPayments = months + 1;
-                paymentAmount = amount / totalPayments;
                 break;
             default:
-                paymentAmount = amount; // Handle single payment case
-                totalPayments = 1;
+                totalPayments = 1; // Handle single payment case
         }
+
+        const paymentAmount = totalRepaymentAmount / totalPayments;
+        const interestPerPayment = totalInterest / totalPayments;
 
         for (let i = 0; i < totalPayments; i++) {
             if (remainingBalance <= 0) break;
-            
+
             remainingBalance -= paymentAmount;
             if (remainingBalance < 0) remainingBalance = 0; // Prevent negative balance
 
             schedule.push({
                 'date-of-payment': currentDate.toISOString().split('T')[0],
                 'amount-to-pay': paymentAmount,
+                'interest-amount': interestPerPayment,
                 'remaining-balance': remainingBalance
             });
 
@@ -420,7 +441,34 @@ document.addEventListener('DOMContentLoaded', function() {
                     break;
             }
         }
-        
+
         return schedule;
+    }
+
+    /**
+     * Displays a simple, custom message box instead of using alert().
+     * @param {string} message - The message to display.
+     * @param {string} type - The type of message ('success' or 'error').
+     */
+    function showMessageBox(message, type) {
+        const existingBox = document.querySelector('.message-box');
+        if (existingBox) existingBox.remove();
+
+        const box = document.createElement('div');
+        box.className = `message-box fixed top-4 right-4 p-4 rounded-lg text-white shadow-lg transition-transform duration-300 transform translate-y-0`;
+
+        if (type === 'error') {
+            box.classList.add('bg-red-500');
+        } else {
+            box.classList.add('bg-green-500');
+        }
+
+        box.textContent = message;
+        document.body.appendChild(box);
+
+        setTimeout(() => {
+            box.classList.add('translate-y-full');
+            setTimeout(() => box.remove(), 300);
+        }, 3000);
     }
 });
