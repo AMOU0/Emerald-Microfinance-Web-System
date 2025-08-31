@@ -4,9 +4,11 @@ body {
     background-color: #333;
     margin: 0;
     padding: 0;
-    display: flex;
+    display: grid;
+    grid-template-columns: 280px 1fr; /* Defines a sidebar and a main content column */
     min-height: 100vh;
     color: #fff;
+    box-sizing: border-box;
 }
 
 .sidebar {
@@ -44,7 +46,7 @@ body {
     transition: background-color 0.2s ease-in-out;
     border-radius: 8px;
     margin: 0 12px 8px;
-    text-decoration: none; /* Add this to remove the underline */
+    text-decoration: none;
 }
 
 .nav-link:hover {
@@ -81,26 +83,24 @@ body {
     background-color: #C53030;
 }
 
-
 /* Main Content Styling */
 .main-content {
-    margin-left: 250px; /* Offset for the fixed sidebar */
     flex-grow: 1;
     padding: 20px;
-    background-color: #cccccc; /* Lighter grey for main content */
+    background-color: #f0f0f0; /* Lighter grey for main content */
     display: flex;
     flex-direction: column;
 }
 
 .header {
-    background-color: #4CAF50; /* Green header */
+    background-color: #4CAF50;
     color: #ffffff;
     padding: 15px 30px;
-    margin: -20px -20px 20px -20px; /* Negative margin to fill width */
+    margin: -20px -20px 20px -20px;
     display: flex;
     justify-content: space-between;
     align-items: center;
-    box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
 }
 
 .header-title {
@@ -110,7 +110,7 @@ body {
 }
 
 .save-button {
-    background-color: #66BB6A; /* Lighter green for save button */
+    background-color: #66BB6A;
     color: #ffffff;
     padding: 8px 18px;
     border: none;
@@ -121,16 +121,16 @@ body {
     transition: background-color 0.2s;
 }
 
-    .save-button:hover {
-        background-color: #4CAF50;
-    }
+.save-button:hover {
+    background-color: #4CAF50;
+}
 
 /* Form Section Styling */
 .form-section {
     background-color: #ffffff;
     padding: 25px;
     border-radius: 8px;
-    box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+    box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
     margin-bottom: 20px;
 }
 
@@ -145,8 +145,8 @@ body {
 
 .grid-container {
     display: grid;
-    grid-template-columns: repeat(3, 1fr); /* 3 columns by default */
-    gap: 20px 30px; /* Row and column gap */
+    grid-template-columns: repeat(3, 1fr);
+    gap: 20px 30px;
 }
 
 .form-group {
@@ -170,18 +170,18 @@ body {
     font-size: 0.9rem;
     color: #333333;
     background-color: #f7f7f7;
-    box-sizing: border-box; /* Include padding in width */
+    box-sizing: border-box;
 }
 
-    .form-input:focus,
-    .form-select:focus {
-        outline: none;
-        border-color: #4CAF50;
-        box-shadow: 0 0 0 2px rgba(76, 175, 80, 0.2);
-    }
+.form-input:focus,
+.form-select:focus {
+    outline: none;
+    border-color: #4CAF50;
+    box-shadow: 0 0 0 2px rgba(76, 175, 80, 0.2);
+}
 
 .form-select {
-    appearance: none; /* Remove default arrow */
+    appearance: none;
     -webkit-appearance: none;
     -moz-appearance: none;
     background-image: url('data:image/svg+xml;charset=US-ASCII,%3Csvg%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%20width%3D%22292.4%22%20height%3D%22292.4%22%3E%3Cpath%20fill%3D%22%23666666%22%20d%3D%22M287%2C114.7L159.2%2C242.5c-3.2%2C3.2-8.3%2C3.2-11.6%2C0L5.4%2C114.7c-3.2-3.2-3.2-8.3%2C0-11.6l10.3-10.3c3.2-3.2%2C8.3-3.2%2C11.6%2C0l126.9%2C126.9l126.9-126.9c3.2-3.2%2C8.3-3.2%2C11.6%2C0l10.3%2C10.3C290.2%2C106.4%2C290.2%2C111.5%2C287%2C114.7z%22%2F%3E%3C%2Fsvg%3E');
@@ -192,34 +192,33 @@ body {
 }
 
 .full-width {
-    grid-column: span 3; /* Spans all 3 columns */
+    grid-column: span 3;
 }
 
 .date-input .input-with-icon {
     position: relative;
 }
 
-    .date-input .input-with-icon .form-input {
-        padding-right: 35px; /* Make space for the icon */
-    }
+.date-input .input-with-icon .form-input {
+    padding-right: 35px;
+}
 
-    .date-input .input-with-icon i {
-        position: absolute;
-        right: 12px;
-        top: 50%;
-        transform: translateY(-50%);
-        color: #777;
-        pointer-events: none; /* Allow clicks to pass through to the input */
-    }
+.date-input .input-with-icon i {
+    position: absolute;
+    right: 12px;
+    top: 50%;
+    transform: translateY(-50%);
+    color: #777;
+    pointer-events: none;
+}
 
 .checkbox-group {
     display: flex;
     align-items: center;
-    gap: 8px; /* Space between checkbox and label */
+    gap: 8px;
 }
 
 .form-checkbox {
-    /* Existing Tailwind classes might handle this, but if not: */
     width: 18px;
     height: 18px;
     border: 1px solid #cccccc;
@@ -232,20 +231,20 @@ body {
     outline: none;
 }
 
-    .form-checkbox:checked {
-        background-color: #4CAF50;
-        border-color: #4CAF50;
-    }
+.form-checkbox:checked {
+    background-color: #4CAF50;
+    border-color: #4CAF50;
+}
 
-        .form-checkbox:checked::after {
-            content: '\2713'; /* Checkmark character */
-            position: absolute;
-            top: 50%;
-            left: 50%;
-            transform: translate(-50%, -50%);
-            color: #ffffff;
-            font-size: 12px;
-        }
+.form-checkbox:checked::after {
+    content: '\2713';
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    color: #ffffff;
+    font-size: 12px;
+}
 
 .form-checkbox-label {
     font-size: 0.9rem;
@@ -255,20 +254,19 @@ body {
 }
 
 .grid-container-requirements {
-    grid-template-columns: repeat(2, 1fr); /* 2 columns for this section */
+    grid-template-columns: repeat(2, 1fr);
 }
-
 
 /* Bottom Create Button */
 .form-actions-bottom {
     display: flex;
     justify-content: flex-end;
     padding-top: 20px;
-    margin-right: 10px; /* Adjust margin to align with content */
+    margin-right: 10px;
 }
 
 .create-button {
-    background-color: #4CAF50; /* Green create button */
+    background-color: #4CAF50;
     color: #ffffff;
     padding: 12px 25px;
     border: none;
@@ -277,17 +275,17 @@ body {
     font-size: 1.1rem;
     font-weight: 600;
     transition: background-color 0.2s;
-    box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
 }
 
-    .create-button:hover {
-        background-color: #45a049;
-    }
+.create-button:hover {
+    background-color: #45a049;
+}
 
 /* Responsive adjustments */
 @media (max-width: 1024px) {
     .grid-container {
-        grid-template-columns: repeat(2, 1fr); /* 2 columns on medium screens */
+        grid-template-columns: repeat(2, 1fr);
     }
 
     .full-width {
@@ -295,16 +293,21 @@ body {
     }
 
     .grid-container-requirements {
-        grid-template-columns: 1fr; /* 1 column on medium screens */
+        grid-template-columns: 1fr;
     }
 }
 
 @media (max-width: 768px) {
+    body {
+        grid-template-columns: 1fr; /* Stacks the sidebar and content */
+    }
+
     .sidebar {
         width: 100%;
         height: auto;
         position: static;
         padding-bottom: 0;
+        border-radius: 0;
     }
 
     .main-content {
@@ -327,7 +330,7 @@ body {
     }
 
     .grid-container {
-        grid-template-columns: 1fr; /* Single column on small screens */
+        grid-template-columns: 1fr;
     }
 
     .full-width {
@@ -337,4 +340,72 @@ body {
     .section-title {
         text-align: center;
     }
+}
+/* Add to existing CSS file: reportsexistingclientview_style.css */
+
+.loan-details-container {
+    width: 100%;
+    margin-top: 20px;
+}
+
+.table-container {
+    border: 1px solid #ddd;
+    border-radius: 8px;
+    overflow: hidden;
+    background-color: #f9f9f9;
+}
+
+.table-header {
+    display: flex;
+    background-color: #4CAF50;
+    color: white;
+    font-weight: bold;
+    padding: 10px 15px;
+    border-bottom: 1px solid #ddd;
+}
+
+.table-body {
+    max-height: 400px; /* Adjust as needed */
+    overflow-y: auto;
+}
+
+.table-row {
+    display: flex;
+    padding: 10px 15px;
+    border-bottom: 1px solid #eee;
+    transition: background-color 0.2s ease-in-out;
+}
+
+.table-row:last-child {
+    border-bottom: none;
+}
+
+.table-row:hover {
+    background-color: #f1f1f1;
+}
+
+.table-cell {
+    flex: 1;
+    padding: 0 5px;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    display: flex;
+    align-items: center;
+}
+
+/* Specific column widths for better alignment */
+.table-cell:nth-child(1) { flex: 0.8; } /* Loan ID */
+.table-cell:nth-child(2) { flex: 1.2; } /* Amount */
+.table-cell:nth-child(3) { flex: 1; } /* Frequency */
+.table-cell:nth-child(4) { flex: 1; } /* Duration */
+.table-cell:nth-child(5) { flex: 1.2; } /* Start Date */
+.table-cell:nth-child(6) { flex: 1.2; } /* End Date */
+.table-cell:nth-child(7) { flex: 0.8; } /* Status */
+.table-cell:nth-child(8) { flex: 0.5; } /* Paid */
+
+p {
+    text-align: center;
+    color: #555;
+    padding: 20px;
 }

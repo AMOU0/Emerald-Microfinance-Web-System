@@ -289,12 +289,12 @@ document.addEventListener('DOMContentLoaded', function() {
         // Generate the payment schedule table
         const schedule = generateLoanSchedule(data['loan-amount'], data['payment-frequency'], data['date-start'], data['date-end'], data['interest-rate']);
         let scheduleTableHTML = `
-            <h3>Payment Schedule</h3>
+            <h3>Amortization Schedule</h3>
             <table>
                 <thead>
                     <tr>
                         <th>Date of Payment</th>
-                        <th>Amount to Pay</th>
+                        <th>principal amount</th>
                         <th>Interest Amount</th>
                         <th>Amount Paid</th>
                         <th>Date of Amount Paid</th>

@@ -3,7 +3,7 @@
 -- https://www.phpmyadmin.net/
 --
 -- Host: 127.0.0.1
--- Generation Time: Aug 31, 2025 at 10:15 AM
+-- Generation Time: Aug 31, 2025 at 09:02 PM
 -- Server version: 10.4.32-MariaDB
 -- PHP Version: 8.2.12
 
@@ -53,7 +53,8 @@ CREATE TABLE `clients` (
 --
 
 INSERT INTO `clients` (`client_ID`, `last_name`, `first_name`, `middle_name`, `marital_status`, `gender`, `date_of_birth`, `city`, `barangay`, `postal_code`, `street_address`, `phone_number`, `email`, `employment_status`, `occupation`, `years_in_job`, `income`, `created_at`) VALUES
-(202500001, 'Mallari', 'Angel', 'Laurence P', 'single', 'male', '2003-03-07', 'tarlac', 'sanroque', '2300', '#205 Alvindia Segundo Tarlac City', '09212271315', 'laurence030703@gmail.com', '', '', 0, '0 - 5,000', '2025-08-26 02:47:57');
+(202500001, 'Mallari', 'Angel', 'Laurence P', 'single', 'male', '2003-03-07', 'tarlac', 'sanroque', '2300', '#205 Alvindia Segundo Tarlac City', '09212271315', 'laurence030703@gmail.com', '', '', 0, '0 - 5,000', '2025-08-26 02:47:57'),
+(202500002, 'Mallari', 'Angel', 'Laurence P', 'single', 'male', '2025-09-03', 'tarlac', 'sanroque', '2300', '#205 Alvindia Segundo Tarlac City', '09212271315', 'laurence030703@gmail.com', '', '', 0, '5,000 - 10,000', '2025-08-31 15:26:10');
 
 -- --------------------------------------------------------
 
@@ -74,7 +75,8 @@ CREATE TABLE `client_requirements` (
 --
 
 INSERT INTO `client_requirements` (`has_valid_id`, `has_barangay_clearance`, `has_cr`, `client_ID`, `created_at`) VALUES
-(1, 0, '0', 202500001, '2025-08-26 10:47:57');
+(1, 0, '0', 202500001, '2025-08-26 10:47:57'),
+(1, 0, '0', 202500002, '2025-08-31 23:26:10');
 
 -- --------------------------------------------------------
 
@@ -99,7 +101,27 @@ CREATE TABLE `guarantor` (
 --
 
 INSERT INTO `guarantor` (`guarantor_id`, `guarantor_last_name`, `guarantor_first_name`, `guarantor_middle_name`, `guarantor_street_address`, `guarantor_phone_number`, `loan_application_id`, `client_ID`, `created_at`) VALUES
-(1, 'Mallari', 'Angel', 'Laurence P', '#205 Alvindia Segundo Tarlac City', '09212271315', 13, 202500001, '2025-08-26 10:49:38');
+(1, 'Mallari', 'Angel', 'Laurence P', '#205 Alvindia Segundo Tarlac City', '09212271315', 1, 202500001, '2025-09-01 00:04:02');
+
+-- --------------------------------------------------------
+
+--
+-- Table structure for table `interest_pecent`
+--
+
+CREATE TABLE `interest_pecent` (
+  `interest_ID` varchar(11) NOT NULL,
+  `Interest_Pecent` int(11) NOT NULL,
+  `status` varchar(11) NOT NULL,
+  `date_created` date NOT NULL DEFAULT current_timestamp()
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
+
+--
+-- Dumping data for table `interest_pecent`
+--
+
+INSERT INTO `interest_pecent` (`interest_ID`, `Interest_Pecent`, `status`, `date_created`) VALUES
+('I202050001', 20, 'activated', '2025-08-31');
 
 -- --------------------------------------------------------
 
@@ -125,7 +147,7 @@ CREATE TABLE `loan_applications` (
 --
 
 INSERT INTO `loan_applications` (`loan_application_id`, `loan_amount`, `payment_frequency`, `date_start`, `duration_of_loan`, `date_end`, `client_ID`, `status`, `paid`, `created_at`) VALUES
-(13, 5000.00, 'weekly', '2025-08-28', '100 days', '2025-12-06', 202500001, 'pending', 0, '2025-08-26 10:49:37');
+(1, 10000.00, 'daily', '2025-10-01', '100 days', '2026-01-09', 202500001, 'pending', 0, '2025-09-01 00:04:02');
 
 -- --------------------------------------------------------
 
@@ -230,7 +252,7 @@ ALTER TABLE `guarantor`
 -- AUTO_INCREMENT for table `loan_applications`
 --
 ALTER TABLE `loan_applications`
-  MODIFY `loan_application_id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=14;
+  MODIFY `loan_application_id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=2;
 
 --
 -- AUTO_INCREMENT for table `users`

@@ -1,0 +1,60 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Emerald Microfinance Dashboard</title>
+    <link rel="stylesheet" href="CSS/reportsexistingclients_style.css">
+</head>
+<body>
+    <aside class="sidebar">
+        <div class="sidebar-header">
+            Emerald Microfinance
+        </div>
+        <nav class="sidebar-nav">
+            <ul>
+                <li><a href="#" class="nav-link">Dashboard</a></li>
+                <li><a href="#" class="nav-link">Client Creation</a></li>
+                <li><a href="#" class="nav-link">Loan Application</a></li>
+                <li><a href="#" class="nav-link">Pending Accounts</a></li>
+                <li><a href="#" class="nav-link">Accounts Receivable</a></li>
+                <li><a href="#" class="nav-link">Ledger</a></li>
+                <li><a href="#" class="nav-link active">Reports</a></li>
+                <li><a href="#" class="nav-link">User Management</a></li>
+                <li><a href="#" class="nav-link">Tools</a></li>
+            </ul>
+        </nav>
+        <div class="sidebar-footer">
+            <button class="logout-button">
+                Logout
+            </button>
+        </div>
+    </aside>
+    <main class="main-content">
+        <header class="header reports-header">
+            <h1 class="header-title">Reports</h1>
+        </header>
+        <div class="reports-container">
+            <div class="reports-sidebar">
+                <button class="report-button active">Existing Clients</button>
+                <button class="report-button">Overdue Payments</button>
+                <button class="report-button">Due Payments</button>
+                <button class="report-button">Overdue Payments</button>
+            </div>
+            <div class="report-viewer">
+                <div class="client-selection-view">
+                    <div class="flex justify-between items-center pb-4 border-b border-gray-200 mb-4">
+                        <h2 class="text-xl font-semibold">Select a Client</h2>
+                    </div>
+                    <div class="search-container mb-4">
+                        <input type="text" id="clientSearchInput" class="form-input w-full" placeholder="Search by name...">
+                    </div>
+                    <ul class="client-list overflow-y-auto max-h-64">
+                    </ul>
+                </div>
+            </div>
+        </div>
+    </main>
+    <script src="JS/reportsexistingclient_function.js"></script>
+</body>
+</html>

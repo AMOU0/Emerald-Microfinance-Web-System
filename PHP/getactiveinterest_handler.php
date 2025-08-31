@@ -17,8 +17,8 @@ if ($conn->connect_error) {
 }
 
 try {
-    // Fetch the active interest rate
-    $sql = "SELECT Interest_Pecent FROM interest WHERE status = 'activated'";
+    // Fetch the active interest rate from the 'interest_pecent' table
+    $sql = "SELECT Interest_Pecent FROM interest_pecent WHERE status = 'activated'";
     $result = $conn->query($sql);
 
     if ($result->num_rows > 0) {
