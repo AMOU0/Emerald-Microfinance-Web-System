@@ -109,14 +109,29 @@ function renderClientList(clients) {
     const clientList = document.querySelector('.client-list');
     if (!clientList) return;
 
-    clientList.innerHTML = clients.map(client => `
-        <li class="client-list-item rounded-lg hover:bg-gray-100 transition-colors duration-150" data-client-id="${client.client_ID}">
-            <span class="font-medium">${client.first_name} ${client.middle_name} ${client.last_name}</span>
-            <span class="text-gray-500 text-sm block">ID: ${client.client_ID}</span>
-        </li>
-    `).join('');
+clientList.innerHTML = `
+    <table class="client-table w-full text-left border-collapse">
+        <thead>
+            <tr>
+                <th class="py-2 px-4 border-b border-gray-200 bg-gray-50 font-semibold text-gray-600">Name</th>
+                <th class="py-2 px-4 border-b border-gray-200 bg-gray-50 font-semibold text-gray-600">ID</th>
+            </tr>
+        </thead>
+        <tbody>
+            ${clients.map(client => `
+                <tr class="hover:bg-gray-100 transition-colors duration-150" data-client-id="${client.client_ID}">
+                    <td class="py-2 px-4 border-b border-gray-200">
+                        ${client.first_name} ${client.middle_name} ${client.last_name}
+                    </td>
+                    <td class="py-2 px-4 border-b border-gray-200">
+                        ${client.client_ID}
+                    </td>
+                </tr>
+            `).join('')}
+        </tbody>
+    </table>
+`;
 }
-
 // Event listener for the client search input
 document.getElementById('clientSearchInput').addEventListener('input', (event) => {
     const searchTerm = event.target.value.toLowerCase();
@@ -128,14 +143,11 @@ document.getElementById('clientSearchInput').addEventListener('input', (event) =
 
 // Event listener to handle client selection
 document.querySelector('.client-list').addEventListener('click', (event) => {
-    const selectedItem = event.target.closest('li');
+    const selectedItem = event.target.closest('tr');
     if (selectedItem) {
         const clientID = selectedItem.getAttribute('data-client-id');
-        const selectedClient = allClients.find(client => client.client_ID.toString() === clientID);
-
-        if (selectedClient) {
-            showClientDetailsModal(selectedClient);
-        }
+        // Redirect to the new page with the client ID in the URL
+        window.location.href = `ReportsExistingClientView.html?clientId=${clientID}`;
     }
 });
 

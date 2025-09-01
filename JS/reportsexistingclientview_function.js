@@ -185,7 +185,7 @@ async function fetchLoanApplications(clientId) {
 
 /**
  * Dynamically creates and displays the loan details and schedule modal.
- * @param {Object} data - The loan application data from the PHP response.
+ * @param {Object} data - The loan application data from the PHP response, including guarantor info.
  */
 function createLoanDetailsModal(data) {
     const modal = document.createElement('div');
@@ -196,11 +196,11 @@ function createLoanDetailsModal(data) {
 
     // Generate the payment schedule table
     const schedule = generateLoanSchedule(
-        parseFloat(data.loan_amount),
-        data.payment_frequency,
-        data.date_start,
-        data.date_end,
-        parseFloat(data.interest_rate)
+        parseFloat(data['loan-amount']),
+        data['payment-frequency'],
+        data['date-start'],
+        data['date-end'],
+        parseFloat(data['interest-rate'])
     );
 
     let scheduleTableHTML = `
@@ -245,15 +245,19 @@ function createLoanDetailsModal(data) {
         <div class="modal-body">
             <div class="loan-info">
                 <h3>Client Information</h3>
-                <p><strong>Client Name:</strong> ${data.client_name}</p>
-                <p><strong>Client ID:</strong> ${data.client_id}</p>
+                <p><strong>Client ID:</strong> ${data.clientID}</p>
+                <p><strong>Client Name:</strong> ${data.clientName}</p>
+                <h3>Guarantor Information</h3>
+                <p><strong>Guarantor Name:</strong> ${data.guarantorFirstName} ${data.guarantorMiddleName} ${data.guarantorLastName}</p>
+                <p><strong>Address:</strong> ${data.guarantorStreetAddress}</p>
+                <p><strong>Phone Number:</strong> ${data.guarantorPhoneNumber}</p>
                 <h3>Loan Information</h3>
-                <p><strong>Loan ID:</strong> ${data.loan_application_id}</p>
-                <p><strong>Loan Amount:</strong> PHP ${parseFloat(data.loan_amount).toLocaleString('en-US')}</p>
-                <p><strong>Interest Rate:</strong> ${parseFloat(data.interest_rate)}%</p>
-                <p><strong>Start Date:</strong> ${data.date_start}</p>
-                <p><strong>End Date:</strong> ${data.date_end}</p>
-                <p><strong>Payment Frequency:</strong> ${data.payment_frequency}</p>
+                <p><strong>Loan ID:</strong> ${data.loanID}</p>
+                <p><strong>Loan Amount:</strong> PHP ${data['loan-amount'].toLocaleString('en-US')}</p>
+                <p><strong>Interest Rate:</strong> ${data['interest-rate']}%</p>
+                <p><strong>Start Date:</strong> ${data['date-start']}</p>
+                <p><strong>End Date:</strong> ${data['date-end']}</p>
+                <p><strong>Payment Frequency:</strong> ${data['payment-frequency']}</p>
             </div>
             <div class="loan-schedule">
                 ${scheduleTableHTML}
@@ -335,12 +339,13 @@ function renderLoanTable(loans, clientName, clientId) {
     tableHTML += `
                 </tbody>
             </table>
-    `;
+        `;
     tableContainer.innerHTML = tableHTML;
 
     // Add event listeners after the table is rendered
     addLoanRowClickListeners();
 }
+
 /**
  * Adds click event listeners to each loan table row to display the modal.
  * This function should be called inside renderLoanTable().
@@ -348,27 +353,16 @@ function renderLoanTable(loans, clientName, clientId) {
 function addLoanRowClickListeners() {
     const loanRows = document.querySelectorAll('.loan-row');
     loanRows.forEach(row => {
-        row.addEventListener('click', async () => { // Add async here
+        row.addEventListener('click', async () => {
             const loanData = JSON.parse(row.dataset.loan);
             
             try {
-                // Fetch full loan details including client info and interest rate
+                // Fetch full loan details including client info, interest rate, and guarantor
                 const response = await fetch(`PHP/reports_get_full_loan_details.php?loan_id=${loanData.loan_application_id}`);
                 const fullLoanData = await response.json();
                 
                 if (fullLoanData && fullLoanData.loanID) { // Check if data is valid
-                    // Create a new object with the correct keys for the modal function
-                    const formattedData = {
-                        client_name: fullLoanData.clientName,
-                        client_id: fullLoanData.clientID,
-                        loan_application_id: fullLoanData.loanID,
-                        loan_amount: fullLoanData['loan-amount'],
-                        interest_rate: fullLoanData['interest-rate'],
-                        date_start: fullLoanData['date-start'],
-                        date_end: fullLoanData['date-end'],
-                        payment_frequency: fullLoanData['payment-frequency']
-                    };
-                    createLoanDetailsModal(formattedData);
+                    createLoanDetailsModal(fullLoanData);
                 } else {
                     showMessageBox('Could not retrieve full loan details.', 'error');
                 }
@@ -389,70 +383,70 @@ function addLoanRowClickListeners() {
  * @param {number} interestRate - The annual interest rate in percent (e.g., 20 for 20%).
  * @returns {Array<Object>} An array of objects, each representing a payment period.
  */
-   function generateLoanSchedule(amount, frequency, startDateStr, endDateStr, interestRate) {
-        const schedule = [];
-        let currentDate = new Date(startDateStr);
-        const endDate = new Date(endDateStr);
+function generateLoanSchedule(amount, frequency, startDateStr, endDateStr, interestRate) {
+    const schedule = [];
+    let currentDate = new Date(startDateStr);
+    const endDate = new Date(endDateStr);
 
-        // Calculate the total amount to be paid, including interest
-        const totalInterest = amount * (interestRate / 100);
-        const totalRepaymentAmount = amount + totalInterest;
+    // Calculate the total amount to be paid, including interest
+    const totalInterest = amount * (interestRate / 100);
+    const totalRepaymentAmount = amount + totalInterest;
 
-        let remainingBalance = totalRepaymentAmount;
+    let remainingBalance = totalRepaymentAmount;
 
-        let totalPayments = 0;
+    let totalPayments = 0;
 
-        // Calculate total number of payments based on frequency
-        const oneDay = 24 * 60 * 60 * 1000;
-        const totalDays = Math.round((endDate - currentDate) / oneDay);
+    // Calculate total number of payments based on frequency
+    const oneDay = 24 * 60 * 60 * 1000;
+    const totalDays = Math.round((endDate - currentDate) / oneDay);
 
+    switch (frequency) {
+        case 'daily':
+            totalPayments = totalDays + 1;
+            break;
+        case 'weekly':
+            totalPayments = Math.floor(totalDays / 7) + 1;
+            break;
+        case 'monthly':
+            let months = (endDate.getFullYear() - currentDate.getFullYear()) * 12;
+            months -= currentDate.getMonth();
+            months += endDate.getMonth();
+            totalPayments = months + 1;
+            break;
+        default:
+            totalPayments = 1; // Handle single payment case
+    }
+
+    const paymentAmount = totalRepaymentAmount / totalPayments;
+    const interestPerPayment = totalInterest / totalPayments;
+
+    for (let i = 0; i < totalPayments; i++) {
+        if (remainingBalance <= 0) break;
+
+        remainingBalance -= paymentAmount;
+        if (remainingBalance < 0) remainingBalance = 0; // Prevent negative balance
+
+        schedule.push({
+            'date-of-payment': currentDate.toISOString().split('T')[0],
+            'amount-to-pay': paymentAmount,
+            'interest-amount': interestPerPayment,
+            'remaining-balance': remainingBalance
+        });
+
+        // Advance the date based on frequency
         switch (frequency) {
             case 'daily':
-                totalPayments = totalDays + 1;
+                currentDate.setDate(currentDate.getDate() + 1);
                 break;
             case 'weekly':
-                totalPayments = Math.floor(totalDays / 7) + 1;
+                currentDate.setDate(currentDate.getDate() + 7);
                 break;
             case 'monthly':
-                let months = (endDate.getFullYear() - currentDate.getFullYear()) * 12;
-                months -= currentDate.getMonth();
-                months += endDate.getMonth();
-                totalPayments = months + 1;
+                currentDate.setMonth(currentDate.getMonth() + 1);
                 break;
-            default:
-                totalPayments = 1; // Handle single payment case
         }
-
-        const paymentAmount = totalRepaymentAmount / totalPayments;
-        const interestPerPayment = totalInterest / totalPayments;
-
-        for (let i = 0; i < totalPayments; i++) {
-            if (remainingBalance <= 0) break;
-
-            remainingBalance -= paymentAmount;
-            if (remainingBalance < 0) remainingBalance = 0; // Prevent negative balance
-
-            schedule.push({
-                'date-of-payment': currentDate.toISOString().split('T')[0],
-                'amount-to-pay': paymentAmount,
-                'interest-amount': interestPerPayment,
-                'remaining-balance': remainingBalance
-            });
-
-            // Advance the date based on frequency
-            switch (frequency) {
-                case 'daily':
-                    currentDate.setDate(currentDate.getDate() + 1);
-                    break;
-                case 'weekly':
-                    currentDate.setDate(currentDate.getDate() + 7);
-                    break;
-                case 'monthly':
-                    currentDate.setMonth(currentDate.getMonth() + 1);
-                    break;
-            }
-        }
-
-        return schedule;
-
     }
+
+    return schedule;
+
+}

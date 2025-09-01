@@ -269,3 +269,33 @@ body {
     border: none;
     cursor: pointer;
 }
+.client-table {
+    width: 100%;
+    text-align: left;
+    border-collapse: collapse; /* This removes the space between cells */
+}
+
+/* Table Header */
+.client-table thead th {
+    padding: 8px 16px; /* py-2 px-4 */
+    border-bottom: 1px solid #e5e7eb; /* border-b border-gray-200 */
+    background-color: #f9fafb; /* bg-gray-50 */
+    font-weight: 600; /* font-semibold */
+    color: #4b5563; /* text-gray-600 */
+}
+
+/* Table Row and Cells */
+.client-table tbody tr {
+    transition-property: background-color;
+    transition-timing-function: cubic-bezier(0.4, 0, 0.2, 1);
+    transition-duration: 150ms;
+}
+
+.client-table tbody tr:hover {
+    background-color: #f3f4f6; /* hover:bg-gray-100 */
+}
+
+.client-table tbody td {
+    padding: 8px 16px; /* py-2 px-4 */
+    border-bottom: 1px solid #e5e7eb; /* border-b border-gray-200 */
+}

@@ -294,7 +294,7 @@ document.addEventListener('DOMContentLoaded', function() {
         });
     }
 
-    /**
+/**
      * Dynamically creates and displays the loan details and schedule modal.
      * @param {Object} data - The loan application data.
      */
@@ -347,8 +347,12 @@ document.addEventListener('DOMContentLoaded', function() {
             <div class="modal-body">
                 <div class="loan-info">
                     <h3>Client Information</h3>
-                    <p><strong>Client Name:</strong> ${data.clientName}</p>
                     <p><strong>Client ID:</strong> ${data.clientID}</p>
+                    <p><strong>Client Name:</strong> ${data.clientName}</p>
+                    <h3>Guarantor Information</h3>
+                    <p><strong>Guarantor Name:</strong> ${data.guarantorFirstName} ${data.guarantorMiddleName} ${data.guarantorLastName}</p>
+                    <p><strong>Address:</strong> ${data.guarantorStreetAddress}</p>
+                    <p><strong>Phone Number:</strong> ${data.guarantorPhoneNumber}</p>
                     <h3>Loan Information</h3>
                     <p><strong>Loan ID:</strong> ${data.loanID}</p>
                     <p><strong>Loan Amount:</strong> PHP ${data['loan-amount'].toLocaleString('en-US')}</p>
