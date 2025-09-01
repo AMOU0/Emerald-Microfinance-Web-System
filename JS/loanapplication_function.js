@@ -30,9 +30,11 @@ document.addEventListener('DOMContentLoaded', function() {
         });
     });
 
-    logoutButton.addEventListener('click', function() {
-        window.location.href = 'login.html';
-    });
+    if (logoutButton) {
+        logoutButton.addEventListener('click', function() {
+            window.location.href = 'login.html';
+        });
+    }
 
     // --- Client Search Modal Logic ---
     const showClientsBtn = document.getElementById('showClientsBtn');
@@ -40,45 +42,47 @@ document.addEventListener('DOMContentLoaded', function() {
     let clientName = ''; // Global variable to store client name
     let globalInterestRate = 0; // Global variable to store interest rate
 
-    showClientsBtn.addEventListener('click', async () => {
-        try {
-            // Fetch both the client list and the active interest rate simultaneously
-            const [clientsResponse, interestResponse] = await Promise.all([
-                fetch('PHP/getclient_handler.php'),
-                fetch('PHP/getactiveinterest_handler.php')
-            ]);
+    if (showClientsBtn) {
+        showClientsBtn.addEventListener('click', async () => {
+            try {
+                // Fetch both the client list and the active interest rate simultaneously
+                const [clientsResponse, interestResponse] = await Promise.all([
+                    fetch('PHP/getclient_handler.php'),
+                    fetch('PHP/getactiveinterest_handler.php')
+                ]);
 
-            if (!clientsResponse.ok) {
-                throw new Error(`HTTP error! Status: ${clientsResponse.status}`);
+                if (!clientsResponse.ok) {
+                    throw new Error(`HTTP error! Status: ${clientsResponse.status}`);
+                }
+                if (!interestResponse.ok) {
+                    throw new Error(`HTTP error! Status: ${interestResponse.status}`);
+                }
+
+                const clientsResult = await clientsResponse.json();
+                const interestResult = await interestResponse.json();
+
+                if (clientsResult.status === 'error') {
+                    showMessageBox(clientsResult.message, 'error');
+                    return;
+                }
+
+                if (interestResult.status === 'success') {
+                    globalInterestRate = interestResult.interestRate;
+                } else {
+                    console.error(interestResult.message);
+                    showMessageBox('Could not load interest rate.', 'error');
+                }
+
+                const clients = clientsResult.data;
+                // Pass the interest rate to the modal creation function
+                createClientModal(clients, globalInterestRate);
+
+            } catch (error) {
+                console.error('Error fetching data:', error);
+                showMessageBox('Could not load client list. Please try again later.', 'error');
             }
-            if (!interestResponse.ok) {
-                throw new Error(`HTTP error! Status: ${interestResponse.status}`);
-            }
-
-            const clientsResult = await clientsResponse.json();
-            const interestResult = await interestResponse.json();
-
-            if (clientsResult.status === 'error') {
-                showMessageBox(clientsResult.message, 'error');
-                return;
-            }
-
-            if (interestResult.status === 'success') {
-                globalInterestRate = interestResult.interestRate;
-            } else {
-                console.error(interestResult.message);
-                showMessageBox('Could not load interest rate.', 'error');
-            }
-
-            const clients = clientsResult.data;
-            // Pass the interest rate to the modal creation function
-            createClientModal(clients, globalInterestRate);
-
-        } catch (error) {
-            console.error('Error fetching data:', error);
-            showMessageBox('Could not load client list. Please try again later.', 'error');
-        }
-    });
+        });
+    }
 
     /**
      * Dynamically creates and displays a modal with a list of clients, including a search bar and interest rate.
@@ -143,7 +147,7 @@ document.addEventListener('DOMContentLoaded', function() {
             if (selectedItem) {
                 const clientID = selectedItem.getAttribute('data-client-id');
                 clientName = selectedItem.getAttribute('data-client-name');
-                clientIDInput.value = clientID;
+                if (clientIDInput) clientIDInput.value = clientID;
                 console.log(`Selected Client ID: ${clientID}`);
                 closeModal();
             }
@@ -173,107 +177,122 @@ document.addEventListener('DOMContentLoaded', function() {
     // --- Loan Application Form Logic ---
     const startDateInput = document.getElementById('date-start');
     const endDateInput = document.getElementById('date-end');
-    const clearButton = document.querySelector('.clear-button');
     const applyButton = document.querySelector('.apply-button');
     const form = document.querySelector('.loan-application-container');
 
-    // Automatically set the end date 100 days from the start date
-    startDateInput.addEventListener('change', function() {
-        if (this.value) {
-            const startDate = new Date(this.value);
-            const endDate = new Date(startDate);
-            const loanDuration = 100; // Define the duration in days
+    if (startDateInput) {
+        // Automatically set the end date 100 days from the start date
+        startDateInput.addEventListener('change', function() {
+            if (this.value) {
+                const startDate = new Date(this.value);
+                const endDate = new Date(startDate);
+                const loanDuration = 100; // Define the duration in days
 
-            endDate.setDate(startDate.getDate() + loanDuration);
+                endDate.setDate(startDate.getDate() + loanDuration);
 
-            // Format the date as YYYY-MM-DD
-            const formattedEndDate = endDate.toISOString().split('T')[0];
+                // Format the date as YYYY-MM-DD
+                const formattedEndDate = endDate.toISOString().split('T')[0];
 
-            // Update the end date input field
-            endDateInput.value = formattedEndDate;
+                // Update the end date input field
+                if (endDateInput) {
+                    endDateInput.value = formattedEndDate;
+                }
 
-            // Update the loan duration input field
-            document.getElementById('duration-of-loan').value = loanDuration + ' days';
-        } else {
-            endDateInput.value = '';
-            document.getElementById('duration-of-loan').value = '';
-        }
-    });
-
-    // Handle the "Apply" button and form submission
-    applyButton.addEventListener('click', function(event) {
-        event.preventDefault();
-
-        const data = {
-            clientID: document.getElementById('clientID').value,
-            clientName: clientName,
-            loanID: 'L' + Math.floor(Math.random() * 10000), // Placeholder Loan ID
-            guarantorLastName: document.getElementById('guarantorLastName').value,
-            guarantorFirstName: document.getElementById('guarantorFirstName').value,
-            guarantorMiddleName: document.getElementById('guarantorMiddleName').value,
-            guarantorStreetAddress: document.getElementById('guarantorStreetAddress').value,
-            guarantorPhoneNumber: document.getElementById('guarantorPhoneNumber').value,
-            'loan-amount': parseFloat(document.getElementById('loan-amount').value),
-            'payment-frequency': document.getElementById('payment-frequency').value,
-            'date-start': document.getElementById('date-start').value,
-            'duration-of-loan': document.getElementById('duration-of-loan').value,
-            'date-end': document.getElementById('date-end').value,
-            'interest-rate': globalInterestRate // Pass the interest rate
-        };
-
-        const requiredFields = [
-            'clientID', 'guarantorLastName', 'guarantorFirstName', 'guarantorMiddleName',
-            'guarantorStreetAddress', 'guarantorPhoneNumber', 'loan-amount',
-            'payment-frequency', 'date-start', 'duration-of-loan', 'date-end'
-        ];
-
-        let isValid = true;
-        requiredFields.forEach(fieldId => {
-            const input = document.getElementById(fieldId);
-            if (!input || !input.value) {
-                isValid = false;
-                input.style.borderColor = 'red';
+                // Update the loan duration input field
+                const durationInput = document.getElementById('duration-of-loan');
+                if (durationInput) {
+                    durationInput.value = loanDuration + ' days';
+                }
             } else {
-                input.style.borderColor = '';
+                if (endDateInput) {
+                    endDateInput.value = '';
+                }
+                const durationInput = document.getElementById('duration-of-loan');
+                if (durationInput) {
+                    durationInput.value = '';
+                }
             }
         });
+    }
 
-        if (!isValid) {
-            showMessageBox('Please fill out all required fields.', 'error');
-            return;
-        }
+    if (applyButton) {
+        // Handle the "Apply" button and form submission
+        applyButton.addEventListener('click', function(event) {
+            event.preventDefault();
+            
+            // Collect form data
+            const data = {
+                clientID: document.getElementById('clientID').value.trim(),
+                clientName: clientName.trim(),
+                guarantorLastName: document.getElementById('guarantorLastName').value.trim(),
+                guarantorFirstName: document.getElementById('guarantorFirstName').value.trim(),
+                guarantorMiddleName: document.getElementById('guarantorMiddleName').value.trim(),
+                guarantorStreetAddress: document.getElementById('guarantorStreetAddress').value.trim(),
+                guarantorPhoneNumber: document.getElementById('guarantorPhoneNumber').value.trim(),
+                'loan-amount': parseFloat(document.getElementById('loan-amount').value.trim()),
+                'payment-frequency': document.getElementById('payment-frequency').value.trim(),
+                'date-start': document.getElementById('date-start').value.trim(),
+                'duration-of-loan': document.getElementById('duration-of-loan').value.trim(),
+                'date-end': document.getElementById('date-end').value.trim(),
+                'interest-rate': globalInterestRate // Pass the interest rate
+            };
 
-        // Send data to PHP backend
-        fetch('PHP/loanapplication_handler.php', {
-            method: 'POST',
-            headers: {
-                'Content-Type': 'application/json'
-            },
-            body: JSON.stringify(data)
-        })
-        .then(response => {
-            if (!response.ok) {
-                throw new Error('Network response was not ok: ' + response.statusText);
+            const requiredFields = [
+                'clientID', 'guarantorLastName', 'guarantorFirstName', 'guarantorMiddleName',
+                'guarantorStreetAddress', 'guarantorPhoneNumber', 'loan-amount',
+                'payment-frequency', 'date-start', 'duration-of-loan', 'date-end'
+            ];
+
+            let isValid = true;
+            requiredFields.forEach(fieldId => {
+                const input = document.getElementById(fieldId);
+                if (!input || !input.value || input.value.trim() === '') {
+                    isValid = false;
+                }
+            });
+
+            if (!isValid) {
+                showMessageBox('Please fill out all required fields.', 'error');
+                return;
             }
-            return response.json();
-        })
-        .then(result => {
-            if (result.status === 'success') {
-                showMessageBox(result.message, 'success');
-                // You can clear the form or perform other actions here
-                form.reset();
-                endDateInput.value = '';
-                // Display the modal with the calculated information
-                createLoanDetailsModal(data);
-            } else {
-                showMessageBox(result.message, 'error');
-            }
-        })
-        .catch(error => {
-            console.error('There was a problem with the fetch operation:', error);
-            showMessageBox('An error occurred. Please check the console for details.', 'error');
+
+            // Send data to PHP backend
+            fetch('PHP/loanapplication_handler.php', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify(data)
+            })
+            .then(response => {
+                if (!response.ok) {
+                    throw new Error('Network response was not ok: ' + response.statusText);
+                }
+                return response.json();
+            })
+            .then(result => {
+                if (result.status === 'success') {
+                    showMessageBox(result.message, 'success');
+                    // You can clear the form or perform other actions here
+                    if (form) {
+                        form.reset();
+                    }
+                    if (endDateInput) {
+                        endDateInput.value = '';
+                    }
+                    // Display the modal with the calculated information
+                    data.loanID = result.loan_application_id;
+                    createLoanDetailsModal(data);
+                } else {
+                    showMessageBox(result.message, 'error');
+                }
+            })
+            .catch(error => {
+                console.error('There was a problem with the fetch operation:', error);
+                showMessageBox('An error occurred. Please check the console for details.', 'error');
+            });
         });
-    });
+    }
 
     /**
      * Dynamically creates and displays the loan details and schedule modal.
@@ -294,7 +313,7 @@ document.addEventListener('DOMContentLoaded', function() {
                 <thead>
                     <tr>
                         <th>Date of Payment</th>
-                        <th>principal amount</th>
+                        <th>Principal Amount</th>
                         <th>Interest Amount</th>
                         <th>Amount Paid</th>
                         <th>Date of Amount Paid</th>
@@ -358,14 +377,18 @@ document.addEventListener('DOMContentLoaded', function() {
         const closeBtn = modalContent.querySelector('.close-modal-btn');
         const printBtn = modalContent.querySelector('.print-btn');
 
-        closeBtn.addEventListener('click', () => {
-            modalContent.classList.remove('is-active');
-            setTimeout(() => modal.remove(), 300);
-        });
-
-        printBtn.addEventListener('click', () => {
-            window.print();
-        });
+        if (closeBtn) {
+            closeBtn.addEventListener('click', () => {
+                modalContent.classList.remove('is-active');
+                setTimeout(() => modal.remove(), 300);
+            });
+        }
+        
+        if (printBtn) {
+            printBtn.addEventListener('click', () => {
+                window.print();
+            });
+        }
     }
 
     /**
@@ -470,5 +493,60 @@ document.addEventListener('DOMContentLoaded', function() {
             box.classList.add('translate-y-full');
             setTimeout(() => box.remove(), 300);
         }, 3000);
+    }
+    
+    // Check for the existence of the client and loan form elements and add event listeners
+    const formElement = document.getElementById('loanForm');
+    if(formElement) {
+        formElement.addEventListener('submit', async (e) => {
+            e.preventDefault();
+
+            const messageDiv = document.getElementById('formMessage');
+            if (messageDiv) {
+                messageDiv.textContent = 'Submitting...';
+                messageDiv.className = 'text-center text-sm font-medium text-gray-500';
+            }
+
+            // Collect form data
+            const formData = new FormData(formElement);
+            const data = {};
+            for (const [key, value] of formData.entries()) {
+                data[key] = value.trim();
+            }
+
+            try {
+                // Send data to the PHP handler
+                const response = await fetch('PHP/loanapplication_handler.php', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                    },
+                    body: JSON.stringify(data),
+                });
+
+                // Parse the JSON response
+                const result = await response.json();
+
+                // Display success or error message
+                if (result.status === 'success') {
+                    if (messageDiv) {
+                        messageDiv.textContent = result.message;
+                        messageDiv.className = 'text-center text-sm font-medium text-green-600';
+                    }
+                    console.log('Loan Application ID:', result.loan_application_id);
+                    formElement.reset();
+                    data.loanID = result.loan_application_id;
+                    createLoanDetailsModal(data); // Call the modal function with form data
+                } else {
+                    throw new Error(result.message);
+                }
+            } catch (error) {
+                if (messageDiv) {
+                    messageDiv.textContent = `Error: ${error.message}`;
+                    messageDiv.className = 'text-center text-sm font-medium text-red-600';
+                }
+                console.error('Error submitting form:', error);
+            }
+        });
     }
 });

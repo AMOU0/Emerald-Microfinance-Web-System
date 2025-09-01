@@ -440,6 +440,7 @@ body {
 
 .loan-info p, .guarantor-info p {
     margin: 5px 0;
+        color: #4a687c;
 }
 
 .loan-schedule table {
@@ -458,54 +459,114 @@ body {
 .loan-schedule th {
     background-color: #f2f2f2;
 }
+/* The semi-transparent backdrop that covers the entire page */
+.modal-overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background-color: rgba(0, 0, 0, 0.7); /* Dark semi-transparent background */
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  z-index: 1000; /* Ensures the modal is on top of other content */
+}
+
+.modal-content {
+  background: #fff;
+  padding: 30px;
+  border-radius: 8px;
+  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.2);
+  max-width: 900px;
+  max-height: 90vh; /* Limits height on smaller screens */
+  width: 95%;
+  overflow-y: auto; /* Allows scrolling if content is too long */
+  position: relative;
+  opacity: 0; /* Hidden by default for the animation */
+  transform: translateY(-50px); /* Starts off-screen for a slide-down effect */
+  transition: opacity 0.3s ease, transform 0.3s ease; /* Smooth transition */
+}
+
+/* State for when the modal is active (visible) */
+.modal-content.is-active {
+  opacity: 1;
+  transform: translateY(0); /* Slides into place */
+}
+
+/* Header, body, and footer sections */
+.modal-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  border-bottom: 1px solid #eee;
+  padding-bottom: 15px;
+  margin-bottom: 20px;
+}
+
+.modal-header h2 {
+  margin: 0;
+  color: #333;
+}
+
+.modal-body {
+  line-height: 1.6;
+}
 
 .modal-footer {
-    margin-top: 20px;
-    text-align: right;
+  text-align: right;
+  border-top: 1px solid #eee;
+  padding-top: 15px;
+  margin-top: 20px;
+}
+.close-modal-btn {
+  background: none;
+  border: none;
+  font-size: 30px;
+  color: #aaa;
+  cursor: pointer;
+  transition: color 0.2s ease;
+  padding: 0;
+  line-height: 1;
+}
+
+.close-modal-btn:hover {
+  color: #888;
 }
 
 .print-btn {
-    padding: 10px 20px;
-    background-color: #48BB78;
-    color: white;
-    border: none;
-    border-radius: 5px;
-    cursor: pointer;
+  padding: 10px 20px;
+  background-color: #007bff;
+  color: white;
+  border: none;
+  border-radius: 5px;
+  cursor: pointer;
+  font-size: 16px;
+  transition: background-color 0.2s ease;
 }
 
-/* Utility and Other Styles */
-.message-box {
-    position: fixed;
-    top: 20px;
-    right: 20px;
-    padding: 15px 25px;
-    border-radius: 8px;
-    color: #fff;
-    z-index: 1000;
-    transition: transform 0.5s ease-in-out;
-    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+.print-btn:hover {
+  background-color: #0056b3;
+}
+.loan-info p {
+  margin: 8px 0;
 }
 
-.bg-red-500 {
-    background-color: #E53E3E;
+.loan-schedule table {
+  width: 100%;
+  border-collapse: collapse;
+  margin-top: 20px;
+  font-size: 14px;
 }
 
-.bg-blue-500 {
-    background-color: #4299E1;
+.loan-schedule th,
+.loan-schedule td {
+  border: 1px solid #ddd;
+  padding: 10px;
+  text-align: left;
 }
 
-.bg-green-500 {
-    background-color: #48BB78;
-}
-
-.client-list-item:hover {
-    background-color: #E2E8F0;
-}
-
-.client-list {
-    color: #2D3748;
-}
-
-.client-list-item:hover span {
-    color: #2D3748;
+.loan-schedule th {
+  background-color: #f2f2f2;
+  font-weight: bold;
 }

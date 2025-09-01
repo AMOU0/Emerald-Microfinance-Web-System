@@ -30,8 +30,30 @@ if ($data === null) {
 $conn->begin_transaction();
 
 try {
-    // 1. Insert into loan_applications table
-    $sql_loan = "INSERT INTO loan_applications (client_ID, loan_amount, payment_frequency, date_start, date_end, duration_of_loan, status, paid) VALUES (?, ?, ?, ?, ?, ?, ?, ?)";
+    // 1. Generate the loan_application_id in the correct format (YYYYMMDD + sequential number)
+    $datePart = date('Ymd');
+    $sql_last_id = "SELECT MAX(loan_application_id) FROM loan_applications WHERE loan_application_id LIKE ?";
+    $stmt_last_id = $conn->prepare($sql_last_id);
+    if ($stmt_last_id === false) {
+        throw new Exception("Last ID prepare failed: " . $conn->error);
+    }
+    $searchPattern = $datePart . '%';
+    $stmt_last_id->bind_param("s", $searchPattern);
+    $stmt_last_id->execute();
+    $result_last_id = $stmt_last_id->get_result();
+    $row = $result_last_id->fetch_row();
+    $lastId = $row[0];
+
+    $sequentialNumber = 1;
+    if ($lastId) {
+        $lastSequentialNumber = (int)substr($lastId, -5);
+        $sequentialNumber = $lastSequentialNumber + 1;
+    }
+    
+    $loanApplicationID = (int)($datePart . str_pad($sequentialNumber, 5, '0', STR_PAD_LEFT));
+
+    // 2. Insert into loan_applications table
+    $sql_loan = "INSERT INTO loan_applications (loan_application_id, client_ID, loan_amount, payment_frequency, date_start, date_end, duration_of_loan, status, paid) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)";
     $stmt_loan = $conn->prepare($sql_loan);
     if ($stmt_loan === false) {
         throw new Exception("Loan prepare failed: " . $conn->error);
@@ -41,7 +63,8 @@ try {
     $status = 'pending';
     $paid = 0;
     
-    $stmt_loan->bind_param("issssssi", 
+    $stmt_loan->bind_param("iissssssi", 
+        $loanApplicationID,
         $data['clientID'],
         $data['loan-amount'],
         $data['payment-frequency'],
@@ -56,10 +79,7 @@ try {
         throw new Exception("Loan execute failed: " . $stmt_loan->error);
     }
 
-    $loanApplicationID = $conn->insert_id;
-
-    // 2. Insert into guarantor table
-    // Corrected column names to match the database schema
+    // 3. Insert into guarantor table
     $sql_guarantor = "INSERT INTO guarantor (client_ID, loan_application_id, guarantor_last_name, guarantor_first_name, guarantor_middle_name, guarantor_street_address, guarantor_phone_number) VALUES (?, ?, ?, ?, ?, ?, ?)";
     $stmt_guarantor = $conn->prepare($sql_guarantor);
     if ($stmt_guarantor === false) {
@@ -68,7 +88,7 @@ try {
 
     $stmt_guarantor->bind_param("iisssss",
         $data['clientID'],
-        $loanApplicationID,
+        $loanApplicationID, // Use the new generated ID
         $data['guarantorLastName'],
         $data['guarantorFirstName'],
         $data['guarantorMiddleName'],
