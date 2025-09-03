@@ -167,7 +167,8 @@ body {
 
 .pending-account-table-header {
     display: grid;
-    grid-template-columns: 50px 100px minmax(150px, 3fr) minmax(150px, 2fr);
+    /* FIX: Added a new column for Loan Amount */
+    grid-template-columns: 50px 100px minmax(150px, 2fr) minmax(150px, 1fr) minmax(150px, 2fr);
     background-color: #edf2f7;
     color: #718096;
     font-weight: 600;
@@ -194,7 +195,8 @@ body {
 
 .table-row {
     display: grid;
-    grid-template-columns: 50px 100px minmax(150px, 3fr) minmax(150px, 2fr);
+    /* FIX: Added a new column for Loan Amount */
+    grid-template-columns: 50px 100px minmax(150px, 2fr) minmax(150px, 1fr) minmax(150px, 2fr);
     border-bottom: 1px solid #e2e8f0;
 }
 

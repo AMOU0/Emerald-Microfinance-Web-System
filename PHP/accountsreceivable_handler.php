@@ -15,8 +15,7 @@ if ($conn->connect_error) {
     die(json_encode(["error" => "Connection failed: " . $conn->connect_error]));
 }
 
-// SQL query to fetch pending loan applications
-// IMPORTANT: This query joins 'loan_applications' and 'clients' tables.
+// SQL query to fetch all approved accounts
 $sql = "SELECT 
             la.loan_application_id, 
             la.client_ID, 
@@ -26,17 +25,16 @@ $sql = "SELECT
             la.created_at
         FROM loan_applications AS la
         JOIN clients AS c ON la.client_ID = c.client_ID
-        WHERE la.status = 'pending' 
+        WHERE la.status = 'approved' 
         ORDER BY la.created_at DESC";
 
 $result = $conn->query($sql);
 
-$pending_accounts = [];
+$approved_accounts = [];
 
 if ($result->num_rows > 0) {
-    // Fetch all rows and add to the array
     while($row = $result->fetch_assoc()) {
-        $pending_accounts[] = [
+        $approved_accounts[] = [
             'loan_application_id' => $row['loan_application_id'],
             'client_ID' => $row['client_ID'],
             'first_name' => htmlspecialchars($row['first_name']),
@@ -48,7 +46,7 @@ if ($result->num_rows > 0) {
 }
 
 // Return the data as a JSON object
-echo json_encode($pending_accounts);
+echo json_encode($approved_accounts);
 
 $conn->close();
 ?>

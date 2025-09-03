@@ -6,7 +6,7 @@
     <title>Emerald Microfinance</title>
     <link rel="stylesheet" href="CSS/accountrecivable_style.css">
 </head>
-<body>
+<body onload="fetchApprovedAccounts()">
      <aside class="sidebar">
         <div class="sidebar-header">
             Emerald Microfinance
@@ -33,7 +33,7 @@
 
     <main class="main-content">
         <div class="main-header">
-            <h1>Account Receivable</h1>
+            <h1>Accounts Receivable</h1>
             <div class="action-buttons">
                 <button class="action-button reconstruct-button">Reconstruct</button>
                 <button class="action-button select-button">SELECT</button>
@@ -43,136 +43,18 @@
         <section class="account-receivable-table-section">
             <div class="table-container">
                 <div class="table-header">
+                    <div class="table-header-cell small-column"></div>
+                    <div class="table-header-cell">Client ID</div>
+                    <div class="table-header-cell">Loan Application ID</div>
                     <div class="table-header-cell">Name</div>
-                    <div class="table-header-cell">Contact Number</div>
-                    <div class="table-header-cell">Date of Payment</div>
-                    <div class="table-header-cell">Balance</div>
+                    <div class="table-header-cell">Loan Amount</div>
+                    <div class="table-header-cell">Created At</div>
                 </div>
-                <div class="table-body">
-                    <div class="table-row">
-                        <div class="table-cell"></div>
-                        <div class="table-cell"></div>
-                        <div class="table-cell"></div>
-                        <div class="table-cell"></div>
-                    </div>
-                    <div class="table-row even-row">
-                        <div class="table-cell"></div>
-                        <div class="table-cell"></div>
-                        <div class="table-cell"></div>
-                        <div class="table-cell"></div>
-                    </div>
-                    <div class="table-row">
-                        <div class="table-cell"></div>
-                        <div class="table-cell"></div>
-                        <div class="table-cell"></div>
-                        <div class="table-cell"></div>
-                    </div>
-                    <div class="table-row even-row">
-                        <div class="table-cell"></div>
-                        <div class="table-cell"></div>
-                        <div class="table-cell"></div>
-                        <div class="table-cell"></div>
-                    </div>
-                    <div class="table-row">
-                        <div class="table-cell"></div>
-                        <div class="table-cell"></div>
-                        <div class="table-cell"></div>
-                        <div class="table-cell"></div>
-                    </div>
-                    <div class="table-row even-row">
-                        <div class="table-cell"></div>
-                        <div class="table-cell"></div>
-                        <div class="table-cell"></div>
-                        <div class="table-cell"></div>
-                    </div>
-                    <div class="table-row">
-                        <div class="table-cell"></div>
-                        <div class="table-cell"></div>
-                        <div class="table-cell"></div>
-                        <div class="table-cell"></div>
-                    </div>
-                    <div class="table-row even-row">
-                        <div class="table-cell"></div>
-                        <div class="table-cell"></div>
-                        <div class="table-cell"></div>
-                        <div class="table-cell"></div>
-                    </div>
-                    <div class="table-row">
-                        <div class="table-cell"></div>
-                        <div class="table-cell"></div>
-                        <div class="table-cell"></div>
-                        <div class="table-cell"></div>
-                    </div>
-                    <div class="table-row even-row">
-                        <div class="table-cell"></div>
-                        <div class="table-cell"></div>
-                        <div class="table-cell"></div>
-                        <div class="table-cell"></div>
-                    </div>
-                    <div class="table-row">
-                        <div class="table-cell"></div>
-                        <div class="table-cell"></div>
-                        <div class="table-cell"></div>
-                        <div class="table-cell"></div>
-                    </div>
-                    <div class="table-row even-row">
-                        <div class="table-cell"></div>
-                        <div class="table-cell"></div>
-                        <div class="table-cell"></div>
-                        <div class="table-cell"></div>
-                    </div>
-                    <div class="table-row">
-                        <div class="table-cell"></div>
-                        <div class="table-cell"></div>
-                        <div class="table-cell"></div>
-                        <div class="table-cell"></div>
-                    </div>
-                    <div class="table-row even-row">
-                        <div class="table-cell"></div>
-                        <div class="table-cell"></div>
-                        <div class="table-cell"></div>
-                        <div class="table-cell"></div>
-                    </div>
-                    <div class="table-row">
-                        <div class="table-cell"></div>
-                        <div class="table-cell"></div>
-                        <div class="table-cell"></div>
-                        <div class="table-cell"></div>
-                    </div>
-                    <div class="table-row even-row">
-                        <div class="table-cell"></div>
-                        <div class="table-cell"></div>
-                        <div class="table-cell"></div>
-                        <div class="table-cell"></div>
-                    </div>
-                    <div class="table-row">
-                        <div class="table-cell"></div>
-                        <div class="table-cell"></div>
-                        <div class="table-cell"></div>
-                        <div class="table-cell"></div>
-                    </div>
-                    <div class="table-row even-row">
-                        <div class="table-cell"></div>
-                        <div class="table-cell"></div>
-                        <div class="table-cell"></div>
-                        <div class="table-cell"></div>
-                    </div>
-                    <div class="table-row">
-                        <div class="table-cell"></div>
-                        <div class="table-cell"></div>
-                        <div class="table-cell"></div>
-                        <div class="table-cell"></div>
-                    </div>
-                    <div class="table-row even-row">
-                        <div class="table-cell"></div>
-                        <div class="table-cell"></div>
-                        <div class="table-cell"></div>
-                        <div class="table-cell"></div>
-                    </div>
+                <div class="table-body approved-account-table-body">
                 </div>
             </div>
         </section>
     </main>
-        <script src="JS/dashboard_function.js"></script>
-    </body>
+    <script src="JS/accountsreceivable_function.js"></script>
+</body>
 </html>

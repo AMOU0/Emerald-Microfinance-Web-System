@@ -3,7 +3,7 @@
 -- https://www.phpmyadmin.net/
 --
 -- Host: 127.0.0.1
--- Generation Time: Sep 01, 2025 at 05:40 PM
+-- Generation Time: Sep 03, 2025 at 05:40 PM
 -- Server version: 10.4.32-MariaDB
 -- PHP Version: 8.2.12
 
@@ -112,11 +112,27 @@ CREATE TABLE `loan_applications` (
   `payment_frequency` varchar(50) NOT NULL,
   `date_start` date NOT NULL,
   `duration_of_loan` varchar(50) NOT NULL,
+  `interest_rate` int(11) NOT NULL DEFAULT 0,
   `date_end` date NOT NULL,
   `client_ID` bigint(20) DEFAULT NULL,
   `status` varchar(50) DEFAULT NULL,
   `paid` tinyint(1) DEFAULT NULL,
   `created_at` text DEFAULT current_timestamp()
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
+
+-- --------------------------------------------------------
+
+--
+-- Table structure for table `payment`
+--
+
+CREATE TABLE `payment` (
+  `payment_id` int(11) NOT NULL,
+  `loanid` bigint(20) NOT NULL,
+  `client_id` bigint(20) NOT NULL,
+  `amount_paid` decimal(10,2) NOT NULL,
+  `date_payed` timestamp NOT NULL DEFAULT current_timestamp(),
+  `processby` varchar(255) NOT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 
 -- --------------------------------------------------------
@@ -194,6 +210,14 @@ ALTER TABLE `loan_applications`
   ADD KEY `fk_loan_client_id` (`client_ID`);
 
 --
+-- Indexes for table `payment`
+--
+ALTER TABLE `payment`
+  ADD PRIMARY KEY (`payment_id`),
+  ADD KEY `loanid` (`loanid`),
+  ADD KEY `client_id` (`client_id`);
+
+--
 -- Indexes for table `users`
 --
 ALTER TABLE `users`
@@ -217,6 +241,12 @@ ALTER TABLE `user_accounts`
 --
 ALTER TABLE `guarantor`
   MODIFY `guarantor_id` int(11) NOT NULL AUTO_INCREMENT;
+
+--
+-- AUTO_INCREMENT for table `payment`
+--
+ALTER TABLE `payment`
+  MODIFY `payment_id` int(11) NOT NULL AUTO_INCREMENT;
 
 --
 -- AUTO_INCREMENT for table `users`
@@ -245,6 +275,13 @@ ALTER TABLE `guarantor`
 --
 ALTER TABLE `loan_applications`
   ADD CONSTRAINT `fk_loan_client_id` FOREIGN KEY (`client_ID`) REFERENCES `clients` (`client_ID`);
+
+--
+-- Constraints for table `payment`
+--
+ALTER TABLE `payment`
+  ADD CONSTRAINT `payment_ibfk_1` FOREIGN KEY (`loanid`) REFERENCES `loan_applications` (`loan_application_id`),
+  ADD CONSTRAINT `payment_ibfk_2` FOREIGN KEY (`client_id`) REFERENCES `clients` (`client_ID`);
 COMMIT;
 
 /*!40101 SET CHARACTER_SET_CLIENT=@OLD_CHARACTER_SET_CLIENT */;

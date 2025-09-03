@@ -1,0 +1,94 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Emerald Microfinance</title>
+    <link rel="stylesheet" href="CSS/accountrecivableselect_style.css">
+</head>
+<body>
+     <aside class="sidebar">
+        <div class="sidebar-header">
+            Emerald Microfinance
+        </div>
+        <nav class="sidebar-nav">
+            <ul>
+                <li><a href="#" class="nav-link">Dashboard</a></li>
+                <li><a href="#" class="nav-link">Client Creation</a></li>
+                <li><a href="#" class="nav-link">Loan Application</a></li>
+                <li><a href="#" class="nav-link">Pending Accounts</a></li>
+                <li><a href="#" class="nav-link active">Accounts Receivable</a></li>
+                <li><a href="#" class="nav-link">Ledger</a></li>
+                <li><a href="#" class="nav-link">Reports</a></li>
+                <li><a href="#" class="nav-link">User Management</a></li>
+                <li><a href="#" class="nav-link">Tools</a></li>
+            </ul>
+        </nav>
+        <div class="sidebar-footer">
+            <button class="logout-button">
+                Logout
+            </button>
+        </div>
+    </aside>
+
+    <main class="main-content">
+        <div class="main-header">
+            <h1>Accounts Receivable</h1>
+        </div>
+
+        <section class="account-receivable-form-section">
+            <div class="form-container">
+                <div class="client-information-group">
+                    <h2>Client Information</h2>
+                    <div class="form-fields">
+                        <div class="input-group">
+                            <label for="accountNumber">client ID</label>
+                            <input type="text" id="client_ID">
+                        </div>
+                        <div class="input-group">
+                            <label for="lastName">Name</label>
+                            <input type="text" id="lastName">
+                        </div>
+                    </div>
+                </div>
+                <div class="loan-information-group">
+                    <h2>Loan Information</h2>
+                    <div class="form-fields">
+                        <div class="input-group">
+                            <label for="loanid">Loan ID</label>
+                            <input type="text" id="loanid">
+                        </div>
+                        <div class="input-group">
+                            <label for="balance">Balance</label>
+                            <input type="text" id="balance">
+                        </div>
+                        <div class="input-group">
+                            <label for="amountToPay">Amount to Pay</label>
+                            <input type="text" id="amountToPay">
+                        </div>
+                        <div class="input-group">
+                            <label for="currentDue">Current Due</label>
+                            <input type="text" id="currentDue">
+                        </div>
+                        <div class="input-group">
+                            <label for="nextDue">Next Due</label>
+                            <input type="text" id="nextDue">
+                        </div>
+                    </div>
+                </div>
+                <div class="payment-group">
+                    <h2>Payment</h2>
+                    <div class="form-fields">
+                        <div class="input-group">
+                            <label for="amount">AMOUNT</label>
+                            <input type="text" id="amount">
+                        </div>
+                        <button type="button" class="pay-button">PAY</button>
+                    </div>
+                </div>
+            </div>
+        </section>
+    </main>
+    <script src="JS/accountsreceivableselect_function.js"></script>
+</body>
+</html>

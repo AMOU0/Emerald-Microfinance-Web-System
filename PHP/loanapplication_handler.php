@@ -52,8 +52,8 @@ try {
     
     $loanApplicationID = (int)($datePart . str_pad($sequentialNumber, 5, '0', STR_PAD_LEFT));
 
-    // 2. Insert into loan_applications table
-    $sql_loan = "INSERT INTO loan_applications (loan_application_id, client_ID, loan_amount, payment_frequency, date_start, date_end, duration_of_loan, status, paid) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)";
+    // 2. Insert into loan_applications table with the new interest_rate field
+    $sql_loan = "INSERT INTO loan_applications (loan_application_id, client_ID, loan_amount, payment_frequency, date_start, date_end, duration_of_loan, interest_rate, status, paid) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)";
     $stmt_loan = $conn->prepare($sql_loan);
     if ($stmt_loan === false) {
         throw new Exception("Loan prepare failed: " . $conn->error);
@@ -62,8 +62,9 @@ try {
     // Set default status and paid values
     $status = 'pending';
     $paid = 0;
+    $interestRate = (int)$data['interest-rate'];
     
-    $stmt_loan->bind_param("iissssssi", 
+    $stmt_loan->bind_param("iisssssisi", 
         $loanApplicationID,
         $data['clientID'],
         $data['loan-amount'],
@@ -71,6 +72,7 @@ try {
         $data['date-start'],
         $data['date-end'],
         $data['duration-of-loan'],
+        $interestRate,
         $status,
         $paid
     );
@@ -88,7 +90,7 @@ try {
 
     $stmt_guarantor->bind_param("iisssss",
         $data['clientID'],
-        $loanApplicationID, // Use the new generated ID
+        $loanApplicationID,
         $data['guarantorLastName'],
         $data['guarantorFirstName'],
         $data['guarantorMiddleName'],

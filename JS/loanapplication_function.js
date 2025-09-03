@@ -74,7 +74,6 @@ document.addEventListener('DOMContentLoaded', function() {
                 }
 
                 const clients = clientsResult.data;
-                // Pass the interest rate to the modal creation function
                 createClientModal(clients, globalInterestRate);
 
             } catch (error) {
@@ -132,7 +131,6 @@ document.addEventListener('DOMContentLoaded', function() {
         const clientList = modal.querySelector('.client-list');
         const searchInput = modal.querySelector('#clientSearchInput');
 
-        // Add event listener to the search input
         searchInput.addEventListener('input', (event) => {
             const searchTerm = event.target.value.toLowerCase();
             const filteredClients = clients.filter(client =>
@@ -141,7 +139,6 @@ document.addEventListener('DOMContentLoaded', function() {
             renderClientList(filteredClients, clientList);
         });
 
-        // Add event listener to handle client selection
         clientList.addEventListener('click', (event) => {
             const selectedItem = event.target.closest('li');
             if (selectedItem) {
@@ -153,7 +150,6 @@ document.addEventListener('DOMContentLoaded', function() {
             }
         });
 
-        // Helper function to render the list of clients
         function renderClientList(clientArray, ulElement) {
             ulElement.innerHTML = clientArray.map(client => `
                 <li class="client-list-item rounded-lg hover:bg-gray-100 transition-colors duration-150" data-client-id="${client.id}" data-client-name="${client.name}">
@@ -179,26 +175,24 @@ document.addEventListener('DOMContentLoaded', function() {
     const endDateInput = document.getElementById('date-end');
     const applyButton = document.querySelector('.apply-button');
     const form = document.querySelector('.loan-application-container');
+    const formElement = document.getElementById('loanForm');
+
 
     if (startDateInput) {
-        // Automatically set the end date 100 days from the start date
         startDateInput.addEventListener('change', function() {
             if (this.value) {
                 const startDate = new Date(this.value);
                 const endDate = new Date(startDate);
-                const loanDuration = 100; // Define the duration in days
+                const loanDuration = 100;
 
                 endDate.setDate(startDate.getDate() + loanDuration);
 
-                // Format the date as YYYY-MM-DD
                 const formattedEndDate = endDate.toISOString().split('T')[0];
 
-                // Update the end date input field
                 if (endDateInput) {
                     endDateInput.value = formattedEndDate;
                 }
 
-                // Update the loan duration input field
                 const durationInput = document.getElementById('duration-of-loan');
                 if (durationInput) {
                     durationInput.value = loanDuration + ' days';
@@ -216,11 +210,9 @@ document.addEventListener('DOMContentLoaded', function() {
     }
 
     if (applyButton) {
-        // Handle the "Apply" button and form submission
         applyButton.addEventListener('click', function(event) {
             event.preventDefault();
-            
-            // Collect form data
+
             const data = {
                 clientID: document.getElementById('clientID').value.trim(),
                 clientName: clientName.trim(),
@@ -234,7 +226,7 @@ document.addEventListener('DOMContentLoaded', function() {
                 'date-start': document.getElementById('date-start').value.trim(),
                 'duration-of-loan': document.getElementById('duration-of-loan').value.trim(),
                 'date-end': document.getElementById('date-end').value.trim(),
-                'interest-rate': globalInterestRate // Pass the interest rate
+                'interest-rate': globalInterestRate
             };
 
             const requiredFields = [
@@ -256,7 +248,6 @@ document.addEventListener('DOMContentLoaded', function() {
                 return;
             }
 
-            // Send data to PHP backend
             fetch('PHP/loanapplication_handler.php', {
                 method: 'POST',
                 headers: {
@@ -273,14 +264,12 @@ document.addEventListener('DOMContentLoaded', function() {
             .then(result => {
                 if (result.status === 'success') {
                     showMessageBox(result.message, 'success');
-                    // You can clear the form or perform other actions here
                     if (form) {
                         form.reset();
                     }
                     if (endDateInput) {
                         endDateInput.value = '';
                     }
-                    // Display the modal with the calculated information
                     data.loanID = result.loan_application_id;
                     createLoanDetailsModal(data);
                 } else {
@@ -294,7 +283,7 @@ document.addEventListener('DOMContentLoaded', function() {
         });
     }
 
-/**
+    /**
      * Dynamically creates and displays the loan details and schedule modal.
      * @param {Object} data - The loan application data.
      */
@@ -305,7 +294,6 @@ document.addEventListener('DOMContentLoaded', function() {
         const modalContent = document.createElement('div');
         modalContent.className = 'modal-content modal-content-transition';
 
-        // Generate the payment schedule table
         const schedule = generateLoanSchedule(data['loan-amount'], data['payment-frequency'], data['date-start'], data['date-end'], data['interest-rate']);
         let scheduleTableHTML = `
             <h3>Amortization Schedule</h3>
@@ -377,7 +365,6 @@ document.addEventListener('DOMContentLoaded', function() {
             modalContent.classList.add('is-active');
         }, 10);
 
-        // Add event listeners for the new buttons
         const closeBtn = modalContent.querySelector('.close-modal-btn');
         const printBtn = modalContent.querySelector('.print-btn');
 
@@ -410,7 +397,6 @@ document.addEventListener('DOMContentLoaded', function() {
         let currentDate = new Date(startDateStr);
         const endDate = new Date(endDateStr);
 
-        // Calculate the total amount to be paid, including interest
         const totalInterest = amount * (interestRate / 100);
         const totalRepaymentAmount = amount + totalInterest;
 
@@ -418,7 +404,6 @@ document.addEventListener('DOMContentLoaded', function() {
 
         let totalPayments = 0;
 
-        // Calculate total number of payments based on frequency
         const oneDay = 24 * 60 * 60 * 1000;
         const totalDays = Math.round((endDate - currentDate) / oneDay);
 
@@ -436,7 +421,7 @@ document.addEventListener('DOMContentLoaded', function() {
                 totalPayments = months + 1;
                 break;
             default:
-                totalPayments = 1; // Handle single payment case
+                totalPayments = 1;
         }
 
         const paymentAmount = totalRepaymentAmount / totalPayments;
@@ -446,7 +431,7 @@ document.addEventListener('DOMContentLoaded', function() {
             if (remainingBalance <= 0) break;
 
             remainingBalance -= paymentAmount;
-            if (remainingBalance < 0) remainingBalance = 0; // Prevent negative balance
+            if (remainingBalance < 0) remainingBalance = 0;
 
             schedule.push({
                 'date-of-payment': currentDate.toISOString().split('T')[0],
@@ -455,7 +440,6 @@ document.addEventListener('DOMContentLoaded', function() {
                 'remaining-balance': remainingBalance
             });
 
-            // Advance the date based on frequency
             switch (frequency) {
                 case 'daily':
                     currentDate.setDate(currentDate.getDate() + 1);
@@ -499,8 +483,6 @@ document.addEventListener('DOMContentLoaded', function() {
         }, 3000);
     }
     
-    // Check for the existence of the client and loan form elements and add event listeners
-    const formElement = document.getElementById('loanForm');
     if(formElement) {
         formElement.addEventListener('submit', async (e) => {
             e.preventDefault();
@@ -511,7 +493,6 @@ document.addEventListener('DOMContentLoaded', function() {
                 messageDiv.className = 'text-center text-sm font-medium text-gray-500';
             }
 
-            // Collect form data
             const formData = new FormData(formElement);
             const data = {};
             for (const [key, value] of formData.entries()) {
@@ -519,7 +500,6 @@ document.addEventListener('DOMContentLoaded', function() {
             }
 
             try {
-                // Send data to the PHP handler
                 const response = await fetch('PHP/loanapplication_handler.php', {
                     method: 'POST',
                     headers: {
@@ -528,10 +508,8 @@ document.addEventListener('DOMContentLoaded', function() {
                     body: JSON.stringify(data),
                 });
 
-                // Parse the JSON response
                 const result = await response.json();
 
-                // Display success or error message
                 if (result.status === 'success') {
                     if (messageDiv) {
                         messageDiv.textContent = result.message;
@@ -540,7 +518,7 @@ document.addEventListener('DOMContentLoaded', function() {
                     console.log('Loan Application ID:', result.loan_application_id);
                     formElement.reset();
                     data.loanID = result.loan_application_id;
-                    createLoanDetailsModal(data); // Call the modal function with form data
+                    createLoanDetailsModal(data);
                 } else {
                     throw new Error(result.message);
                 }
