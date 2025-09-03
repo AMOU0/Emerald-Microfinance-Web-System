@@ -44,8 +44,8 @@ document.addEventListener('DOMContentLoaded', function() {
 /*================================= */
 // Function to fetch and display approved accounts
 const fetchApprovedAccounts = () => {
-    // Change the fetch URL to the new handler that returns a list of accounts
-    fetch('PHP/approved_accounts_list_handler.php')
+    // Corrected fetch URL to use forward slashes
+    fetch('PHP/accountsreceivable_handler.php')
         .then(response => {
             if (!response.ok) {
                 // If the server response was not okay, throw an error

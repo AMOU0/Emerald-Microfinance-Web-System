@@ -42,121 +42,98 @@ document.addEventListener('DOMContentLoaded', function() {
     });
 });
 /*================================= */
-// Wait for the DOM to be fully loaded before running the script
 document.addEventListener('DOMContentLoaded', () => {
+    const urlParams = new URLSearchParams(window.location.search);
+    const clientId = urlParams.get('clientID');
+    const loanId = urlParams.get('loanID');
 
-    // Function to get a parameter from the URL
-    const getUrlParameter = (name) => {
-        name = name.replace(/[\[]/, '\\[').replace(/[\]]/, '\\]');
-        const regex = new RegExp('[\\?&]' + name + '=([^&#]*)');
-        const results = regex.exec(location.search);
-        return results === null ? '' : decodeURIComponent(results[1].replace(/\+/g, ' '));
-    };
-
-    // Function to format a date as YYYY-MM-DD
-    const formatDate = (date) => {
-        const d = new Date(date);
-        let month = '' + (d.getMonth() + 1);
-        let day = '' + d.getDate();
-        const year = d.getFullYear();
-
-        if (month.length < 2) 
-            month = '0' + month;
-        if (day.length < 2) 
-            day = '0' + day;
-
-        return [year, month, day].join('-');
-    };
-
-    // Function to calculate due dates based on loan details
-    const calculateDueDates = (startDate, endDate, frequency) => {
-        const now = new Date();
-        const start = new Date(startDate);
-        const end = new Date(endDate);
-        let currentDue = null;
-        let nextDue = null;
-        let currentDate = new Date(start); // Use a new date object for calculation to avoid mutation
-
-        while (currentDate <= end) {
-            if (currentDate >= now) {
-                if (!currentDue) {
-                    currentDue = new Date(currentDate);
-                } else if (!nextDue) {
-                    nextDue = new Date(currentDate);
-                    break; // Found both, exit the loop
-                }
-            }
-
-            // Increment date based on frequency
-            if (frequency === 'monthly') {
-                currentDate.setMonth(currentDate.getMonth() + 1);
-            } else if (frequency === 'weekly') {
-                currentDate.setDate(currentDate.getDate() + 7);
-            } else if (frequency === 'daily') {
-                currentDate.setDate(currentDate.getDate() + 1);
-            } else {
-                break; 
-            }
-        }
-        
-        return {
-            currentDue: currentDue ? formatDate(currentDue) : 'N/A',
-            nextDue: nextDue ? formatDate(nextDue) : 'N/A'
-        };
-    };
-
-    // Get clientID and loanID from the URL
-    const clientID = getUrlParameter('clientID');
-    const loanID = getUrlParameter('loanID');
-
-    // Check if the IDs were found in the URL
-    if (clientID && loanID) {
-        // Construct the URL for the PHP script
-        const phpUrl = `PHP/accountsreceivableselect_handler.php?clientID=${clientID}&loanID=${loanID}`;
-
-        fetch(phpUrl)
-            .then(response => {
-                if (!response.ok) {
-                    throw new Error('Network response was not ok');
-                }
-                return response.json();
-            })
-            .then(data => {
-                // Check if the request was successful and data is available
-                if (data.success && data.loanDetails) {
-                    const loan = data.loanDetails;
-                    
-                    // Populate the form fields with the received data
-                    document.getElementById('client_ID').value = loan.client_ID;
-                    document.getElementById('lastName').value = loan.client_name;
-                    document.getElementById('loanid').value = loan.loan_ID;
-
-                    // The balance is correctly calculated on the PHP side
-                    document.getElementById('balance').value = loan.current_balance.toFixed(2);
-                    
-                    // Amount to pay should be retrieved from a payment schedule, not the full loan amount
-                    // For now, setting it to a simplified value or leaving it to be input manually
-                    document.getElementById('amountToPay').value = ''; 
-
-                    // Calculate and populate the due dates
-                    const dueDates = calculateDueDates(loan.date_start, loan.date_end, loan.payment_frequency);
-                    document.getElementById('currentDue').value = dueDates.currentDue;
-                    document.getElementById('nextDue').value = dueDates.nextDue;
-
-                    // Disable input fields to prevent manual editing
-                    document.getElementById('client_ID').disabled = true;
-                    document.getElementById('lastName').disabled = true;
-                    document.getElementById('loanid').disabled = true;
-                    document.getElementById('balance').disabled = true;
-
-                } else {
-                    console.error('Error from PHP script:', data.message || 'No loan details found.');
-                }
-            })
-            .catch(error => {
-                console.error('Fetch error:', error);
-            });
-    } else {
-        console.error('clientID or loanID not found in the URL.');
+    if (!clientId || !loanId) {
+        alert('Missing clientID or loanID in URL');
+        return;
     }
+
+    const clientIDInput = document.getElementById('client_ID');
+    const lastNameInput = document.getElementById('lastName');
+    const loanIdInput = document.getElementById('loanid');
+    const balanceInput = document.getElementById('balance');
+    const amountToPayInput = document.getElementById('amountToPay');
+    const currentDueInput = document.getElementById('currentDue');
+    const nextDueInput = document.getElementById('nextDue');
+    const amountInput = document.getElementById('amount');
+    const payButton = document.querySelector('.pay-button');
+    const messageContainer = document.getElementById('message-container');
+
+    let loanData = null;
+
+    function fetchLoanDetails() {
+        fetch(`PHP/accountsreceivableselect_handler.php?client_id=${clientId}&loan_id=${loanId}`)
+            .then(res => res.json())
+            .then(data => {
+                if (data.error) {
+                    messageContainer.textContent = data.error;
+                    return;
+                }
+                loanData = data.loan;
+                clientIDInput.value = data.client.client_ID;
+                lastNameInput.value = data.client.name;
+                loanIdInput.value = loanData.id;
+                balanceInput.value = loanData.balance.toFixed(2);
+                amountToPayInput.value = loanData.amount_to_pay.toFixed(2);
+                currentDueInput.value = loanData.current_due;
+                nextDueInput.value = loanData.next_due;
+                amountInput.value = loanData.amount_to_pay.toFixed(2);
+            })
+            .catch(e => {
+                messageContainer.textContent = 'Error fetching loan details';
+                console.error(e);
+            });
+    }
+
+    payButton.addEventListener('click', () => {
+        const amountStr = amountInput.value.trim();
+        if (!amountStr || isNaN(amountStr)) {
+            messageContainer.textContent = 'Enter a valid payment amount';
+            return;
+        }
+        const amount = parseFloat(amountStr);
+        if (amount <= 0) {
+            messageContainer.textContent = 'Payment amount must be positive';
+            return;
+        }
+        if (amount > parseFloat(balanceInput.value)) {
+            messageContainer.textContent = 'Payment exceeds total balance';
+            return;
+        }
+        if (amount > loanData.amount_to_pay) {
+            messageContainer.textContent = 'Payment exceeds current installment due amount';
+            return;
+        }
+
+        const formData = new FormData();
+        formData.append('client_id', clientId);
+        formData.append('loan_id', loanId);
+        formData.append('amount', amount);
+        formData.append('processby', 'system');
+
+        fetch('PHP/accountsreceivableselectpay_handle.php', {
+            method: 'POST',
+            body: formData
+        })
+            .then(res => res.json())
+            .then(data => {
+                if (data.error) {
+                    messageContainer.textContent = data.error;
+                } else {
+                    messageContainer.textContent = data.message;
+                    amountInput.value = '';
+                    fetchLoanDetails();
+                }
+            })
+            .catch(e => {
+                messageContainer.textContent = 'Error processing payment';
+                console.error(e);
+            });
+    });
+
+    fetchLoanDetails();
 });

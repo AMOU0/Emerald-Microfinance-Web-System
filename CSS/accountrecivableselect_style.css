@@ -1,4 +1,5 @@
 /* General Body and Container Styling */
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap');
 body {
     font-family: 'Inter', sans-serif;
     background-color: #333;
@@ -225,4 +226,100 @@ h2 {
 
 .pay-button:hover {
     background-color: #38A169;
+}
+
+/* General button styles for both pay and return buttons */
+.action-button {
+    padding: 12px 24px;
+    border: none;
+    border-radius: 8px;
+    font-size: 16px;
+    font-weight: 600;
+    cursor: pointer;
+    transition: background-color 0.2s ease-in-out;
+}
+
+/* Specific styles for the RETURN button */
+.return-button {
+    background-color: #A0D3B4;
+    color: #2D3748;
+}
+
+.return-button:hover {
+    background-color: #8CC29E;
+}
+
+/* === Amortization Table Styling === */
+/* Main container for the schedule */
+.ammortization-schedule-container {
+    background-color: #ffffff;
+    border-radius: 0.5rem;
+    box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
+    padding: 1.5rem;
+}
+
+/* Header for the schedule table */
+.table-header {
+    background-color: #f3f4f6;
+    color: #4b5563;
+    font-weight: 600;
+    border-bottom: 2px solid #e5e7eb;
+    border-top-left-radius: 0.5rem;
+    border-top-right-radius: 0.5rem;
+    padding: 0.75rem 1.5rem; /* Matches the content padding */
+}
+
+/* Common styles for all grid items in header and rows */
+.table-header > div,
+.table-row > div {
+    padding: 0.75rem 0.5rem; /* Adjusted for better spacing */
+    display: flex;
+    align-items: center;
+}
+
+/* Styles for table rows */
+.table-row {
+    color: #1f2937;
+    border-bottom: 1px solid #e5e7eb;
+}
+
+/* Specific styling for the last row to remove bottom border */
+.table-row:last-child {
+    border-bottom: none;
+}
+
+/* Responsive grid layout */
+.grid-cols-6 {
+    display: grid;
+    grid-template-columns: repeat(6, minmax(0, 1fr));
+}
+
+/* Alignment for specific columns */
+.text-right {
+    text-align: right;
+    justify-content: flex-end;
+}
+
+/* Optional: Add hover effect to rows for better user experience */
+.table-row:hover {
+    background-color: #f9fafb;
+}
+
+/* Styles for the message container */
+#message-container {
+    min-height: 1.5rem;
+    text-align: center;
+    font-weight: 500;
+    margin-bottom: 1rem;
+}
+
+/* Colors for message types */
+.text-red-600 {
+    color: #dc2626;
+}
+.text-green-600 {
+    color: #16a34a;
+}
+.text-gray-600 {
+    color: #4b5563;
 }

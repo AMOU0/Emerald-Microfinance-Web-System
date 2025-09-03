@@ -3,7 +3,7 @@
 -- https://www.phpmyadmin.net/
 --
 -- Host: 127.0.0.1
--- Generation Time: Sep 03, 2025 at 05:40 PM
+-- Generation Time: Sep 03, 2025 at 08:35 PM
 -- Server version: 10.4.32-MariaDB
 -- PHP Version: 8.2.12
 
@@ -128,7 +128,7 @@ CREATE TABLE `loan_applications` (
 
 CREATE TABLE `payment` (
   `payment_id` int(11) NOT NULL,
-  `loanid` bigint(20) NOT NULL,
+  `loan_application_id` bigint(20) NOT NULL,
   `client_id` bigint(20) NOT NULL,
   `amount_paid` decimal(10,2) NOT NULL,
   `date_payed` timestamp NOT NULL DEFAULT current_timestamp(),
@@ -214,8 +214,8 @@ ALTER TABLE `loan_applications`
 --
 ALTER TABLE `payment`
   ADD PRIMARY KEY (`payment_id`),
-  ADD KEY `loanid` (`loanid`),
-  ADD KEY `client_id` (`client_id`);
+  ADD KEY `client_id` (`client_id`),
+  ADD KEY `loan_application_id` (`loan_application_id`) USING BTREE;
 
 --
 -- Indexes for table `users`
@@ -280,7 +280,7 @@ ALTER TABLE `loan_applications`
 -- Constraints for table `payment`
 --
 ALTER TABLE `payment`
-  ADD CONSTRAINT `payment_ibfk_1` FOREIGN KEY (`loanid`) REFERENCES `loan_applications` (`loan_application_id`),
+  ADD CONSTRAINT `payment_ibfk_1` FOREIGN KEY (`loan_application_id`) REFERENCES `loan_applications` (`loan_application_id`),
   ADD CONSTRAINT `payment_ibfk_2` FOREIGN KEY (`client_id`) REFERENCES `clients` (`client_ID`);
 COMMIT;
 
