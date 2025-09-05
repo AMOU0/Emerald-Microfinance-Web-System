@@ -42,30 +42,36 @@ document.addEventListener('DOMContentLoaded', function() {
     });
 });
 /*=============================================================================================================================================================================*/
-document.addEventListener('DOMContentLoaded', function() {
-    const reportButtons = document.querySelectorAll('.report-button');
+document.addEventListener('DOMContentLoaded', () => {
+    // Get references to all the buttons by their IDs
+    const passwordChangeBtn = document.getElementById('password-change-btn');
+    const usernameChangeBtn = document.getElementById('username-change-btn');
+    const accountCreationBtn = document.getElementById('account-creation-btn');
+    const existingAccountsBtn = document.getElementById('existing-accounts-btn');
 
-    // Logic for the reports sidebar buttons
-    reportButtons.forEach(button => {
-        button.addEventListener('click', function(event) {
-            // Prevent default button behavior
-            event.preventDefault();
-            // Get the text from the button
-            const buttonText = this.textContent.toLowerCase().replace(/\s/g, '');
-            // Define the URL mapping for report buttons
-            const reportUrlMapping = {
-                'existingclients': 'ReportsExistingClient.html',
-                'duepayments': 'ReportsDuePayments.html',
-                'overduepayments': 'ReportsOverduePayments.html'
-            };
-            // Navigate to the correct report page
-            if (reportUrlMapping[buttonText]) {
-                window.location.href = reportUrlMapping[buttonText];
-            } else {
-                console.error('No page defined for this report button:', buttonText);
-            }
+    // Add an event listener for each button
+    if (passwordChangeBtn) {
+        passwordChangeBtn.addEventListener('click', () => {
+            window.location.href = 'UserPasswordChange.html';
         });
-    });
+    }
+
+    if (usernameChangeBtn) {
+        usernameChangeBtn.addEventListener('click', () => {
+            window.location.href = 'UserUsernameChange.html';
+        });
+    }
+
+    if (accountCreationBtn) {
+        accountCreationBtn.addEventListener('click', () => {
+            window.location.href = 'UserCreation.html';
+        });
+    }
+
+    if (existingAccountsBtn) {
+        existingAccountsBtn.addEventListener('click', () => {
+            window.location.href = 'UserExisting.html';
+        });
+    }
 });
 /*================================= */
-

@@ -1,17 +1,22 @@
 document.addEventListener('DOMContentLoaded', function() {
-    // --- Navigation and Logout Logic ---
+    // Call the session check function as soon as the page loads.
+    checkSessionAndRedirect(); 
+
     const navLinks = document.querySelectorAll('.nav-link');
     const logoutButton = document.querySelector('.logout-button');
 
     navLinks.forEach(link => {
         link.addEventListener('click', function(event) {
-            event.preventDefault();
+            event.preventDefault(); 
             navLinks.forEach(nav => nav.classList.remove('active'));
             this.classList.add('active');
 
-            const linkText = this.textContent.toLowerCase().replace(/\s/g, '');
+            const linkText = this.textContent.toLowerCase().replace(/\s/g, ''); 
+            
+            // NOTE: Keep links pointing to .php if you want server-side security, 
+            // otherwise keep them as .html.
             const urlMapping = {
-                'dashboard': 'Dashboard.html',
+                'dashboard': 'DashBoard.html',
                 'clientcreation': 'ClientCreationForm.html',
                 'loanapplication': 'LoanApplication.html',
                 'pendingaccounts': 'PendingAccount.html',
@@ -30,11 +35,13 @@ document.addEventListener('DOMContentLoaded', function() {
         });
     });
 
-    if (logoutButton) {
-        logoutButton.addEventListener('click', function() {
-            window.location.href = 'login.html';
-        });
-    }
+    // Handle the logout button securely
+    logoutButton.addEventListener('click', function() {
+        // Redirect to the PHP script that handles session destruction
+        window.location.href = 'PHP/check_logout.php'; 
+    });
+
+/*=============================================================================================================================================================================*/
 
     // --- Client Search Modal Logic ---
     const showClientsBtn = document.getElementById('showClientsBtn');

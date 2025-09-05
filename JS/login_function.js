@@ -26,7 +26,8 @@ document.addEventListener('DOMContentLoaded', function() {
             if (data.success) {
                 messageDiv.textContent = data.message;
                 messageDiv.style.color = 'green';
-                window.location.href = 'DashBoard.html'; 
+                // Redirect to the secure dashboard PHP page
+                window.location.href = data.redirect_url; 
             } else {
                 messageDiv.textContent = data.message;
                 messageDiv.style.color = 'red';

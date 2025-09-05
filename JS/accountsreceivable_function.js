@@ -1,21 +1,22 @@
 document.addEventListener('DOMContentLoaded', function() {
+    // Call the session check function as soon as the page loads.
+    checkSessionAndRedirect(); 
+
     const navLinks = document.querySelectorAll('.nav-link');
     const logoutButton = document.querySelector('.logout-button');
 
     navLinks.forEach(link => {
         link.addEventListener('click', function(event) {
-            // Prevent the default link behavior
             event.preventDefault(); 
-            // Remove 'active' class from all links
             navLinks.forEach(nav => nav.classList.remove('active'));
-            // Add 'active' class to the clicked link
             this.classList.add('active');
 
-            // Get the text from the link
             const linkText = this.textContent.toLowerCase().replace(/\s/g, ''); 
-            // Define the URL based on the link's text
+            
+            // NOTE: Keep links pointing to .php if you want server-side security, 
+            // otherwise keep them as .html.
             const urlMapping = {
-                'dashboard': 'Dashboard.html',
+                'dashboard': 'DashBoard.html',
                 'clientcreation': 'ClientCreationForm.html',
                 'loanapplication': 'LoanApplication.html',
                 'pendingaccounts': 'PendingAccount.html',
@@ -26,7 +27,6 @@ document.addEventListener('DOMContentLoaded', function() {
                 'tools': 'Tools.html'
             };
 
-            // Navigate to the correct page
             if (urlMapping[linkText]) {
                 window.location.href = urlMapping[linkText];
             } else {
@@ -35,13 +35,13 @@ document.addEventListener('DOMContentLoaded', function() {
         });
     });
 
-    // Handle the logout button separately
+    // Handle the logout button securely
     logoutButton.addEventListener('click', function() {
-        // You would typically handle a logout process here (e.g., clearing session data)
-        window.location.href = 'login.html'; // Redirect to the login page
+        // Redirect to the PHP script that handles session destruction
+        window.location.href = 'PHP/check_logout.php'; 
     });
 });
-/*================================= */
+/*=============================================================================================================================================================================*/
 // Function to fetch and display approved accounts
 const fetchApprovedAccounts = () => {
     // Corrected fetch URL to use forward slashes

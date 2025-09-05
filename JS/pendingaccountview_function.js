@@ -1,27 +1,29 @@
-// Wait for the entire HTML document to be fully loaded and parsed before running the script.
 document.addEventListener('DOMContentLoaded', function() {
+    // Call the session check function as soon as the page loads.
+    checkSessionAndRedirect(); 
+
     const navLinks = document.querySelectorAll('.nav-link');
     const logoutButton = document.querySelector('.logout-button');
-    const updateForm = document.getElementById('pendingAccountForm');
-    const clientIdInput = document.getElementById('clientIdInput');
 
-    // Navigation handling
     navLinks.forEach(link => {
         link.addEventListener('click', function(event) {
-            event.preventDefault();
+            event.preventDefault(); 
             navLinks.forEach(nav => nav.classList.remove('active'));
             this.classList.add('active');
 
-            const linkText = this.textContent.toLowerCase().replace(/\s/g, '');
+            const linkText = this.textContent.toLowerCase().replace(/\s/g, ''); 
+            
+            // NOTE: Keep links pointing to .php if you want server-side security, 
+            // otherwise keep them as .html.
             const urlMapping = {
-                'dashboard': 'Dashboard.html',
+                'dashboard': 'DashBoard.html',
                 'clientcreation': 'ClientCreationForm.html',
                 'loanapplication': 'LoanApplication.html',
                 'pendingaccounts': 'PendingAccount.html',
                 'accountsreceivable': 'AccountsReceivable.html',
                 'ledger': 'Ledgers.html',
                 'reports': 'Reports.html',
-                'usermanagement': 'User Management.html',
+                'usermanagement': 'UserManagement.html',
                 'tools': 'Tools.html'
             };
 
@@ -33,12 +35,13 @@ document.addEventListener('DOMContentLoaded', function() {
         });
     });
 
-    // Logout handling
+    // Handle the logout button securely
     logoutButton.addEventListener('click', function() {
-        window.location.href = 'login.html';
+        // Redirect to the PHP script that handles session destruction
+        window.location.href = 'PHP/check_logout.php'; 
     });
-    
-    /*================================ */
+
+/*=============================================================================================================================================================================*/
     // Function to get a URL query parameter by name
     const getQueryParam = (param) => {
         const urlParams = new URLSearchParams(window.location.search);

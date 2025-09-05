@@ -3,7 +3,7 @@
 -- https://www.phpmyadmin.net/
 --
 -- Host: 127.0.0.1
--- Generation Time: Sep 05, 2025 at 12:11 PM
+-- Generation Time: Sep 05, 2025 at 04:14 PM
 -- Server version: 10.4.32-MariaDB
 -- PHP Version: 8.2.12
 
@@ -48,6 +48,13 @@ CREATE TABLE `clients` (
   `created_at` timestamp NOT NULL DEFAULT current_timestamp() ON UPDATE current_timestamp()
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 
+--
+-- Dumping data for table `clients`
+--
+
+INSERT INTO `clients` (`client_ID`, `last_name`, `first_name`, `middle_name`, `marital_status`, `gender`, `date_of_birth`, `city`, `barangay`, `postal_code`, `street_address`, `phone_number`, `email`, `employment_status`, `occupation`, `years_in_job`, `income`, `created_at`) VALUES
+(202500001, 'Mallari', 'Angel', 'Laurence P', 'single', 'female', '2025-09-19', 'tarlac', 'sanroque', '2300', '#205 Alvindia Segundo Tarlac City', '09628785256', 'laurence030703@gmail.com', '', '', 0, '0 - 5,000', '2025-09-05 11:13:24');
+
 -- --------------------------------------------------------
 
 --
@@ -61,6 +68,13 @@ CREATE TABLE `client_requirements` (
   `client_ID` bigint(20) NOT NULL,
   `created_at` text DEFAULT current_timestamp()
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
+
+--
+-- Dumping data for table `client_requirements`
+--
+
+INSERT INTO `client_requirements` (`has_valid_id`, `has_barangay_clearance`, `has_cr`, `client_ID`, `created_at`) VALUES
+(1, 0, '0', 202500001, '2025-09-05 19:13:24');
 
 -- --------------------------------------------------------
 
@@ -79,6 +93,13 @@ CREATE TABLE `guarantor` (
   `client_ID` bigint(20) DEFAULT NULL,
   `created_at` text DEFAULT current_timestamp()
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
+
+--
+-- Dumping data for table `guarantor`
+--
+
+INSERT INTO `guarantor` (`guarantor_id`, `guarantor_last_name`, `guarantor_first_name`, `guarantor_middle_name`, `guarantor_street_address`, `guarantor_phone_number`, `loan_application_id`, `client_ID`, `created_at`) VALUES
+(1, 'Mallari', 'Angel', 'Laurence P', '#205 Alvindia Segundo Tarlac City', '09628785256', 2025090500001, 202500001, '2025-09-05 19:13:38');
 
 -- --------------------------------------------------------
 
@@ -120,6 +141,13 @@ CREATE TABLE `loan_applications` (
   `created_at` text DEFAULT current_timestamp()
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 
+--
+-- Dumping data for table `loan_applications`
+--
+
+INSERT INTO `loan_applications` (`loan_application_id`, `loan_amount`, `payment_frequency`, `date_start`, `duration_of_loan`, `interest_rate`, `date_end`, `client_ID`, `status`, `paid`, `created_at`) VALUES
+(2025090500001, 10000.00, 'monthly', '2025-09-25', '100 days', 20, '2026-01-03', 202500001, 'approved', '0', '2025-09-05 19:13:38');
+
 -- --------------------------------------------------------
 
 --
@@ -134,26 +162,6 @@ CREATE TABLE `payment` (
   `date_payed` timestamp NOT NULL DEFAULT current_timestamp(),
   `processby` varchar(255) NOT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
-
--- --------------------------------------------------------
-
---
--- Table structure for table `users`
---
-
-CREATE TABLE `users` (
-  `id` int(11) NOT NULL,
-  `username` varchar(50) NOT NULL,
-  `password` varchar(255) NOT NULL,
-  `created_at` timestamp NOT NULL DEFAULT current_timestamp()
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
-
---
--- Dumping data for table `users`
---
-
-INSERT INTO `users` (`id`, `username`, `password`, `created_at`) VALUES
-(1, 'admin', '1', '2025-08-04 17:59:07');
 
 -- --------------------------------------------------------
 
@@ -218,13 +226,6 @@ ALTER TABLE `payment`
   ADD KEY `loan_application_id` (`loan_application_id`) USING BTREE;
 
 --
--- Indexes for table `users`
---
-ALTER TABLE `users`
-  ADD PRIMARY KEY (`id`),
-  ADD UNIQUE KEY `username` (`username`);
-
---
 -- Indexes for table `user_accounts`
 --
 ALTER TABLE `user_accounts`
@@ -240,19 +241,13 @@ ALTER TABLE `user_accounts`
 -- AUTO_INCREMENT for table `guarantor`
 --
 ALTER TABLE `guarantor`
-  MODIFY `guarantor_id` int(11) NOT NULL AUTO_INCREMENT;
+  MODIFY `guarantor_id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=2;
 
 --
 -- AUTO_INCREMENT for table `payment`
 --
 ALTER TABLE `payment`
   MODIFY `payment_id` int(11) NOT NULL AUTO_INCREMENT;
-
---
--- AUTO_INCREMENT for table `users`
---
-ALTER TABLE `users`
-  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=3;
 
 --
 -- AUTO_INCREMENT for table `user_accounts`

@@ -1,25 +1,22 @@
 document.addEventListener('DOMContentLoaded', function() {
-    // ===================================
-    // 1. Navigation and Logout Handler
-    // ===================================
+    // Call the session check function as soon as the page loads.
+    checkSessionAndRedirect(); 
+
     const navLinks = document.querySelectorAll('.nav-link');
     const logoutButton = document.querySelector('.logout-button');
-    const returnButton = document.querySelector('.return-button');
 
     navLinks.forEach(link => {
         link.addEventListener('click', function(event) {
-            // Prevent the default link behavior
             event.preventDefault(); 
-            // Remove 'active' class from all links
             navLinks.forEach(nav => nav.classList.remove('active'));
-            // Add 'active' class to the clicked link
             this.classList.add('active');
 
-            // Get the text from the link
             const linkText = this.textContent.toLowerCase().replace(/\s/g, ''); 
-            // Define the URL based on the link's text
+            
+            // NOTE: Keep links pointing to .php if you want server-side security, 
+            // otherwise keep them as .html.
             const urlMapping = {
-                'dashboard': 'Dashboard.html',
+                'dashboard': 'DashBoard.html',
                 'clientcreation': 'ClientCreationForm.html',
                 'loanapplication': 'LoanApplication.html',
                 'pendingaccounts': 'PendingAccount.html',
@@ -30,7 +27,6 @@ document.addEventListener('DOMContentLoaded', function() {
                 'tools': 'Tools.html'
             };
 
-            // Navigate to the correct page
             if (urlMapping[linkText]) {
                 window.location.href = urlMapping[linkText];
             } else {
@@ -39,12 +35,12 @@ document.addEventListener('DOMContentLoaded', function() {
         });
     });
 
-    // Handle the logout button
-    if (logoutButton) {
-        logoutButton.addEventListener('click', function() {
-            window.location.href = 'login.html';
-        });
-    }
+    // Handle the logout button securely
+    logoutButton.addEventListener('click', function() {
+        // Redirect to the PHP script that handles session destruction
+        window.location.href = 'PHP/check_logout.php'; 
+    });
+/*=============================================================================================================================================================================*/
 
     // Handle the return button
     if (returnButton) {
