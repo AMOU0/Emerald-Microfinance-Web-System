@@ -63,6 +63,14 @@ const fetchApprovedAccounts = () => {
             if (data.length > 0) {
                 // If data is available, iterate through each client
                 data.forEach(client => {
+                    // Helper function to format currency
+                    const formatCurrency = (amount) => {
+                        return parseFloat(amount).toLocaleString('en-US', { 
+                            minimumFractionDigits: 2, 
+                            maximumFractionDigits: 2 
+                        });
+                    };
+
                     // Create a new table row element
                     const row = document.createElement('div');
                     row.classList.add('table-row');
@@ -78,7 +86,11 @@ const fetchApprovedAccounts = () => {
                         <div class="table-cell">${client.client_ID}</div>
                         <div class="table-cell">${client.loan_application_id}</div>
                         <div class="table-cell">${client.last_name}, ${client.first_name}</div>
-                        <div class="table-cell">PHP ${parseFloat(client.loan_amount).toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}</div>
+                        
+                        <div class="table-cell">PHP ${formatCurrency(client.principal_amount)}</div> 
+                        <div class="table-cell">PHP ${formatCurrency(client.interest_amount)}</div>
+                        <div class="table-cell">PHP ${formatCurrency(client.total_loan_amount)}</div> 
+                        
                         <div class="table-cell">${client.created_at}</div>
                     `;
                     // Append the new row to the table body
@@ -88,7 +100,7 @@ const fetchApprovedAccounts = () => {
                 // If no data is returned, display a message
                 const emptyRow = document.createElement('div');
                 emptyRow.classList.add('table-row');
-                emptyRow.innerHTML = `<div class="table-cell" style="text-align: center;">No approved accounts found.</div>`;
+                emptyRow.innerHTML = `<div class="table-cell" style="text-align: center; grid-column: 1 / span 8;">No approved accounts found.</div>`; // Adjusted colspan to match 8 columns
                 tableBody.appendChild(emptyRow);
             }
         })
@@ -99,6 +111,7 @@ const fetchApprovedAccounts = () => {
             alert('Failed to load approved accounts. Please try again later.');
         });
 };
+/*================================= */
 // Add an event listener to the "SELECT" button
 document.addEventListener('DOMContentLoaded', () => {
     const selectButton = document.querySelector('.select-button');

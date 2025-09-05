@@ -3,7 +3,7 @@
 -- https://www.phpmyadmin.net/
 --
 -- Host: 127.0.0.1
--- Generation Time: Sep 03, 2025 at 08:35 PM
+-- Generation Time: Sep 05, 2025 at 12:11 PM
 -- Server version: 10.4.32-MariaDB
 -- PHP Version: 8.2.12
 
@@ -116,7 +116,7 @@ CREATE TABLE `loan_applications` (
   `date_end` date NOT NULL,
   `client_ID` bigint(20) DEFAULT NULL,
   `status` varchar(50) DEFAULT NULL,
-  `paid` tinyint(1) DEFAULT NULL,
+  `paid` varchar(25) DEFAULT NULL,
   `created_at` text DEFAULT current_timestamp()
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 
@@ -258,7 +258,7 @@ ALTER TABLE `users`
 -- AUTO_INCREMENT for table `user_accounts`
 --
 ALTER TABLE `user_accounts`
-  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=3;
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=4;
 
 --
 -- Constraints for dumped tables

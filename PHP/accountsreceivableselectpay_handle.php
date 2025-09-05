@@ -9,6 +9,7 @@ $dbname = "emerald_microfinance";
 $client_id = $_POST['client_id'] ?? null;
 $loan_id = $_POST['loan_id'] ?? null;
 $payment_amount = $_POST['amount'] ?? null;
+$processby = $_POST['processby'] ?? 'system';
 
 if (!$client_id || !$loan_id || !$payment_amount) {
     echo json_encode(['error' => 'Missing parameters']);
@@ -27,7 +28,7 @@ try {
     ]);
 
     // Fetch loan info
-    $stmt = $pdo->prepare("SELECT * FROM loan_applications WHERE loan_application_id = ? AND client_ID = ?");
+    $stmt = $pdo->prepare("SELECT loan_amount, interest_rate FROM loan_applications WHERE loan_application_id = ? AND client_ID = ?");
     $stmt->execute([$loan_id, $client_id]);
     $loan = $stmt->fetch(PDO::FETCH_ASSOC);
     if (!$loan) {
@@ -35,50 +36,64 @@ try {
         exit;
     }
 
-    // Calculate total payable and installment amount
+    // Calculate total payable
     $principal = floatval($loan['loan_amount']);
     $interest_rate = intval($loan['interest_rate']);
     $interest_amount = ($principal * $interest_rate) / 100;
     $total_payable = $principal + $interest_amount;
 
-    $freq = strtolower($loan['payment_frequency']);
-    $freq_days = 30;
-    if ($freq === 'weekly') $freq_days = 7;
-    else if ($freq === 'daily') $freq_days = 1;
-
-    $start_date = new DateTime($loan['date_start']);
-    $end_date = new DateTime($loan['date_end']);
-    $interval = $start_date->diff($end_date);
-    $total_days = (int)$interval->format('%a');
-    $num_payments = max(1, floor($total_days / $freq_days));
-
-    $installment_amount = round($total_payable / $num_payments, 2);
-
-    // Sum total payments made
+    // Sum total payments made *before* this payment
     $stmt = $pdo->prepare("SELECT IFNULL(SUM(amount_paid),0) as total_paid FROM payment WHERE loan_application_id = ?");
     $stmt->execute([$loan_id]);
-    $total_paid = floatval($stmt->fetchColumn());
+    $total_paid_before = floatval($stmt->fetchColumn());
 
-    // Calculate current installment and remaining due
-    $current_installment = floor($total_paid / $installment_amount) + 1;
-    if ($current_installment > $num_payments) {
-        $current_installment = $num_payments;
-    }
-    $paid_in_current = $total_paid % $installment_amount;
-    $current_due_amount = $installment_amount - $paid_in_current;
-    if ($current_due_amount < 0) $current_due_amount = 0;
+    // Calculate remaining balance before this payment
+    $remaining_balance_before = $total_payable - $total_paid_before;
 
-    // Validate payment amount does not exceed current due
-    if ($payment_amount > $current_due_amount) {
-        echo json_encode(['error' => 'Payment exceeds current installment due amount']);
+    // 1. Check if loan is already fully paid
+    if ($remaining_balance_before <= 0.01) {
+        echo json_encode(['error' => 'Loan is already fully settled.']);
         exit;
     }
 
-    // Insert payment (no installment number stored)
-    $stmt = $pdo->prepare("INSERT INTO payment (loan_application_id, client_id, amount_paid, date_payed, processby) VALUES (?, ?, ?, NOW(), ?)");
-    $stmt->execute([$loan_id, $client_id, $payment_amount, 'system']);
+    // 2. Validate and adjust payment amount against the remaining loan balance
+    // This ensures we don't insert a payment larger than the amount required for settlement
+    $final_payment_amount = min($payment_amount, $remaining_balance_before);
 
-    echo json_encode(['success' => true, 'message' => 'Payment recorded']);
+    // --- BEGIN TRANSACTION ---
+    $pdo->beginTransaction();
+
+    // 3. Insert payment
+    $stmt = $pdo->prepare("INSERT INTO payment (loan_application_id, client_id, amount_paid, date_payed, processby) VALUES (?, ?, ?, NOW(), ?)");
+    $stmt->execute([$loan_id, $client_id, $final_payment_amount, $processby]);
+
+    // 4. Check if the loan is now fully paid
+    $new_remaining_balance = $remaining_balance_before - $final_payment_amount;
+
+    if ($new_remaining_balance <= 0.01) { 
+        // Update ONLY the 'paid' column to 'fully paid'
+        $stmt = $pdo->prepare("UPDATE loan_applications SET paid = '1' WHERE loan_application_id = ?");
+        $stmt->execute([$loan_id]);
+        
+        $message = 'Payment recorded successfully! Loan is now fully paid.';
+        
+        if ($final_payment_amount < $payment_amount) {
+            $message .= ' (Only $' . number_format($final_payment_amount, 2) . ' was applied as the final settlement amount).';
+        }
+
+    } else {
+        $message = 'Payment recorded successfully.';
+    }
+    
+    $pdo->commit();
+    // --- END TRANSACTION ---
+
+    echo json_encode(['success' => true, 'message' => $message]);
+
 } catch (PDOException $e) {
-    echo json_encode(['error' => $e->getMessage()]);
+    if ($pdo->inTransaction()) {
+        $pdo->rollBack();
+    }
+    echo json_encode(['error' => 'Database error: ' . $e->getMessage()]);
 }
+?>

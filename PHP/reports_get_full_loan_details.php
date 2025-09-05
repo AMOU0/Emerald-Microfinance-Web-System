@@ -20,7 +20,7 @@ if ($conn->connect_error) {
 if (isset($_GET['loan_id']) && is_numeric($_GET['loan_id'])) {
     $loanId = $_GET['loan_id'];
 
-    // SQL query to get loan, client, and guarantor information
+    // SQL query to get loan, client, guarantor, and all payments
     $sql = "
         SELECT
             la.loan_application_id,
@@ -51,38 +51,71 @@ if (isset($_GET['loan_id']) && is_numeric($_GET['loan_id'])) {
         LIMIT 1;
     ";
 
+    // 1. Fetch Loan Details
     $stmt = $conn->prepare($sql);
     $stmt->bind_param("i", $loanId);
     $stmt->execute();
-    $result = $stmt->get_result();
+    $loanResult = $stmt->get_result();
 
-    if ($result->num_rows > 0) {
-        $row = $result->fetch_assoc();
-
-        // Construct the data object to match the frontend's expected format
-        $fullLoanData = [
-            'loanID' => $row['loan_application_id'],
-            'loan-amount' => (float)$row['loan_amount'],
-            'payment-frequency' => $row['payment_frequency'],
-            'date-start' => $row['date_start'],
-            'date-end' => $row['date_end'],
-            'clientName' => $row['client_first_name'] . ' ' . $row['client_middle_name'] . ' ' . $row['client_last_name'],
-            'clientID' => $row['client_ID'],
-            'interest-rate' => (int)$row['Interest_Pecent'],
-            'guarantorFirstName' => $row['guarantor_first_name'],
-            'guarantorMiddleName' => $row['guarantor_middle_name'],
-            'guarantorLastName' => $row['guarantor_last_name'],
-            'guarantorStreetAddress' => $row['guarantor_street_address'],
-            'guarantorPhoneNumber' => $row['guarantor_phone_number']
-        ];
-        
-        echo json_encode($fullLoanData);
-
-    } else {
+    if ($loanResult->num_rows === 0) {
+        $stmt->close();
+        $conn->close();
         echo json_encode(['status' => 'error', 'message' => 'Loan not found.']);
+        exit();
     }
-
+    
+    $row = $loanResult->fetch_assoc();
     $stmt->close();
+
+    // 2. Fetch Payment History
+    $paymentsSql = "
+        SELECT
+            amount_paid,
+            date_payed
+        FROM
+            payment
+        WHERE
+            loan_application_id = ?
+        ORDER BY
+            date_payed ASC;
+    ";
+
+    $paymentsStmt = $conn->prepare($paymentsSql);
+    $paymentsStmt->bind_param("i", $loanId);
+    $paymentsStmt->execute();
+    $paymentsResult = $paymentsStmt->get_result();
+
+    $payments = [];
+    while ($paymentRow = $paymentsResult->fetch_assoc()) {
+        // Format date to 'YYYY-MM-DD' for consistency with loan schedule dates
+        $date = new DateTime($paymentRow['date_payed']);
+        $payments[] = [
+            'amount_paid' => (float)$paymentRow['amount_paid'],
+            'date_paid' => $date->format('Y-m-d')
+        ];
+    }
+    $paymentsStmt->close();
+
+    // Construct the final data object
+    $fullLoanData = [
+        'loanID' => $row['loan_application_id'],
+        'loan-amount' => (float)$row['loan_amount'],
+        'payment-frequency' => $row['payment_frequency'],
+        'date-start' => $row['date_start'],
+        'date-end' => $row['date_end'],
+        'clientName' => trim($row['client_first_name'] . ' ' . $row['client_middle_name'] . ' ' . $row['client_last_name']),
+        'clientID' => $row['client_ID'],
+        'interest-rate' => (int)$row['Interest_Pecent'],
+        'guarantorFirstName' => $row['guarantor_first_name'],
+        'guarantorMiddleName' => $row['guarantor_middle_name'],
+        'guarantorLastName' => $row['guarantor_last_name'],
+        'guarantorStreetAddress' => $row['guarantor_street_address'],
+        'guarantorPhoneNumber' => $row['guarantor_phone_number'],
+        'payments' => $payments // Add the payments here
+    ];
+    
+    echo json_encode($fullLoanData);
+
 } else {
     echo json_encode(['status' => 'error', 'message' => 'Invalid or missing loan_id.']);
 }

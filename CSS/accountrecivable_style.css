@@ -44,7 +44,7 @@ body {
     transition: background-color 0.2s ease-in-out;
     border-radius: 8px;
     margin: 0 12px 8px;
-    text-decoration: none; /* Add this to remove the underline */
+    text-decoration: none;
 }
 
 .nav-link:hover {
@@ -89,6 +89,8 @@ body {
     background-color: #E2E8F0;
     padding: 32px;
     color: #000;
+    /* Ensure main content doesn't get too small */
+    min-width: 900px; 
 }
 
 .main-header {
@@ -153,11 +155,20 @@ body {
     box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
 }
 
-/* Fix grid to match the 6 columns in the HTML */
+/* * FIX: Updated grid-template-columns to match the 8 columns in the HTML:
+* 1. Radio Button (50px)
+* 2. Client ID (1fr)
+* 3. Loan Application ID (1.5fr)
+* 4. Name (2fr)
+* 5. Principal Amount (1.5fr)
+* 6. Interest Amount (1.5fr)
+* 7. Total Loan Amount (1.5fr)
+* 8. Created At (1.8fr) 
+*/
 .table-header, .table-row {
     display: grid;
-    /* Define 6 columns: a small one for the radio button, and 5 equal-width columns */
-    grid-template-columns: 50px 1.2fr 1.5fr 2fr 1.5fr 1.5fr; 
+    /* Defining 8 columns based on the HTML structure */
+    grid-template-columns: 50px 1fr 1.5fr 2fr 1.5fr 1.5fr 1.5fr 1.8fr; 
     align-items: center;
 }
 
@@ -169,8 +180,11 @@ body {
 
 .table-header-cell {
     text-align: left;
-    padding: 12px 24px;
+    padding: 12px 10px; /* Reduced side padding slightly for fitting more columns */
     border-right: 1px solid #E2E8F0;
+    overflow: hidden; /* Prevent text overflow from distorting layout */
+    text-overflow: ellipsis;
+    white-space: nowrap;
 }
 
 .table-header-cell:first-child {
@@ -188,6 +202,13 @@ body {
 
 .table-row {
     border-bottom: 1px solid #E2E8F0;
+    /* Use a pseudo-selector to apply alternating background colors */
+    background-color: #fff;
+}
+
+/* Added explicit background color for alternating rows */
+.table-body .table-row:nth-child(even) {
+    background-color: #F7FAFC; 
 }
 
 .table-row:last-child {
@@ -195,9 +216,11 @@ body {
 }
 
 .table-cell {
-    padding: 12px 24px;
+    padding: 12px 10px; /* Reduced side padding to match header cell */
     border-right: 1px solid #E2E8F0;
     min-height: 40px;
+    display: flex;
+    align-items: center;
 }
 
 .table-cell:first-child {
@@ -211,9 +234,7 @@ body {
     border-right: none;
 }
 
-.even-row {
-    background-color: #F7FAFC;
-}
+/* Removed .even-row class as :nth-child(even) now handles it */
 
 /* Style for the radio button input */
 .table-cell input[type="radio"] {

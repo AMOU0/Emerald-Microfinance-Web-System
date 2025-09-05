@@ -1,6 +1,10 @@
 document.addEventListener('DOMContentLoaded', function() {
+    // ===================================
+    // 1. Navigation and Logout Handler
+    // ===================================
     const navLinks = document.querySelectorAll('.nav-link');
     const logoutButton = document.querySelector('.logout-button');
+    const returnButton = document.querySelector('.return-button');
 
     navLinks.forEach(link => {
         link.addEventListener('click', function(event) {
@@ -35,14 +39,25 @@ document.addEventListener('DOMContentLoaded', function() {
         });
     });
 
-    // Handle the logout button separately
-    logoutButton.addEventListener('click', function() {
-        // You would typically handle a logout process here (e.g., clearing session data)
-        window.location.href = 'login.html'; // Redirect to the login page
-    });
+    // Handle the logout button
+    if (logoutButton) {
+        logoutButton.addEventListener('click', function() {
+            window.location.href = 'login.html';
+        });
+    }
+
+    // Handle the return button
+    if (returnButton) {
+        returnButton.addEventListener('click', () => {
+            window.location.href = 'accountsreceivable.html'; 
+        });
+    }
 });
-/*================================= */
-document.addEventListener('DOMContentLoaded', () => {
+
+/*================================= */document.addEventListener('DOMContentLoaded', () => {
+    // ==================================================
+    // 2. Loan Details, Schedule Fetch, and Payment Handler
+    // ==================================================
     const urlParams = new URLSearchParams(window.location.search);
     const clientId = urlParams.get('clientID');
     const loanId = urlParams.get('loanID');
@@ -52,6 +67,7 @@ document.addEventListener('DOMContentLoaded', () => {
         return;
     }
 
+    // DOM Elements (Consolidated)
     const clientIDInput = document.getElementById('client_ID');
     const lastNameInput = document.getElementById('lastName');
     const loanIdInput = document.getElementById('loanid');
@@ -62,58 +78,147 @@ document.addEventListener('DOMContentLoaded', () => {
     const amountInput = document.getElementById('amount');
     const payButton = document.querySelector('.pay-button');
     const messageContainer = document.getElementById('message-container');
+    const scheduleTableBody = document.querySelector('.loan-schedule-table tbody');
 
-    let loanData = null;
+    let loanData = null; // Stores loan summary for payment validation
 
-    function fetchLoanDetails() {
-        fetch(`PHP/accountsreceivableselect_handler.php?client_id=${clientId}&loan_id=${loanId}`)
-            .then(res => res.json())
-            .then(data => {
-                if (data.error) {
-                    messageContainer.textContent = data.error;
-                    return;
+    // Helper function for currency formatting
+    const formatCurrency = (amount) => parseFloat(amount).toFixed(2);
+
+    /**
+     * Fetches loan summary and the amortization schedule and populates the table.
+     */
+    async function fetchLoanDataAndSchedule() {
+        messageContainer.textContent = 'Loading loan details and schedule...';
+        messageContainer.style.color = 'blue';
+        scheduleTableBody.innerHTML = ''; // Clear existing table data
+
+        // --- Fetch Summary Details ---
+        try {
+            const summaryUrl = `PHP/accountsreceivableselect_handler.php?client_id=${clientId}&loan_id=${loanId}`;
+            const summaryRes = await fetch(summaryUrl);
+            const summaryData = await summaryRes.json();
+
+            if (summaryData.error) {
+                messageContainer.textContent = `Error: ${summaryData.error}`;
+                messageContainer.style.color = 'red';
+                return;
+            }
+            
+            // Populate summary fields
+            loanData = summaryData.loan;
+            clientIDInput.value = summaryData.client.client_ID;
+            lastNameInput.value = summaryData.client.name;
+            loanIdInput.value = loanData.id;
+            balanceInput.value = formatCurrency(loanData.balance);
+            amountToPayInput.value = formatCurrency(loanData.amount_to_pay);
+            currentDueInput.value = loanData.current_due;
+            nextDueInput.value = loanData.next_due;
+            amountInput.value = formatCurrency(loanData.amount_to_pay); 
+
+        } catch (e) {
+            messageContainer.textContent = 'Error fetching loan details.';
+            console.error('Summary Fetch Error:', e);
+            return;
+        }
+
+        // --- Fetch Amortization Schedule ---
+        try {
+            const scheduleUrl = `PHP/accountsreceivableselectsched_handle.php?client_id=${clientId}&loan_id=${loanId}`;
+            const scheduleRes = await fetch(scheduleUrl);
+            const scheduleData = await scheduleRes.json();
+
+            if (scheduleData.error) {
+                messageContainer.textContent = `Error fetching schedule: ${scheduleData.error}`;
+                messageContainer.style.color = 'red';
+                return;
+            }
+
+            if (scheduleData.length === 0) {
+                messageContainer.textContent = 'No amortization schedule found for this loan.';
+                messageContainer.style.color = 'orange';
+                return;
+            }
+
+            // Render Table
+            scheduleData.forEach((installment) => {
+                const row = scheduleTableBody.insertRow();
+                
+                const isPaid = installment.is_paid;
+                const isPartiallyPaid = installment.amount_paid > 0 && !isPaid;
+                const rowClass = isPaid ? 'paid' : (isPartiallyPaid ? 'partially-paid' : '');
+
+                // FIX: Only add the class if rowClass is not an empty string
+                if (rowClass) {
+                    row.classList.add(rowClass);
                 }
-                loanData = data.loan;
-                clientIDInput.value = data.client.client_ID;
-                lastNameInput.value = data.client.name;
-                loanIdInput.value = loanData.id;
-                balanceInput.value = loanData.balance.toFixed(2);
-                amountToPayInput.value = loanData.amount_to_pay.toFixed(2);
-                currentDueInput.value = loanData.current_due;
-                nextDueInput.value = loanData.next_due;
-                amountInput.value = loanData.amount_to_pay.toFixed(2);
-            })
-            .catch(e => {
-                messageContainer.textContent = 'Error fetching loan details';
-                console.error(e);
+
+                row.insertCell().textContent = installment.due_date;
+                row.insertCell().textContent = formatCurrency(installment.installment_amount);
+                row.insertCell().textContent = formatCurrency(installment.interest_component);
+                row.insertCell().textContent = formatCurrency(installment.amount_paid);
+                row.insertCell().textContent = installment.date_paid || 'N/A';
+                row.insertCell().textContent = formatCurrency(installment.remaining_balance);
             });
+            
+            // Update Due Dates
+            const firstUnpaid = scheduleData.find(item => !item.is_paid);
+            if (firstUnpaid) {
+                const firstUnpaidIndex = scheduleData.findIndex(item => !item.is_paid);
+                currentDueInput.value = firstUnpaid.due_date;
+                const nextDueInstallment = scheduleData[firstUnpaidIndex + 1];
+                nextDueInput.value = nextDueInstallment ? nextDueInstallment.due_date : 'N/A (Last Due)';
+            } else {
+                currentDueInput.value = 'N/A (Fully Paid)';
+                nextDueInput.value = 'N/A';
+            }
+
+            messageContainer.textContent = 'Schedule and details loaded successfully.';
+            messageContainer.style.color = 'green';
+            
+        } catch (error) {
+            console.error('Schedule Fetch Error:', error);
+            messageContainer.textContent = 'Failed to fetch or process schedule data.';
+            messageContainer.style.color = 'red';
+        }
     }
 
+
+    // --- Payment Handler ---
     payButton.addEventListener('click', () => {
         const amountStr = amountInput.value.trim();
         if (!amountStr || isNaN(amountStr)) {
             messageContainer.textContent = 'Enter a valid payment amount';
+            messageContainer.style.color = 'red';
             return;
         }
         const amount = parseFloat(amountStr);
+        
+        // Validation checks
         if (amount <= 0) {
             messageContainer.textContent = 'Payment amount must be positive';
+            messageContainer.style.color = 'red';
             return;
         }
+        
+        // ✅ Validation: Payment cannot exceed total balance (Allows full payoff/overpayment of installment)
         if (amount > parseFloat(balanceInput.value)) {
             messageContainer.textContent = 'Payment exceeds total balance';
+            messageContainer.style.color = 'red';
             return;
         }
-        if (amount > loanData.amount_to_pay) {
-            messageContainer.textContent = 'Payment exceeds current installment due amount';
-            return;
-        }
+        
+        // NOTE: The previous validation limiting payment to 'amountToPay' (current installment due) is omitted
+        // to allow the user to overpay the installment up to the remaining loan balance.
 
         const formData = new FormData();
         formData.append('client_id', clientId);
         formData.append('loan_id', loanId);
         formData.append('amount', amount);
         formData.append('processby', 'system');
+
+        messageContainer.textContent = 'Processing payment...';
+        messageContainer.style.color = 'blue';
 
         fetch('PHP/accountsreceivableselectpay_handle.php', {
             method: 'POST',
@@ -123,17 +228,21 @@ document.addEventListener('DOMContentLoaded', () => {
             .then(data => {
                 if (data.error) {
                     messageContainer.textContent = data.error;
+                    messageContainer.style.color = 'red';
                 } else {
                     messageContainer.textContent = data.message;
-                    amountInput.value = '';
-                    fetchLoanDetails();
+                    messageContainer.style.color = 'green';
+                    // Refresh both summary fields and the table
+                    fetchLoanDataAndSchedule(); 
                 }
             })
             .catch(e => {
                 messageContainer.textContent = 'Error processing payment';
+                messageContainer.style.color = 'red';
                 console.error(e);
             });
     });
 
-    fetchLoanDetails();
+    // Initial Load
+    fetchLoanDataAndSchedule();
 });

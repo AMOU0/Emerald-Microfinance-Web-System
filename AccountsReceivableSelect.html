@@ -93,7 +93,7 @@
 
                             <label for="amountToPay">Amount to Pay</label>
 
-                            <input type="text" id="amountToPay">
+                            <input type="text" id="amountToPay" disabled>
 
                         </div>
 
@@ -131,21 +131,24 @@
         
         <div id="message-container" class="text-center text-sm font-medium mb-4 min-h-[1.5rem] mt-8"></div>
         
-        <section class="ammortization-schedule-container">
-            <div class="table-container min-w-[700px]">
-                <div class="table-header text-sm grid grid-cols-6 px-6 py-4 rounded-t-lg font-medium uppercase tracking-wider">
-                    <div class="p-2">#</div>
-                    <div class="p-2">Date</div>
-                    <div class="p-2 text-right">Payment</div>
-                    <div class="p-2 text-right">Principal</div>
-                    <div class="p-2 text-right">Interest</div>
-                    <div class="p-2 text-right">Balance</div>
-                </div>
-                
-                <div class="table-body ammortization-schedule-table-body text-sm">
-                </div>
-            </div>
-        </section>
+<div class="loan-schedule">
+    <div style="overflow-x: auto;">
+        <table class="loan-schedule-table">
+            <thead>
+                <tr>
+                    <th>Date of Payment</th>
+                    <th>Amount to Pay</th>
+                    <th>Interest amount</th>
+                    <th>Amount Paid</th>
+                    <th>Date of Amount Paid</th>
+                    <th>Remaining Balance</th>
+                </tr>
+            </thead>
+            <tbody>
+                </tbody>
+        </table>
+    </div>
+</div>
     </main>
     <script src="JS/accountsreceivableselect_function.js"></script>
 </body>
