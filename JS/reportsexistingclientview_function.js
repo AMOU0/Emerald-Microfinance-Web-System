@@ -67,10 +67,9 @@ document.addEventListener('DOMContentLoaded', function() {
         });
     });
 });
-/*================================= */
-
-
+/*=============================================================================================================================================================================*/
 function fillClientData(clientData) {
+    // Personal and Employment Information (Original logic retained)
     document.getElementById('lastName').value = clientData.last_name || '';
     document.getElementById('firstName').value = clientData.first_name || '';
     document.getElementById('middleName').value = clientData.middle_name || '';
@@ -86,13 +85,41 @@ function fillClientData(clientData) {
     document.getElementById('employmentStatus').value = clientData.employment_status || '';
     document.getElementById('occupationPosition').value = clientData.occupation || '';
     document.getElementById('yearsInJob').value = clientData.years_in_job || '';
+
+    // FIX 1: Display Income/Salary (which is a string range) in the input field.
+    // Ensure the input field handles the string if it's currently set as type="number".
+    // If the HTML input is type="number", it might show an error icon or blank.
+    // If possible, change the HTML <input type="number" to <input type="text">.
     document.getElementById('incomeSalary').value = clientData.income || '';
-    document.getElementById('cr').value = clientData.has_cr || '';
-    document.getElementById('barangayClearance').checked = clientData.has_barangay_clearance === '1';
-    document.getElementById('validId').checked = clientData.has_valid_id === '1';
+
+    // FIX 2: Display Collateral (using the 'cr' alias from the PHP handler)
+    document.getElementById('cr').value = clientData.cr || 'N/A'; // N/A if no loan/collateral found
+
+    // FIX 3: Correctly handling client requirements based on the HTML IDs (barangayClearance, validId)
+    // 1. Barangay Clearance Checkbox: 
+    const barangayClearanceCheck = document.getElementById('barangayClearance');
+    if (barangayClearanceCheck) {
+        // Check if DB value (1 or '1') indicates clearance is present
+        barangayClearanceCheck.checked = clientData.has_barangay_clearance == 1; 
+    }
+    
+    // Determine if a Valid ID was submitted (value is ID name, or '0' if none)
+    const validIdValue = clientData.has_valid_id || '0';
+    // A valid ID is considered submitted if the value is not '0' and not an empty string
+    const hasValidIdSubmitted = validIdValue !== '0' && validIdValue !== '';
+
+    // 2. Valid ID Checkbox: Check it if a valid ID type was submitted.
+    const hasValidIdCheck = document.getElementById('validId');
+    if (hasValidIdCheck) {
+        hasValidIdCheck.checked = hasValidIdSubmitted;
+    }
+
+    // 3. Valid ID Type Input: (Skipping as 'validIdType' does not exist in the provided HTML)
+    // If the field were visible, it would display the ID type string from clientData.has_valid_id.
 }
 
 function showMessageBox(message, type) {
+    // ... (rest of showMessageBox function remains unchanged)
     const existingBox = document.querySelector('.message-box');
     if (existingBox) existingBox.remove();
     const box = document.createElement('div');
@@ -113,6 +140,7 @@ function showMessageBox(message, type) {
 }
 
 document.addEventListener('DOMContentLoaded', async () => {
+    // ... (rest of DOMContentLoaded remains unchanged)
     const clientIdInput = document.getElementById('clientIdInput');
     const clientNameDisplay = document.getElementById('clientNameDisplay');
     const urlParams = new URLSearchParams(window.location.search);
@@ -120,6 +148,7 @@ document.addEventListener('DOMContentLoaded', async () => {
 
     async function fetchClientData(clientId) {
         try {
+            // This handler must join 'clients' and 'client_requirements' tables to return all required fields
             const clientResponse = await fetch(`PHP/reportsexistingclientview_handler.php?client_id=${clientId}`);
             const clientResult = await clientResponse.json();
             if (clientResponse.ok && clientResult.status === 'success') {
@@ -141,8 +170,8 @@ document.addEventListener('DOMContentLoaded', async () => {
         showMessageBox('No client ID found in URL.', 'info');
     }
 });
-/*======================*/
-// Function to show a message box
+/*=============================================================================================================================================================================*/
+// Function to show a message box (redefined for console logging in this block)
 function showMessageBox(message, type) {
     console.log(message, type);
     // You'd typically implement a UI element here to display the message
@@ -175,9 +204,6 @@ async function fetchLoanApplications(clientId) {
             document.getElementById('loanTableContainer').innerHTML = `<p>${result.message}</p>`;
             return;
         }
-
-        // Pass the complete data to the render function
-        // Assuming PHP/reports_loan_handler.php returns clientName and clientId if it gets modified
         renderLoanTable(result.data, result.clientName || 'Client Name N/A', clientId);
     } catch (error) {
         console.error('Error fetching loan applications:', error);

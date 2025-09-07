@@ -89,20 +89,23 @@ try {
     $stmt_client->close();
 
     // 3. Insert into 'client_requirements' table
-    // The client_ID will also serve as the primary key for this table.
-    $stmt_req = $conn->prepare("INSERT INTO client_requirements (client_ID, has_valid_id, has_barangay_clearance, has_cr) VALUES (?, ?, ?, ?)");
-    $stmt_req->bind_param("siii", 
+    // Use the valid ID type string if the checkbox was checked, otherwise '0'
+    $validIdValue = $data['hasValidId'] == 1 ? ($data['validIdType'] ?? 'Valid ID Provided') : '0';
+    $barangayClearanceValue = $data['hasBarangayClearance'];
+
+    // The client_requirements table only has has_valid_id and has_barangay_clearance
+    $stmt_req = $conn->prepare("INSERT INTO client_requirements (client_ID, has_valid_id, has_barangay_clearance) VALUES (?, ?, ?)");
+    $stmt_req->bind_param("ssi", 
         $newClientId,
-        $data['validId'], 
-        $data['barangayClearance'], 
-        $data['cr']
+        $validIdValue, 
+        $barangayClearanceValue
     );
     $stmt_req->execute();
     $stmt_req->close();
 
     // If all queries are successful, commit the transaction
     $conn->commit();
-    echo json_encode(['success' => true, 'message' => 'Client and guarantor data saved successfully!', 'clientId' => $newClientId]);
+    echo json_encode(['success' => true, 'message' => 'Client created successfully!', 'clientId' => $newClientId]);
 
 } catch (mysqli_sql_exception $e) {
     // If any query failed, rollback the transaction and log the error

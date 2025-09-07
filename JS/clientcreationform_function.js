@@ -42,72 +42,128 @@ document.addEventListener('DOMContentLoaded', function() {
     });
 });
 /*=============================================================================================================================================================================*/
-
 document.addEventListener('DOMContentLoaded', () => {
-    const form = document.getElementById('clientCreationForm');
+    // DOM Elements
+    const clientCreationForm = document.getElementById('clientCreationForm');
+    const maritalStatusSelect = document.getElementById('maritalStatus');
+    const genderSelect = document.getElementById('gender');
+    const citySelect = document.getElementById('city');
+    const barangaySelect = document.getElementById('barangay');
+    const incomeSalarySelect = document.getElementById('incomeSalary');
+    const validIdTypeSelect = document.getElementById('validIdType');
+    const barangayClearanceCheck = document.getElementById('barangayClearanceCheck');
+    const hasValidIdCheck = document.getElementById('hasValidIdCheck');
+    
+    const createButton = document.getElementById('create-button');
 
-    // Function to generate the new client ID
-    function generateClientId() {
-        // Get the current year
-        const currentYear = new Date().getFullYear();
-        // A placeholder for the next client number. This would need to be fetched from a database.
-        // For this example, we'll use a hardcoded value, but you would replace this with a dynamic number.
-        // The first client of the year would be 1, the next 2, and so on.
-        const nextClientNumber = 1; 
-        
-        // Pad the number with leading zeros to make it 5 digits long
-        const paddedNumber = String(nextClientNumber).padStart(5, '0');
-        
-        // Combine the year and the padded number to create the client ID
-        return `${currentYear}${paddedNumber}`;
-    }
+    // Async function to fetch data from the PHP handler and populate a select element
+    const fetchAndPopulateSelect = async (element, endpoint, params = {}) => {
+        try {
+            element.disabled = true;
+            element.innerHTML = '<option>Loading...</option>';
 
-    form.addEventListener('submit', async (e) => {
+            const formData = new FormData();
+            formData.append('type', endpoint);
+            for (const key in params) {
+                formData.append(key, params[key]);
+            }
+            
+            // Log the FormData for debugging purposes
+            console.log('Fetching data for:', endpoint, 'with params:', Object.fromEntries(formData));
+
+            const response = await fetch('PHP/selectdatafetcher_handler.php', {
+                method: 'POST',
+                body: formData
+            });
+
+            // Log the full response to check its status
+            console.log('Full Response:', response);
+
+            if (!response.ok) {
+                throw new Error(`HTTP error! status: ${response.status}`);
+            }
+
+            const data = await response.json();
+            // Log the parsed data to see what was returned
+            console.log('Data received from PHP:', data);
+
+            if (data.error) {
+                alert(`Error: ${data.error}`); // Replaced showModal with alert
+                return;
+            }
+
+            // Clear previous options
+            element.innerHTML = '<option value="">Select...</option>';
+            data.forEach(item => {
+                const option = document.createElement('option');
+                option.value = item;
+                option.textContent = item;
+                element.appendChild(option);
+            });
+
+        } catch (error) {
+            console.error('Fetch error:', error);
+            alert('Failed to load data. Please check the server connection or console.'); // Replaced showModal with alert
+        } finally {
+            element.disabled = false;
+        }
+    };
+
+    // Initial population of the dropdowns
+    fetchAndPopulateSelect(maritalStatusSelect, 'maritalStatus');
+    fetchAndPopulateSelect(genderSelect, 'gender');
+    fetchAndPopulateSelect(citySelect, 'city');
+    fetchAndPopulateSelect(incomeSalarySelect, 'incomeSalary');
+    fetchAndPopulateSelect(validIdTypeSelect, 'validId');
+
+    // Event listener for the city dropdown to populate the barangay dropdown
+    citySelect.addEventListener('change', () => {
+        const selectedCity = citySelect.value;
+        if (selectedCity) {
+            fetchAndPopulateSelect(barangaySelect, 'barangay', { city: selectedCity });
+        } else {
+            barangaySelect.innerHTML = '<option value="">Select a City first</option>';
+            barangaySelect.disabled = true;
+        }
+    });
+    
+    // Disable valid ID select unless checkbox is checked
+    validIdTypeSelect.disabled = !hasValidIdCheck.checked;
+    hasValidIdCheck.addEventListener('change', () => {
+        validIdTypeSelect.disabled = !hasValidIdCheck.checked;
+        if (!hasValidIdCheck.checked) {
+            validIdTypeSelect.value = ''; // Reset selection
+        }
+    });
+
+    // Form submission handler
+    clientCreationForm.addEventListener('submit', async (e) => {
         e.preventDefault();
 
-        const formData = new FormData(form);
+        const formData = new FormData(clientCreationForm);
         const data = Object.fromEntries(formData.entries());
 
-        const createButton = document.getElementById('create-button');
         createButton.disabled = true;
         createButton.textContent = 'Creating...';
 
-        // Add checkbox values and convert them to 1 or 0
-        data.barangayClearance = form.elements.barangayClearance.checked ? 1 : 0;
-        data.validId = form.elements.validId.checked ? 1 : 0;
-        
-        // The 'cr' field is a text input, not a checkbox.
-        // Let's ensure it's handled as a string.
-        data.cr = data.cr || null;
+        // Convert checkbox values to 1 or 0
+        data.hasBarangayClearance = barangayClearanceCheck.checked ? 1 : 0;
+        data.hasValidId = hasValidIdCheck.checked ? 1 : 0;
+        data.validIdType = hasValidIdCheck.checked ? validIdTypeSelect.value : null;
 
-        // Basic validation for required fields
-        const requiredFields = [
-            'lastName', 'firstName', 'middleName', 'maritalStatus', 'gender',
-            'dateOfBirth', 'city', 'barangay', 'postalCode', 'streetAddress',
-            'phoneNumber', 'incomeSalary', 'cr'
-        ];
-
-        for (const field of requiredFields) {
-            if (!data[field]) {
-                alert(`Please fill in the required field: ${field.replace(/([A-Z])/g, ' $1').toLowerCase()}`);
-                createButton.disabled = false;
-                createButton.textContent = 'Create';
-                return;
-            }
-        }
-        
-        // Client requirements should have at least one of the following: a collateral, a valid ID, or a barangay clearance.
-        if (!data.cr && !data.validId && !data.barangayClearance) {
-            alert('Please select at least one requirement.');
+        // Client requirements validation: Check if at least one requirement is met
+        if (data.hasValidId === 0 && data.hasBarangayClearance === 0) {
+            alert('A client must provide at least one of the requirements (Valid ID or Barangay Clearance).'); // Replaced showModal with alert
             createButton.disabled = false;
             createButton.textContent = 'Create';
             return;
         }
 
-        // Generate the new client ID and add it to the data
-        data.clientId = generateClientId();
-
         try {
+            // Remove the keys from the original form which are replaced by the 'has' variables
+            delete data.validId;
+            delete data.barangayClearance;
+            
             const response = await fetch('PHP/clientcreationform_handler.php', {
                 method: 'POST',
                 headers: {
@@ -119,14 +175,14 @@ document.addEventListener('DOMContentLoaded', () => {
             const result = await response.json();
 
             if (response.ok && result.success) {
-                alert('Client created successfully! Client ID: ' + data.clientId);
-                form.reset();
+                alert('Client created successfully! Client ID: ' + result.clientId); // Replaced showModal with alert
+                clientCreationForm.reset();
             } else {
-                alert(`Error: ${result.message}`);
+                alert(`Client creation failed: ${result.message}`); // Replaced showModal with alert
             }
         } catch (error) {
             console.error('Error:', error);
-            alert('An unexpected error occurred. Please try again.');
+            alert('An unexpected error occurred. Please try again.'); // Replaced showModal with alert
         } finally {
             createButton.disabled = false;
             createButton.textContent = 'Create';

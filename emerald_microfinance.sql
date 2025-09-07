@@ -3,7 +3,7 @@
 -- https://www.phpmyadmin.net/
 --
 -- Host: 127.0.0.1
--- Generation Time: Sep 05, 2025 at 04:14 PM
+-- Generation Time: Sep 07, 2025 at 04:51 PM
 -- Server version: 10.4.32-MariaDB
 -- PHP Version: 8.2.12
 
@@ -48,13 +48,6 @@ CREATE TABLE `clients` (
   `created_at` timestamp NOT NULL DEFAULT current_timestamp() ON UPDATE current_timestamp()
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 
---
--- Dumping data for table `clients`
---
-
-INSERT INTO `clients` (`client_ID`, `last_name`, `first_name`, `middle_name`, `marital_status`, `gender`, `date_of_birth`, `city`, `barangay`, `postal_code`, `street_address`, `phone_number`, `email`, `employment_status`, `occupation`, `years_in_job`, `income`, `created_at`) VALUES
-(202500001, 'Mallari', 'Angel', 'Laurence P', 'single', 'female', '2025-09-19', 'tarlac', 'sanroque', '2300', '#205 Alvindia Segundo Tarlac City', '09628785256', 'laurence030703@gmail.com', '', '', 0, '0 - 5,000', '2025-09-05 11:13:24');
-
 -- --------------------------------------------------------
 
 --
@@ -62,19 +55,32 @@ INSERT INTO `clients` (`client_ID`, `last_name`, `first_name`, `middle_name`, `m
 --
 
 CREATE TABLE `client_requirements` (
-  `has_valid_id` tinyint(1) DEFAULT 0,
+  `has_valid_id` varchar(50) DEFAULT '0',
   `has_barangay_clearance` tinyint(1) DEFAULT 0,
-  `has_cr` varchar(150) DEFAULT '0',
   `client_ID` bigint(20) NOT NULL,
   `created_at` text DEFAULT current_timestamp()
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 
+-- --------------------------------------------------------
+
 --
--- Dumping data for table `client_requirements`
+-- Table structure for table `genders`
 --
 
-INSERT INTO `client_requirements` (`has_valid_id`, `has_barangay_clearance`, `has_cr`, `client_ID`, `created_at`) VALUES
-(1, 0, '0', 202500001, '2025-09-05 19:13:24');
+CREATE TABLE `genders` (
+  `id` int(11) NOT NULL,
+  `gender_type` varchar(50) NOT NULL
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
+
+--
+-- Dumping data for table `genders`
+--
+
+INSERT INTO `genders` (`id`, `gender_type`) VALUES
+(2, 'Female'),
+(1, 'Male'),
+(3, 'Non-binary'),
+(4, 'Other');
 
 -- --------------------------------------------------------
 
@@ -99,7 +105,29 @@ CREATE TABLE `guarantor` (
 --
 
 INSERT INTO `guarantor` (`guarantor_id`, `guarantor_last_name`, `guarantor_first_name`, `guarantor_middle_name`, `guarantor_street_address`, `guarantor_phone_number`, `loan_application_id`, `client_ID`, `created_at`) VALUES
-(1, 'Mallari', 'Angel', 'Laurence P', '#205 Alvindia Segundo Tarlac City', '09628785256', 2025090500001, 202500001, '2025-09-05 19:13:38');
+(1, 'Mallari', 'Angel', 'Laurence P', '#205 Alvindia Segundo Tarlac City', '09212271315', 2025090700001, 202500001, '2025-09-07 18:31:00'),
+(2, 'Mallari', 'Angel', 'Laurence P', '#205 Alvindia Segundo Tarlac City', '09212271315', 0, 202500001, '2025-09-07 19:24:56');
+
+-- --------------------------------------------------------
+
+--
+-- Table structure for table `income_salaries`
+--
+
+CREATE TABLE `income_salaries` (
+  `id` int(11) NOT NULL,
+  `income_range` varchar(50) NOT NULL
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
+
+--
+-- Dumping data for table `income_salaries`
+--
+
+INSERT INTO `income_salaries` (`id`, `income_range`) VALUES
+(1, '0 - 5,000'),
+(3, '10,000 - 20,000'),
+(4, '20,000+'),
+(2, '5,000 - 10,000');
 
 -- --------------------------------------------------------
 
@@ -129,6 +157,7 @@ INSERT INTO `interest_pecent` (`interest_ID`, `Interest_Pecent`, `status`, `date
 
 CREATE TABLE `loan_applications` (
   `loan_application_id` bigint(20) NOT NULL,
+  `colateral` varchar(150) NOT NULL,
   `loan_amount` decimal(10,2) NOT NULL,
   `payment_frequency` varchar(50) NOT NULL,
   `date_start` date NOT NULL,
@@ -141,12 +170,26 @@ CREATE TABLE `loan_applications` (
   `created_at` text DEFAULT current_timestamp()
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 
+-- --------------------------------------------------------
+
 --
--- Dumping data for table `loan_applications`
+-- Table structure for table `marital_statuses`
 --
 
-INSERT INTO `loan_applications` (`loan_application_id`, `loan_amount`, `payment_frequency`, `date_start`, `duration_of_loan`, `interest_rate`, `date_end`, `client_ID`, `status`, `paid`, `created_at`) VALUES
-(2025090500001, 10000.00, 'monthly', '2025-09-25', '100 days', 20, '2026-01-03', 202500001, 'approved', '0', '2025-09-05 19:13:38');
+CREATE TABLE `marital_statuses` (
+  `id` int(11) NOT NULL,
+  `status` varchar(50) NOT NULL
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
+
+--
+-- Dumping data for table `marital_statuses`
+--
+
+INSERT INTO `marital_statuses` (`id`, `status`) VALUES
+(3, 'Divorced'),
+(1, 'Married'),
+(2, 'Single'),
+(4, 'Widowed');
 
 -- --------------------------------------------------------
 
@@ -162,6 +205,148 @@ CREATE TABLE `payment` (
   `date_payed` timestamp NOT NULL DEFAULT current_timestamp(),
   `processby` varchar(255) NOT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
+
+-- --------------------------------------------------------
+
+--
+-- Table structure for table `philippine_barangays`
+--
+
+CREATE TABLE `philippine_barangays` (
+  `id` int(11) NOT NULL,
+  `barangay_name` varchar(100) NOT NULL,
+  `city_name` varchar(100) NOT NULL
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
+
+--
+-- Dumping data for table `philippine_barangays`
+--
+
+INSERT INTO `philippine_barangays` (`id`, `barangay_name`, `city_name`) VALUES
+(1, 'Aguso', 'Tarlac City'),
+(2, 'Alvindia', 'Tarlac City'),
+(3, 'Amucao', 'Tarlac City'),
+(4, 'Armenia', 'Tarlac City'),
+(5, 'Azon', 'Tarlac City'),
+(6, 'Balanti', 'Tarlac City'),
+(7, 'Balete', 'Tarlac City'),
+(8, 'Balibago I', 'Tarlac City'),
+(9, 'Balibago II', 'Tarlac City'),
+(10, 'Balingcanaway', 'Tarlac City'),
+(11, 'Baras-Baras', 'Tarlac City'),
+(12, 'Batang Batang', 'Tarlac City'),
+(13, 'Bora', 'Tarlac City'),
+(14, 'Buenavista', 'Tarlac City'),
+(15, 'Buhilit', 'Tarlac City'),
+(16, 'Burot', 'Tarlac City'),
+(17, 'Cabayaoasan', 'Tarlac City'),
+(18, 'Cairang', 'Tarlac City'),
+(19, 'Calingcuan', 'Tarlac City'),
+(20, 'Camp Servillano Aquino (C & S)', 'Tarlac City'),
+(21, 'Carangian', 'Tarlac City'),
+(22, 'Central', 'Tarlac City'),
+(23, 'Cutcut I', 'Tarlac City'),
+(24, 'Cutcut II', 'Tarlac City'),
+(25, 'Dapdap', 'Tarlac City'),
+(26, 'Dela Paz', 'Tarlac City'),
+(27, 'Dolores', 'Tarlac City'),
+(28, 'Dominante', 'Tarlac City'),
+(29, 'Don Bosco', 'Tarlac City'),
+(30, 'Dueño', 'Tarlac City'),
+(31, 'Laoang', 'Tarlac City'),
+(32, 'Ligtasan', 'Tarlac City'),
+(33, 'Lipay-Dingin', 'Tarlac City'),
+(36, 'Mabini', 'Tarlac City'),
+(34, 'Maligaya', 'Tarlac City'),
+(35, 'Maliwalo', 'Tarlac City'),
+(37, 'Matatalaib', 'Tarlac City'),
+(38, 'Mckinley', 'Tarlac City'),
+(40, 'Pacquing', 'Tarlac City'),
+(41, 'Paraiso', 'Tarlac City'),
+(39, 'Parang', 'Tarlac City'),
+(42, 'Pasonanca', 'Tarlac City'),
+(43, 'Poblacion', 'Tarlac City'),
+(45, 'Poblacion H', 'Tarlac City'),
+(46, 'Poblacion I', 'Tarlac City'),
+(47, 'Poblacion II', 'Tarlac City'),
+(48, 'Poblacion III', 'Tarlac City'),
+(49, 'Poblacion IV', 'Tarlac City'),
+(54, 'Poblacion IX', 'Tarlac City'),
+(44, 'Poblacion Matatalaib', 'Tarlac City'),
+(50, 'Poblacion V', 'Tarlac City'),
+(51, 'Poblacion VI', 'Tarlac City'),
+(52, 'Poblacion VII', 'Tarlac City'),
+(53, 'Poblacion VIII', 'Tarlac City'),
+(55, 'Poblacion X', 'Tarlac City'),
+(56, 'Poblacion XI', 'Tarlac City'),
+(57, 'Poblacion XII', 'Tarlac City'),
+(58, 'Poblacion XIII', 'Tarlac City'),
+(59, 'Poblacion XIV', 'Tarlac City'),
+(64, 'Poblacion XIX', 'Tarlac City'),
+(60, 'Poblacion XV', 'Tarlac City'),
+(61, 'Poblacion XVI', 'Tarlac City'),
+(62, 'Poblacion XVII', 'Tarlac City'),
+(63, 'Poblacion XVIII', 'Tarlac City'),
+(65, 'Poblacion XX', 'Tarlac City'),
+(66, 'Poblacion XXI', 'Tarlac City'),
+(67, 'Poblacion XXII', 'Tarlac City'),
+(68, 'Poblacion XXIII', 'Tarlac City'),
+(69, 'Poblacion XXIV', 'Tarlac City'),
+(74, 'Poblacion XXIX', 'Tarlac City'),
+(70, 'Poblacion XXV', 'Tarlac City'),
+(71, 'Poblacion XXVI', 'Tarlac City'),
+(72, 'Poblacion XXVII', 'Tarlac City'),
+(73, 'Poblacion XXVIII', 'Tarlac City'),
+(75, 'Poblacion XXX', 'Tarlac City'),
+(76, 'San Isidro', 'Tarlac City');
+
+-- --------------------------------------------------------
+
+--
+-- Table structure for table `philippine_cities`
+--
+
+CREATE TABLE `philippine_cities` (
+  `id` int(11) NOT NULL,
+  `city_name` varchar(100) NOT NULL,
+  `province` varchar(100) DEFAULT NULL,
+  `postal_code` varchar(10) DEFAULT NULL
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
+
+--
+-- Dumping data for table `philippine_cities`
+--
+
+INSERT INTO `philippine_cities` (`id`, `city_name`, `province`, `postal_code`) VALUES
+(1, 'Tarlac City', 'Tarlac', '2300');
+
+-- --------------------------------------------------------
+
+--
+-- Table structure for table `philippine_valid_ids`
+--
+
+CREATE TABLE `philippine_valid_ids` (
+  `id` int(11) NOT NULL,
+  `id_name` varchar(255) NOT NULL,
+  `description` text DEFAULT NULL
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
+
+--
+-- Dumping data for table `philippine_valid_ids`
+--
+
+INSERT INTO `philippine_valid_ids` (`id`, `id_name`, `description`) VALUES
+(1, 'Passport', 'Philippine Passport issued by the Department of Foreign Affairs (DFA).'),
+(2, 'Driver\'s License', 'Issued by the Land Transportation Office (LTO).'),
+(3, 'Social Security System (SSS) ID', 'For private sector employees.'),
+(4, 'Government Service Insurance System (GSIS) ID', 'For government employees.'),
+(5, 'Unified Multi-Purpose ID (UMID)', 'A single ID card for SSS, GSIS, Pag-IBIG, and PhilHealth.'),
+(6, 'Professional Regulation Commission (PRC) ID', 'For licensed professionals.'),
+(7, 'Postal ID', 'An official identification card issued by the Philippine Postal Corporation (PhilPost).'),
+(8, 'Voter\'s ID', 'Issued by the Commission on Elections (COMELEC).'),
+(9, 'Tax Identification Number (TIN) ID', 'Issued by the Bureau of Internal Revenue (BIR).'),
+(10, 'Philippine Health Insurance Corporation (PhilHealth) ID', 'For PhilHealth members.');
 
 -- --------------------------------------------------------
 
@@ -203,12 +388,26 @@ ALTER TABLE `client_requirements`
   ADD PRIMARY KEY (`client_ID`);
 
 --
+-- Indexes for table `genders`
+--
+ALTER TABLE `genders`
+  ADD PRIMARY KEY (`id`),
+  ADD UNIQUE KEY `gender_type` (`gender_type`);
+
+--
 -- Indexes for table `guarantor`
 --
 ALTER TABLE `guarantor`
   ADD PRIMARY KEY (`guarantor_id`),
   ADD KEY `loan_application_id` (`loan_application_id`),
   ADD KEY `fk_guarantor_client_id` (`client_ID`);
+
+--
+-- Indexes for table `income_salaries`
+--
+ALTER TABLE `income_salaries`
+  ADD PRIMARY KEY (`id`),
+  ADD UNIQUE KEY `income_range` (`income_range`);
 
 --
 -- Indexes for table `loan_applications`
@@ -218,12 +417,40 @@ ALTER TABLE `loan_applications`
   ADD KEY `fk_loan_client_id` (`client_ID`);
 
 --
+-- Indexes for table `marital_statuses`
+--
+ALTER TABLE `marital_statuses`
+  ADD PRIMARY KEY (`id`),
+  ADD UNIQUE KEY `status` (`status`);
+
+--
 -- Indexes for table `payment`
 --
 ALTER TABLE `payment`
   ADD PRIMARY KEY (`payment_id`),
   ADD KEY `client_id` (`client_id`),
   ADD KEY `loan_application_id` (`loan_application_id`) USING BTREE;
+
+--
+-- Indexes for table `philippine_barangays`
+--
+ALTER TABLE `philippine_barangays`
+  ADD PRIMARY KEY (`id`),
+  ADD UNIQUE KEY `barangay_city_unique` (`barangay_name`,`city_name`);
+
+--
+-- Indexes for table `philippine_cities`
+--
+ALTER TABLE `philippine_cities`
+  ADD PRIMARY KEY (`id`),
+  ADD UNIQUE KEY `city_name` (`city_name`);
+
+--
+-- Indexes for table `philippine_valid_ids`
+--
+ALTER TABLE `philippine_valid_ids`
+  ADD PRIMARY KEY (`id`),
+  ADD UNIQUE KEY `id_name` (`id_name`);
 
 --
 -- Indexes for table `user_accounts`
@@ -238,16 +465,52 @@ ALTER TABLE `user_accounts`
 --
 
 --
+-- AUTO_INCREMENT for table `genders`
+--
+ALTER TABLE `genders`
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=5;
+
+--
 -- AUTO_INCREMENT for table `guarantor`
 --
 ALTER TABLE `guarantor`
-  MODIFY `guarantor_id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=2;
+  MODIFY `guarantor_id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=3;
+
+--
+-- AUTO_INCREMENT for table `income_salaries`
+--
+ALTER TABLE `income_salaries`
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=5;
+
+--
+-- AUTO_INCREMENT for table `marital_statuses`
+--
+ALTER TABLE `marital_statuses`
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=5;
 
 --
 -- AUTO_INCREMENT for table `payment`
 --
 ALTER TABLE `payment`
   MODIFY `payment_id` int(11) NOT NULL AUTO_INCREMENT;
+
+--
+-- AUTO_INCREMENT for table `philippine_barangays`
+--
+ALTER TABLE `philippine_barangays`
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=77;
+
+--
+-- AUTO_INCREMENT for table `philippine_cities`
+--
+ALTER TABLE `philippine_cities`
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=2;
+
+--
+-- AUTO_INCREMENT for table `philippine_valid_ids`
+--
+ALTER TABLE `philippine_valid_ids`
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=11;
 
 --
 -- AUTO_INCREMENT for table `user_accounts`

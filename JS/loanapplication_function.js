@@ -42,8 +42,7 @@ document.addEventListener('DOMContentLoaded', function() {
     });
 
 /*=============================================================================================================================================================================*/
-
-    // --- Client Search Modal Logic ---
+// --- Client Search Modal Logic ---
     const showClientsBtn = document.getElementById('showClientsBtn');
     const clientIDInput = document.getElementById('clientID');
     let clientName = ''; // Global variable to store client name
@@ -89,6 +88,7 @@ document.addEventListener('DOMContentLoaded', function() {
             }
         });
     }
+/*=============================================================================================================================================================================*/
 
     /**
      * Dynamically creates and displays a modal with a list of clients, including a search bar and interest rate.
@@ -182,8 +182,7 @@ document.addEventListener('DOMContentLoaded', function() {
     const endDateInput = document.getElementById('date-end');
     const applyButton = document.querySelector('.apply-button');
     const form = document.querySelector('.loan-application-container');
-    const formElement = document.getElementById('loanForm');
-
+    const formElement = document.getElementById('loanApplicationForm'); // Changed from loanForm to the correct ID
 
     if (startDateInput) {
         startDateInput.addEventListener('change', function() {
@@ -223,6 +222,7 @@ document.addEventListener('DOMContentLoaded', function() {
             const data = {
                 clientID: document.getElementById('clientID').value.trim(),
                 clientName: clientName.trim(),
+                colateral: document.getElementById('colateral').value.trim(),
                 guarantorLastName: document.getElementById('guarantorLastName').value.trim(),
                 guarantorFirstName: document.getElementById('guarantorFirstName').value.trim(),
                 guarantorMiddleName: document.getElementById('guarantorMiddleName').value.trim(),
@@ -237,7 +237,9 @@ document.addEventListener('DOMContentLoaded', function() {
             };
 
             const requiredFields = [
-                'clientID', 'guarantorLastName', 'guarantorFirstName', 'guarantorMiddleName',
+                'clientID', 
+                'colateral',
+                'guarantorLastName', 'guarantorFirstName', 'guarantorMiddleName',
                 'guarantorStreetAddress', 'guarantorPhoneNumber', 'loan-amount',
                 'payment-frequency', 'date-start', 'duration-of-loan', 'date-end'
             ];
@@ -245,7 +247,7 @@ document.addEventListener('DOMContentLoaded', function() {
             let isValid = true;
             requiredFields.forEach(fieldId => {
                 const input = document.getElementById(fieldId);
-                if (!input || !input.value || input.value.trim() === '') {
+                if (!input || !input.value || input.value.trim() === '' || (fieldId === 'loan-amount' && isNaN(data['loan-amount']))) {
                     isValid = false;
                 }
             });
@@ -276,6 +278,10 @@ document.addEventListener('DOMContentLoaded', function() {
                     }
                     if (endDateInput) {
                         endDateInput.value = '';
+                    }
+                    const durationInput = document.getElementById('duration-of-loan');
+                    if (durationInput) {
+                        durationInput.value = '';
                     }
                     data.loanID = result.loan_application_id;
                     createLoanDetailsModal(data);
@@ -348,6 +354,7 @@ document.addEventListener('DOMContentLoaded', function() {
                     <p><strong>Guarantor Name:</strong> ${data.guarantorFirstName} ${data.guarantorMiddleName} ${data.guarantorLastName}</p>
                     <p><strong>Address:</strong> ${data.guarantorStreetAddress}</p>
                     <p><strong>Phone Number:</strong> ${data.guarantorPhoneNumber}</p>
+                    <p><strong>Colateral:</strong> ${data.colateral}</p>
                     <h3>Loan Information</h3>
                     <p><strong>Loan ID:</strong> ${data.loanID}</p>
                     <p><strong>Loan Amount:</strong> PHP ${data['loan-amount'].toLocaleString('en-US')}</p>
@@ -438,7 +445,12 @@ document.addEventListener('DOMContentLoaded', function() {
             if (remainingBalance <= 0) break;
 
             remainingBalance -= paymentAmount;
-            if (remainingBalance < 0) remainingBalance = 0;
+            // Ensure remaining balance doesn't go below zero for the last payment
+            if (i === totalPayments - 1 && remainingBalance > 0) {
+                 remainingBalance = 0;
+            } else if (remainingBalance < 0) {
+                remainingBalance = 0;
+            }
 
             schedule.push({
                 'date-of-payment': currentDate.toISOString().split('T')[0],
@@ -458,7 +470,15 @@ document.addEventListener('DOMContentLoaded', function() {
                     currentDate.setMonth(currentDate.getMonth() + 1);
                     break;
             }
+            if (currentDate > endDate) break; // Stop generating payments past the end date
         }
+        
+        // Adjust final payment to cover any remaining rounding error
+        if (remainingBalance > 0.01) {
+            schedule[schedule.length - 1]['amount-to-pay'] += remainingBalance;
+            schedule[schedule.length - 1]['remaining-balance'] = 0;
+        }
+
 
         return schedule;
     }
@@ -490,52 +510,15 @@ document.addEventListener('DOMContentLoaded', function() {
         }, 3000);
     }
     
+    // Adjusted event listener for form submission to use loanApplicationForm ID
     if(formElement) {
         formElement.addEventListener('submit', async (e) => {
             e.preventDefault();
 
-            const messageDiv = document.getElementById('formMessage');
-            if (messageDiv) {
-                messageDiv.textContent = 'Submitting...';
-                messageDiv.className = 'text-center text-sm font-medium text-gray-500';
-            }
-
-            const formData = new FormData(formElement);
-            const data = {};
-            for (const [key, value] of formData.entries()) {
-                data[key] = value.trim();
-            }
-
-            try {
-                const response = await fetch('PHP/loanapplication_handler.php', {
-                    method: 'POST',
-                    headers: {
-                        'Content-Type': 'application/json',
-                    },
-                    body: JSON.stringify(data),
-                });
-
-                const result = await response.json();
-
-                if (result.status === 'success') {
-                    if (messageDiv) {
-                        messageDiv.textContent = result.message;
-                        messageDiv.className = 'text-center text-sm font-medium text-green-600';
-                    }
-                    console.log('Loan Application ID:', result.loan_application_id);
-                    formElement.reset();
-                    data.loanID = result.loan_application_id;
-                    createLoanDetailsModal(data);
-                } else {
-                    throw new Error(result.message);
-                }
-            } catch (error) {
-                if (messageDiv) {
-                    messageDiv.textContent = `Error: ${error.message}`;
-                    messageDiv.className = 'text-center text-sm font-medium text-red-600';
-                }
-                console.error('Error submitting form:', error);
-            }
+            // The application logic is already handled by the applyButton listener above.
+            // This prevents duplicate submission logic if the form is submitted via enter key or redundant submit button.
+            // Since the logic is already inside applyButton.addEventListener('click', ...), we just return here.
+            return; 
         });
     }
 });

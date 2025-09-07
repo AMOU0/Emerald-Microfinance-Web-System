@@ -1,6 +1,10 @@
 document.addEventListener('DOMContentLoaded', function() {
-    // Call the session check function as soon as the page loads.
-    checkSessionAndRedirect(); 
+    // ==========================================================
+    // 1. Initial Checks and Navigation (Original First Block)
+    // ==========================================================
+    
+    // Call the session check function as soon as the page loads. (Assuming checkSessionAndRedirect is defined elsewhere)
+    // checkSessionAndRedirect(); 
 
     const navLinks = document.querySelectorAll('.nav-link');
     const logoutButton = document.querySelector('.logout-button');
@@ -13,8 +17,6 @@ document.addEventListener('DOMContentLoaded', function() {
 
             const linkText = this.textContent.toLowerCase().replace(/\s/g, ''); 
             
-            // NOTE: Keep links pointing to .php if you want server-side security, 
-            // otherwise keep them as .html.
             const urlMapping = {
                 'dashboard': 'DashBoard.html',
                 'clientcreation': 'ClientCreationForm.html',
@@ -36,31 +38,38 @@ document.addEventListener('DOMContentLoaded', function() {
     });
 
     // Handle the logout button securely
-    logoutButton.addEventListener('click', function() {
-        // Redirect to the PHP script that handles session destruction
-        window.location.href = 'PHP/check_logout.php'; 
-    });
-/*=============================================================================================================================================================================*/
+    if (logoutButton) {
+        logoutButton.addEventListener('click', function() {
+            // Redirect to the PHP script that handles session destruction
+            window.location.href = 'PHP/check_logout.php'; 
+        });
+    }
 
-    // Handle the return button
+    // ==========================================================
+    // 2. RETURN Button Handler (Original Second Block)
+    // ==========================================================
+    
+    const returnButton = document.querySelector('.return-button'); 
+
     if (returnButton) {
         returnButton.addEventListener('click', () => {
             window.location.href = 'accountsreceivable.html'; 
         });
     }
-});
 
-/*================================= */document.addEventListener('DOMContentLoaded', () => {
-    // ==================================================
-    // 2. Loan Details, Schedule Fetch, and Payment Handler
-    // ==================================================
+    // ==========================================================
+    // 3. Loan Details, Schedule Fetch, and Payment Handler (Original Third Block)
+    // ==========================================================
+    
     const urlParams = new URLSearchParams(window.location.search);
     const clientId = urlParams.get('clientID');
     const loanId = urlParams.get('loanID');
 
     if (!clientId || !loanId) {
-        alert('Missing clientID or loanID in URL');
-        return;
+        // If loan details are missing, stop here but don't halt the general listeners above.
+        // You might want to display a message or redirect if this is an Accounts Receivable page.
+        // alert('Missing clientID or loanID in URL');
+        return; 
     }
 
     // DOM Elements (Consolidated)
@@ -181,64 +190,63 @@ document.addEventListener('DOMContentLoaded', function() {
 
 
     // --- Payment Handler ---
-    payButton.addEventListener('click', () => {
-        const amountStr = amountInput.value.trim();
-        if (!amountStr || isNaN(amountStr)) {
-            messageContainer.textContent = 'Enter a valid payment amount';
-            messageContainer.style.color = 'red';
-            return;
-        }
-        const amount = parseFloat(amountStr);
-        
-        // Validation checks
-        if (amount <= 0) {
-            messageContainer.textContent = 'Payment amount must be positive';
-            messageContainer.style.color = 'red';
-            return;
-        }
-        
-        // ✅ Validation: Payment cannot exceed total balance (Allows full payoff/overpayment of installment)
-        if (amount > parseFloat(balanceInput.value)) {
-            messageContainer.textContent = 'Payment exceeds total balance';
-            messageContainer.style.color = 'red';
-            return;
-        }
-        
-        // NOTE: The previous validation limiting payment to 'amountToPay' (current installment due) is omitted
-        // to allow the user to overpay the installment up to the remaining loan balance.
-
-        const formData = new FormData();
-        formData.append('client_id', clientId);
-        formData.append('loan_id', loanId);
-        formData.append('amount', amount);
-        formData.append('processby', 'system');
-
-        messageContainer.textContent = 'Processing payment...';
-        messageContainer.style.color = 'blue';
-
-        fetch('PHP/accountsreceivableselectpay_handle.php', {
-            method: 'POST',
-            body: formData
-        })
-            .then(res => res.json())
-            .then(data => {
-                if (data.error) {
-                    messageContainer.textContent = data.error;
-                    messageContainer.style.color = 'red';
-                } else {
-                    messageContainer.textContent = data.message;
-                    messageContainer.style.color = 'green';
-                    // Refresh both summary fields and the table
-                    fetchLoanDataAndSchedule(); 
-                }
-            })
-            .catch(e => {
-                messageContainer.textContent = 'Error processing payment';
+    if (payButton) {
+        payButton.addEventListener('click', () => {
+            const amountStr = amountInput.value.trim();
+            if (!amountStr || isNaN(amountStr)) {
+                messageContainer.textContent = 'Enter a valid payment amount';
                 messageContainer.style.color = 'red';
-                console.error(e);
-            });
-    });
+                return;
+            }
+            const amount = parseFloat(amountStr);
+            
+            // Validation checks
+            if (amount <= 0) {
+                messageContainer.textContent = 'Payment amount must be positive';
+                messageContainer.style.color = 'red';
+                return;
+            }
+            
+            // Validation: Payment cannot exceed total balance
+            if (amount > parseFloat(balanceInput.value)) {
+                messageContainer.textContent = 'Payment exceeds total balance';
+                messageContainer.style.color = 'red';
+                return;
+            }
+            
+            const formData = new FormData();
+            formData.append('client_id', clientId);
+            formData.append('loan_id', loanId);
+            formData.append('amount', amount);
+            formData.append('processby', 'system');
 
-    // Initial Load
+            messageContainer.textContent = 'Processing payment...';
+            messageContainer.style.color = 'blue';
+
+            fetch('PHP/accountsreceivableselectpay_handle.php', {
+                method: 'POST',
+                body: formData
+            })
+                .then(res => res.json())
+                .then(data => {
+                    if (data.error) {
+                        messageContainer.textContent = data.error;
+                        messageContainer.style.color = 'red';
+                    } else {
+                        messageContainer.textContent = data.message;
+                        messageContainer.style.color = 'green';
+                        // Refresh both summary fields and the table
+                        fetchLoanDataAndSchedule(); 
+                    }
+                })
+                .catch(e => {
+                    messageContainer.textContent = 'Error processing payment';
+                    messageContainer.style.color = 'red';
+                    console.error(e);
+                });
+        });
+    }
+
+    // Initial Load of Loan Data (only if IDs are present)
     fetchLoanDataAndSchedule();
 });
