@@ -1,4 +1,92 @@
 document.addEventListener('DOMContentLoaded', function() {
+    const loanApplicationForm = document.getElementById('loanApplicationForm');
+    
+    const guarantorLastNameInput = document.getElementById('guarantorLastName');
+    const guarantorFirstNameInput = document.getElementById('guarantorFirstName');
+    const guarantorMiddleNameInput = document.getElementById('guarantorMiddleName');
+    const guarantorPhoneNumberInput = document.getElementById('guarantorPhoneNumber');
+
+    const nameInputs = [guarantorLastNameInput, guarantorFirstNameInput, guarantorMiddleNameInput];
+
+    // Regex definitions
+    // This regex checks for validity during SUBMISSION
+    const NAME_REGEX_VALIDATE = /^[a-zA-Z\s]+$/; 
+    // This regex finds and removes INVALID characters during TYPING (only keeps letters and spaces)
+    const NAME_REGEX_FILTER = /[^a-zA-Z\s]/g; 
+    
+    const PHONE_REGEX = /^\d{11}$/;
+
+    // -----------------------------------------------------------
+    // A. REAL-TIME INPUT FILTERING (To prevent symbols/numbers from showing)
+    // -----------------------------------------------------------
+
+    /**
+     * Filters input in real-time, allowing only letters and spaces.
+     */
+    function filterNameInput(event) {
+        // Replace any character that is NOT a letter or space with an empty string
+        this.value = this.value.replace(NAME_REGEX_FILTER, '');
+        // Also clear any previous error class
+        this.classList.remove('input-error');
+    }
+
+    // Apply the real-time filter to all name fields
+    nameInputs.forEach(input => {
+        input.addEventListener('input', filterNameInput);
+    });
+
+    // -----------------------------------------------------------
+    // B. SUBMISSION VALIDATION (Your existing form-blocking logic)
+    // -----------------------------------------------------------
+
+    /**
+     * Helper function to show error feedback and prevent submission.
+     */
+    function showInputError(event, inputElement, errorMessage) {
+        event.preventDefault(); // Stop the form submission immediately
+        alert(errorMessage);
+        inputElement.classList.add('input-error');
+        inputElement.focus();
+    }
+
+    // Attach the main validation logic to the form submission
+    loanApplicationForm.addEventListener('submit', function(event) {
+        
+        // --- 1. Validate Names (Required and Letters Only using the validation regex) ---
+        for (const input of nameInputs) {
+            const value = input.value.trim();
+            
+            // Check 1A: Is the required field empty?
+            if (value === "") {
+                showInputError(event, input, `Error: ${input.name.replace('guarantor', '').replace(/([A-Z])/g, ' $1').trim()} is required.`);
+                return; 
+            }
+            
+            // Check 1B: Does the final clean value still fail validation? (Safety check)
+            if (!NAME_REGEX_VALIDATE.test(value)) {
+                // This shouldn't fail if filtering worked, but it's a final safeguard.
+                showInputError(event, input, `Error: ${input.name.replace('guarantor', '').replace(/([A-Z])/g, ' $1').trim()} must contain only letters and spaces.`);
+                return; 
+            }
+        }
+
+        // --- 2. Validate Phone Number (Exactly 11 Digits) ---
+        const phoneNumber = guarantorPhoneNumberInput.value;
+        if (!PHONE_REGEX.test(phoneNumber.trim())) {
+             showInputError(event, guarantorPhoneNumberInput, 'Error: Phone Number must contain exactly 11 digits and only numbers.');
+             return; 
+        }
+
+        // If the code reaches this point, all checks passed. The form will submit.
+    });
+
+    // Optional: Clear error class on phone number input
+    guarantorPhoneNumberInput.addEventListener('input', function() {
+        this.classList.remove('input-error');
+    });
+});
+/*=============================================================================================================================================================================*/
+document.addEventListener('DOMContentLoaded', function() {
     // Call the session check function as soon as the page loads.
     checkSessionAndRedirect(); 
 
