@@ -3,7 +3,7 @@
 -- https://www.phpmyadmin.net/
 --
 -- Host: 127.0.0.1
--- Generation Time: Sep 08, 2025 at 09:09 PM
+-- Generation Time: Sep 15, 2025 at 03:15 PM
 -- Server version: 10.4.32-MariaDB
 -- PHP Version: 8.2.12
 
@@ -48,6 +48,16 @@ CREATE TABLE `clients` (
   `created_at` timestamp NOT NULL DEFAULT current_timestamp() ON UPDATE current_timestamp()
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 
+--
+-- Dumping data for table `clients`
+--
+
+INSERT INTO `clients` (`client_ID`, `last_name`, `first_name`, `middle_name`, `marital_status`, `gender`, `date_of_birth`, `city`, `barangay`, `postal_code`, `street_address`, `phone_number`, `email`, `employment_status`, `occupation`, `years_in_job`, `income`, `created_at`) VALUES
+(202500001, 'Mallari', 'Angel', 'Laurence P', 'Married', 'Male', '1988-10-25', 'Tarlac City', 'Aguso', '2300', '#205 Alvindia Segundo Tarlac City', '09212271315', 'laurence030703@gmail.com', 'Student', '', 0, '0 - 5,000', '2025-09-09 15:38:44'),
+(202500002, 'Mallari', 'Angel', 'Laurence P', 'Divorced', 'Non-binary', '1995-10-09', 'Tarlac City', 'Armenia', '2300', '#205 Alvindia Segundo Tarlac City', '09212271315', 'laurence030703@gmail.com', '', '', 0, '5,000 - 10,000', '2025-09-09 15:43:24'),
+(202500003, 'Mallari', 'Angel', 'Laurence P', 'Divorced', 'Male', '1998-03-11', 'Tarlac City', 'Alvindia', '2300', '#205 Alvindia Segundo Tarlac City', '09212271315', 'laurence030703@gmail.com', '', '', 0, '20,000+', '2025-09-09 15:44:38'),
+(202500004, 'Mallari', 'Angel', 'Laurence P', 'Divorced', 'Male', '1998-07-14', 'Tarlac City', 'Amucao', '2300', '#205 Alvindia Segundo Tarlac City', '09212271315', 'laurence030703@gmail.com', '', '', 0, '5,000 - 10,000', '2025-09-14 14:08:34');
+
 -- --------------------------------------------------------
 
 --
@@ -60,6 +70,16 @@ CREATE TABLE `client_requirements` (
   `client_ID` bigint(20) NOT NULL,
   `created_at` text DEFAULT current_timestamp()
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
+
+--
+-- Dumping data for table `client_requirements`
+--
+
+INSERT INTO `client_requirements` (`has_valid_id`, `has_barangay_clearance`, `client_ID`, `created_at`) VALUES
+('Tax Identification Number (TIN) ID', 0, 202500001, '2025-09-09 23:38:44'),
+('Tax Identification Number (TIN) ID', 0, 202500002, '2025-09-09 23:43:24'),
+('Social Security System (SSS) ID', 0, 202500003, '2025-09-09 23:44:38'),
+('Social Security System (SSS) ID', 0, 202500004, '2025-09-14 22:08:34');
 
 -- --------------------------------------------------------
 
@@ -99,6 +119,35 @@ CREATE TABLE `guarantor` (
   `client_ID` bigint(20) DEFAULT NULL,
   `created_at` text DEFAULT current_timestamp()
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
+
+--
+-- Dumping data for table `guarantor`
+--
+
+INSERT INTO `guarantor` (`guarantor_id`, `guarantor_last_name`, `guarantor_first_name`, `guarantor_middle_name`, `guarantor_street_address`, `guarantor_phone_number`, `loan_application_id`, `client_ID`, `created_at`) VALUES
+(1, 'Mallari', 'Angel', 'Laurence P', '#205 Alvindia Segundo Tarlac City', '09212271315', 2025090900001, 202500001, '2025-09-10 01:00:44'),
+(2, 'Mallari', 'Angel', 'Laurence P', '#205 Alvindia Segundo Tarlac City', '09212271315', 2025090900002, 202500003, '2025-09-10 01:02:39'),
+(3, 'Mallari', 'Angel', 'Laurence P', '#205 Alvindia Segundo Tarlac City', '09212271315', 2025090900003, 202500003, '2025-09-10 01:03:02'),
+(4, 'Mallari', 'Angel', 'Laurence P', '#205 Alvindia Segundo Tarlac City', '09212271315', 2025090900001, 202500003, '2025-09-10 01:07:15'),
+(5, 'Mallari', 'Angel', 'Laurence P', '#205 Alvindia Segundo Tarlac City', '09212271315', 2025090900002, 202500003, '2025-09-10 01:09:52'),
+(6, 'Mallari', 'Angel', 'Laurence P', '#205 Alvindia Segundo Tarlac City', '09212271315', 2025090900003, 202500003, '2025-09-10 01:09:53'),
+(7, 'Mallari', 'Angel', 'Laurence P', '#205 Alvindia Segundo Tarlac City', '09212271315', 2025090900004, 202500003, '2025-09-10 01:09:55'),
+(8, 'Mallari', 'Angel', 'Laurence P', '#205 Alvindia Segundo Tarlac City', '09212271315', 2025090900005, 202500003, '2025-09-10 01:09:55'),
+(9, 'Mallari', 'Angel', 'Laurence P', '#205 Alvindia Segundo Tarlac City', '09212271315', 2025090900006, 202500003, '2025-09-10 01:09:55'),
+(10, 'Mallari', 'Angel', 'Laurence P', '#205 Alvindia Segundo Tarlac City', '09212271315', 2025090900007, 202500003, '2025-09-10 01:09:55'),
+(11, 'Mallari', 'Angel', 'Laurence P', '#205 Alvindia Segundo Tarlac City', '09212271315', 2025090900008, 202500003, '2025-09-10 01:09:55'),
+(12, 'Mallari', 'Angel', 'Laurence P', '#205 Alvindia Segundo Tarlac City', '09212271315', 2025090900009, 202500003, '2025-09-10 01:09:56'),
+(13, 'Mallari', 'Angel', 'Laurence P', '#205 Alvindia Segundo Tarlac City', '09212271315', 2025090900010, 202500003, '2025-09-10 01:09:56'),
+(14, 'Mallari', 'Angel', 'Laurence P', '#205 Alvindia Segundo Tarlac City', '09212271315', 2025090900011, 202500003, '2025-09-10 01:09:56'),
+(15, 'Mallari', 'Angel', 'Laurence P', '#205 Alvindia Segundo Tarlac City', '09212271315', 2025090900012, 202500003, '2025-09-10 01:09:56'),
+(16, 'Mallari', 'Angel', 'Laurence P', '#205 Alvindia Segundo Tarlac City', '09212271315', 2025090900013, 202500003, '2025-09-10 01:09:57'),
+(17, 'Mallari', 'Angel', 'Laurence P', '#205 Alvindia Segundo Tarlac City', '09212271315', 2025090900014, 202500003, '2025-09-10 01:09:58'),
+(18, 'Mallari', 'Angel', 'Laurence P', '#205 Alvindia Segundo Tarlac City', '09212271315', 2025090900015, 202500003, '2025-09-10 01:11:23'),
+(19, 'Mallari', 'Angel', 'Laurence P', '#205 Alvindia Segundo Tarlac City', '12312312312', 202500001, 202500002, '2025-09-10 01:33:53'),
+(20, 'Mallari', 'Angel', 'Laurence P', '#205 Alvindia Segundo Tarlac City', '09628785256', 202500002, 202500001, '2025-09-10 01:35:56'),
+(21, 'Mallari', 'Angel', 'Laurence P', '#205 Alvindia Segundo Tarlac City', '09628785256', 202500001, 202500004, '2025-09-14 22:09:03'),
+(22, 'Mallari', 'Angel', 'Laurence P', '#205 Alvindia Segundo Tarlac City', '09628785256', 202500002, 202500004, '2025-09-14 22:10:10'),
+(23, 'Mallari', 'Angel', 'Laurence P', '#205 Alvindia Segundo Tarlac City', '09212271315', 202500003, 202500001, '2025-09-15 20:38:53');
 
 -- --------------------------------------------------------
 
@@ -162,6 +211,32 @@ CREATE TABLE `loan_applications` (
   `created_at` text DEFAULT current_timestamp()
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 
+--
+-- Dumping data for table `loan_applications`
+--
+
+INSERT INTO `loan_applications` (`loan_application_id`, `colateral`, `loan_amount`, `payment_frequency`, `date_start`, `duration_of_loan`, `interest_rate`, `date_end`, `client_ID`, `status`, `paid`, `created_at`) VALUES
+(202500001, 'motor', 25000.00, 'monthly', '2018-06-21', '100 days', 20, '2018-09-29', 202500004, 'approved', 'Unpaid', '2025-09-14 22:09:03'),
+(202500002, 'motor', 20000.00, 'monthly', '2025-09-15', '100 days', 20, '2025-12-24', 202500004, 'approved', 'Unpaid', '2025-09-14 22:10:10'),
+(202500003, 'motor', 30000.00, 'monthly', '2025-09-16', '100 days', 20, '2025-12-25', 202500001, 'approved', 'Unpaid', '2025-09-15 20:38:53');
+
+-- --------------------------------------------------------
+
+--
+-- Table structure for table `loan_reconstruct`
+--
+
+CREATE TABLE `loan_reconstruct` (
+  `loan_reconstruct_id` int(20) NOT NULL,
+  `loan_application_id` bigint(20) NOT NULL,
+  `reconstruct_amount` decimal(10,2) NOT NULL,
+  `payment_frequency` varchar(50) NOT NULL,
+  `interest_rate` int(11) NOT NULL,
+  `date_start` date NOT NULL,
+  `duration` varchar(100) NOT NULL,
+  `date_end` date NOT NULL
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
+
 -- --------------------------------------------------------
 
 --
@@ -197,6 +272,15 @@ CREATE TABLE `payment` (
   `date_payed` timestamp NOT NULL DEFAULT current_timestamp(),
   `processby` varchar(255) NOT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
+
+--
+-- Dumping data for table `payment`
+--
+
+INSERT INTO `payment` (`payment_id`, `loan_application_id`, `client_id`, `amount_paid`, `date_payed`, `processby`) VALUES
+(1, 202500001, 202500004, 2322.00, '2025-09-15 12:26:23', 'system'),
+(2, 202500001, 202500004, 3321.00, '2025-09-15 12:26:34', 'system'),
+(3, 202500001, 202500004, 4357.00, '2025-09-15 12:33:26', 'system');
 
 -- --------------------------------------------------------
 
@@ -409,6 +493,13 @@ ALTER TABLE `loan_applications`
   ADD KEY `fk_loan_client_id` (`client_ID`);
 
 --
+-- Indexes for table `loan_reconstruct`
+--
+ALTER TABLE `loan_reconstruct`
+  ADD PRIMARY KEY (`loan_reconstruct_id`),
+  ADD KEY `fk_loan_reconstruct_application` (`loan_application_id`);
+
+--
 -- Indexes for table `marital_statuses`
 --
 ALTER TABLE `marital_statuses`
@@ -466,13 +557,19 @@ ALTER TABLE `genders`
 -- AUTO_INCREMENT for table `guarantor`
 --
 ALTER TABLE `guarantor`
-  MODIFY `guarantor_id` int(11) NOT NULL AUTO_INCREMENT;
+  MODIFY `guarantor_id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=24;
 
 --
 -- AUTO_INCREMENT for table `income_salaries`
 --
 ALTER TABLE `income_salaries`
   MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=5;
+
+--
+-- AUTO_INCREMENT for table `loan_reconstruct`
+--
+ALTER TABLE `loan_reconstruct`
+  MODIFY `loan_reconstruct_id` int(20) NOT NULL AUTO_INCREMENT;
 
 --
 -- AUTO_INCREMENT for table `marital_statuses`
@@ -484,7 +581,7 @@ ALTER TABLE `marital_statuses`
 -- AUTO_INCREMENT for table `payment`
 --
 ALTER TABLE `payment`
-  MODIFY `payment_id` int(11) NOT NULL AUTO_INCREMENT;
+  MODIFY `payment_id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=4;
 
 --
 -- AUTO_INCREMENT for table `philippine_barangays`
@@ -525,6 +622,12 @@ ALTER TABLE `guarantor`
 --
 ALTER TABLE `loan_applications`
   ADD CONSTRAINT `fk_loan_client_id` FOREIGN KEY (`client_ID`) REFERENCES `clients` (`client_ID`);
+
+--
+-- Constraints for table `loan_reconstruct`
+--
+ALTER TABLE `loan_reconstruct`
+  ADD CONSTRAINT `fk_loan_reconstruct_application` FOREIGN KEY (`loan_application_id`) REFERENCES `loan_applications` (`loan_application_id`) ON DELETE CASCADE ON UPDATE CASCADE;
 
 --
 -- Constraints for table `payment`

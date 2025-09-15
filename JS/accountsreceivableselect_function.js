@@ -22,7 +22,7 @@ document.addEventListener('DOMContentLoaded', function() {
                 'clientcreation': 'ClientCreationForm.html',
                 'loanapplication': 'LoanApplication.html',
                 'pendingaccounts': 'PendingAccount.html',
-                'accountsreceivable': 'AccountsReceivable.html',
+                'paymentcollection': 'AccountsReceivable.html',
                 'ledger': 'Ledgers.html',
                 'reports': 'Reports.html',
                 'usermanagement': 'UserManagement.html',

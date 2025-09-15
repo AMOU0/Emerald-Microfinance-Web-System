@@ -240,3 +240,6 @@ body {
 .table-cell input[type="radio"] {
     cursor: pointer;
 }
+.overdue-loan {
+  background-color: #b22323; /* A light red color for the row */
+}

@@ -12,13 +12,11 @@ $conn = new mysqli($servername, $username, $password, $dbname);
 
 // Check connection
 if ($conn->connect_error) {
-    // Send HTTP 500 status and JSON error message
-    http_response_code(500); 
+    http_response_code(500);
     die(json_encode(["error" => "Connection failed: " . $conn->connect_error]));
 }
 
 // SQL query to fetch all approved AND UNPAID accounts
-// We specifically filter by status = 'approved' AND paid = '0'
 $sql = "SELECT 
             la.loan_application_id, 
             la.client_ID, 
@@ -26,10 +24,12 @@ $sql = "SELECT
             c.last_name,
             la.loan_amount AS principal_amount,
             la.interest_rate,
-            la.created_at
+            la.created_at,
+            la.date_end,
+            la.payment_frequency
         FROM loan_applications AS la
         JOIN clients AS c ON la.client_ID = c.client_ID
-        WHERE la.status = 'approved' AND la.paid = '0' 
+        WHERE la.status = 'approved' AND la.paid = 'Unpaid' 
         ORDER BY la.created_at DESC";
 
 $result = $conn->query($sql);
@@ -47,6 +47,9 @@ if ($result->num_rows > 0) {
         // Calculate Total Loan Amount: Principal + Interest
         $total_loan_amount = $principal_amount + $interest_amount;
 
+        // Check if the loan is overdue
+        $is_overdue = (strtotime($row['date_end']) < time());
+
         $approved_accounts[] = [
             'loan_application_id' => $row['loan_application_id'],
             'client_ID' => $row['client_ID'],
@@ -55,7 +58,9 @@ if ($result->num_rows > 0) {
             'principal_amount' => $principal_amount,
             'interest_amount' => $interest_amount,
             'total_loan_amount' => $total_loan_amount,
-            'created_at' => date("F j, Y, g:i a", strtotime($row['created_at']))
+            'payment_frequency' => $row['payment_frequency'],
+            'date_end' => $row['date_end'],
+            'is_overdue' => $is_overdue
         ];
     }
 }

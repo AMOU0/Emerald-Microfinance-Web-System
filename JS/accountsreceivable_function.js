@@ -20,7 +20,7 @@ document.addEventListener('DOMContentLoaded', function() {
                 'clientcreation': 'ClientCreationForm.html',
                 'loanapplication': 'LoanApplication.html',
                 'pendingaccounts': 'PendingAccount.html',
-                'accountsreceivable': 'AccountsReceivable.html',
+                'paymentcollection': 'AccountsReceivable.html',
                 'ledger': 'Ledgers.html',
                 'reports': 'Reports.html',
                 'usermanagement': 'UserManagement.html',
@@ -44,26 +44,19 @@ document.addEventListener('DOMContentLoaded', function() {
 /*=============================================================================================================================================================================*/
 // Function to fetch and display approved accounts
 const fetchApprovedAccounts = () => {
-    // Corrected fetch URL to use forward slashes
     fetch('PHP/accountsreceivable_handler.php')
         .then(response => {
             if (!response.ok) {
-                // If the server response was not okay, throw an error
                 throw new Error('Network response was not ok');
             }
-            // Parse the JSON data from the response
             return response.json();
         })
         .then(data => {
-            // Select the table body element to populate
             const tableBody = document.querySelector('.approved-account-table-body');
-            // Clear any existing content in the table body
             tableBody.innerHTML = '';
 
             if (data.length > 0) {
-                // If data is available, iterate through each client
                 data.forEach(client => {
-                    // Helper function to format currency
                     const formatCurrency = (amount) => {
                         return parseFloat(amount).toLocaleString('en-US', { 
                             minimumFractionDigits: 2, 
@@ -71,10 +64,22 @@ const fetchApprovedAccounts = () => {
                         });
                     };
 
-                    // Create a new table row element
                     const row = document.createElement('div');
                     row.classList.add('table-row');
-                    // Populate the row with data from the client object
+                    
+                    // Add a class for overdue loans to change the row color to red
+                    if (client.is_overdue) {
+                        row.classList.add('overdue-loan');
+                    }
+
+                    // Get the loan end date from the PHP response
+                    const loanEndDate = new Date(client.date_end);
+                    const formattedDate = loanEndDate.toLocaleDateString('en-US', {
+                        year: 'numeric',
+                        month: 'long',
+                        day: 'numeric'
+                    });
+                    
                     row.innerHTML = `
                         <div class="table-cell small-column">
                             <input type="radio"
@@ -91,23 +96,19 @@ const fetchApprovedAccounts = () => {
                         <div class="table-cell">PHP ${formatCurrency(client.interest_amount)}</div>
                         <div class="table-cell">PHP ${formatCurrency(client.total_loan_amount)}</div> 
                         
-                        <div class="table-cell">${client.created_at}</div>
+                        <div class="table-cell">${formattedDate}</div>
                     `;
-                    // Append the new row to the table body
                     tableBody.appendChild(row);
                 });
             } else {
-                // If no data is returned, display a message
                 const emptyRow = document.createElement('div');
                 emptyRow.classList.add('table-row');
-                emptyRow.innerHTML = `<div class="table-cell" style="text-align: center; grid-column: 1 / span 8;">No approved accounts found.</div>`; // Adjusted colspan to match 8 columns
+                emptyRow.innerHTML = `<div class="table-cell" style="text-align: center; grid-column: 1 / span 8;">No approved accounts found.</div>`;
                 tableBody.appendChild(emptyRow);
             }
         })
         .catch(error => {
-            // Log any errors that occur during the fetch operation
             console.error('Error fetching data:', error);
-            // Alert the user about the failure
             alert('Failed to load approved accounts. Please try again later.');
         });
 };
@@ -122,6 +123,25 @@ document.addEventListener('DOMContentLoaded', () => {
             const clientID = selectedRadio.getAttribute('data-client-id');
             const loanID = selectedRadio.value;
             window.location.href = `AccountsReceivableSelect.html?clientID=${clientID}&loanID=${loanID}`;
+        } else {
+            alert('Please select an account first.');
+        }
+    });
+
+    // Initial fetch of approved accounts
+    fetchApprovedAccounts();
+});
+/*================================= */
+// Add an event listener to the "SELECT" button
+document.addEventListener('DOMContentLoaded', () => {
+    const selectButton = document.querySelector('.reconstruct-button');
+    selectButton.addEventListener('click', () => {
+        const selectedRadio = document.querySelector('input[name="selected"]:checked');
+
+        if (selectedRadio) {
+            const clientID = selectedRadio.getAttribute('data-client-id');
+            const loanID = selectedRadio.value;
+            window.location.href = `AccountsReceivableReconstruct.html?clientID=${clientID}&loanID=${loanID}`;
         } else {
             alert('Please select an account first.');
         }
