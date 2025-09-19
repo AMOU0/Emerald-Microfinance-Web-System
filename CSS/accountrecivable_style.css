@@ -243,3 +243,17 @@ body {
 .overdue-loan {
   background-color: #b22323; /* A light red color for the row */
 }
+
+.search-container {
+    flex-grow: 1; /* Allows the search bar to take up available space */
+    margin-right: 1rem; /* Adds space between the search bar and buttons */
+}
+
+#searchInput {
+    width: 100%;
+    padding: 0.5rem;
+    border: 1px solid #ccc;
+    border-radius: 5px;
+    font-size: 1rem;
+    box-sizing: border-box; /* Ensures padding doesn't affect the width */
+}

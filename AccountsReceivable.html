@@ -4,11 +4,11 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Emerald Microfinance</title>
-            <script src="JS/enforce_login.js"></script>
+    <script src="JS/enforce_login.js"></script>
     <link rel="stylesheet" href="CSS/accountrecivable_style.css">
 </head>
 <body onload="fetchApprovedAccounts()">
-     <aside class="sidebar">
+    <aside class="sidebar">
         <div class="sidebar-header">
             Emerald Microfinance
         </div>
@@ -40,23 +40,25 @@
                 <button class="action-button select-button">SELECT</button>
             </div>
         </div>
-
-<section class="account-receivable-table-section">
-    <div class="table-container">
-        <div class="table-header">
-            <div class="table-header-cell small-column"></div>
-            <div class="table-header-cell">Client ID</div>
-            <div class="table-header-cell">Loan ID</div>
-            <div class="table-header-cell">Name</div>
-            <div class="table-header-cell">principal Amount</div>  
-            <div class="table-header-cell">interest Amount</div>   
-            <div class="table-header-cell">Loan Amount</div>      
-            <div class="table-header-cell">Due Date</div>
-        </div>
-        <div class="table-body approved-account-table-body">
-        </div>
-    </div>
-</section>
-    <script src="JS/accountsreceivable_function.js"></script>
-</body>
+        <section class="account-receivable-table-section">
+            <div class="search-container">
+                <input type="text" id="searchInput" placeholder="Search by Client ID, Loan ID or Name...">
+            </div>
+            <div class="table-container">
+                <div class="table-header">
+                    <div class="table-header-cell small-column"></div>
+                    <div class="table-header-cell">Client ID</div>
+                    <div class="table-header-cell">Loan ID</div>
+                    <div class="table-header-cell">Name</div>
+                    <div class="table-header-cell">principal Amount</div>
+                    <div class="table-header-cell">interest Amount</div>
+                    <div class="table-header-cell">Loan Amount</div>
+                    <div class="table-header-cell">Due Date</div>
+                </div>
+                <div class="table-body approved-account-table-body">
+                </div>
+            </div>
+        </section>
+        <script src="JS/accountsreceivable_function.js"></script>
+    </body>
 </html>

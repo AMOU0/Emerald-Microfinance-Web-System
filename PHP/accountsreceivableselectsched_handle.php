@@ -1,5 +1,5 @@
 <?php
-/*PHP\accountsreceivableselectsched_handle.php - FIXED*/
+/*PHP/accountsreceivableselectsched_handle.php - FIXED*/
 header('Content-Type: application/json');
 
 // Assume your database connection details are included here
@@ -12,6 +12,7 @@ $response = [];
 
 $client_id = $_GET['client_id'] ?? null;
 $loan_id = $_GET['loan_id'] ?? null;
+$reconstruct_id = $_GET['reconstructID'] ?? null;
 
 if (!$client_id || !$loan_id) {
     $response['error'] = 'Missing client ID or loan ID.';
@@ -24,21 +25,42 @@ try {
         PDO::ATTR_ERRMODE => PDO::ERRMODE_EXCEPTION
     ]);
     
-    // --- 1. Fetch Loan Details ---
-    $loan_sql = "
-        SELECT 
-            loan_amount, interest_rate, payment_frequency, date_start, date_end
-        FROM loan_applications 
-        WHERE loan_application_id = ? AND client_ID = ? AND status = 'approved'
-    ";
-    $stmt = $pdo->prepare($loan_sql);
-    $stmt->execute([$loan_id, $client_id]);
-    $loan = $stmt->fetch(PDO::FETCH_ASSOC);
+    $loan = null;
 
-    if (!$loan) {
-        $response['error'] = 'Loan not found or not approved.';
-        echo json_encode($response);
-        exit;
+    // --- 1. Fetch Loan Details (from reconstruct or original table) ---
+    if ($reconstruct_id) {
+        $loan_sql = "
+            SELECT 
+                reconstruct_amount AS loan_amount, interest_rate, payment_frequency, date_start, date_end
+            FROM loan_reconstruct 
+            WHERE loan_reconstruct_id = ? AND loan_application_id = ?
+        ";
+        $stmt = $pdo->prepare($loan_sql);
+        $stmt->execute([$reconstruct_id, $loan_id]);
+        $loan = $stmt->fetch(PDO::FETCH_ASSOC);
+
+        if (!$loan) {
+            $response['error'] = 'Reconstructed loan not found.';
+            echo json_encode($response);
+            exit;
+        }
+
+    } else {
+        $loan_sql = "
+            SELECT 
+                loan_amount, interest_rate, payment_frequency, date_start, date_end
+            FROM loan_applications 
+            WHERE loan_application_id = ? AND client_ID = ? AND status = 'approved'
+        ";
+        $stmt = $pdo->prepare($loan_sql);
+        $stmt->execute([$loan_id, $client_id]);
+        $loan = $stmt->fetch(PDO::FETCH_ASSOC);
+
+        if (!$loan) {
+            $response['error'] = 'Loan not found or not approved.';
+            echo json_encode($response);
+            exit;
+        }
     }
 
     // --- 2. Calculate Loan Parameters (Simple Interest) ---
@@ -69,38 +91,30 @@ try {
     $installment_interest = round($total_interest / $num_payments, 2);
     $installment_principal = round($principal / $num_payments, 2);
 
-    // FIX: Recalculate Total Repayment based on rounded installments to ensure accuracy
-    // The last installment will adjust for any rounding difference.
-    $calculated_repayment_sum = $installment_amount * $num_payments;
-
-
     // --- 3. Fetch Payments Made ---
     $payment_sql = "
         SELECT amount_paid, DATE(date_payed) AS date_payed 
         FROM payment 
-        WHERE loan_application_id = ? 
+        WHERE loan_application_id = ? AND loan_reconstruct_id = ?
         ORDER BY date_payed ASC
     ";
     $stmt = $pdo->prepare($payment_sql);
-    $stmt->execute([$loan_id]);
+    $stmt->execute([$loan_id, $reconstruct_id]);
     $payments = $stmt->fetchAll(PDO::FETCH_ASSOC);
     
     $total_paid = array_sum(array_column($payments, 'amount_paid'));
 
-    // Find the latest payment date
-    $latest_payment_date = !empty($payments) ? end($payments)['date_payed'] : null;
-
-
     // --- 4. Generate Schedule and Apply Payments ---
     $schedule = [];
     $current_due_date = clone $start_date_obj;
-    $current_due_date->modify("+$freq_days days"); // Start date is usually the day after disbursement or the first period
+    $current_due_date->modify("+$freq_days days");
     
-    // Track total amount paid remaining to be applied to installments
-    $total_paid_remaining = $total_paid; 
-    
-    // The balance starts as the total repayment amount
+    // MODIFIED: Use a running balance that is decremented for each installment
     $running_balance = $total_repayment; 
+    
+    // MODIFIED: Track payments applied to each installment individually
+    $payments_to_apply = $payments;
+    $current_payment_index = 0;
 
     for ($i = 1; $i <= $num_payments; $i++) {
         $amount_paid_this_period = 0;
@@ -114,34 +128,39 @@ try {
             $current_installment = round($current_installment, 2);
         }
 
-        // Determine paid status based on `total_paid_remaining`
-        if ($total_paid_remaining >= $current_installment) {
-            // Fully paid
-            $amount_paid_this_period = $current_installment;
-            $total_paid_remaining -= $current_installment;
-            $is_paid = true;
-            $date_paid = $latest_payment_date; 
+        // Apply payments from the payments array
+        while ($current_payment_index < count($payments_to_apply) && $running_balance > 0) {
+            $current_payment = $payments_to_apply[$current_payment_index];
+            $amount_from_payment = $current_payment['amount_paid'];
             
-        } else if ($total_paid_remaining > 0) {
-            // Partially paid (This applies the remaining balance to the current installment)
-            $amount_paid_this_period = $total_paid_remaining;
-            $total_paid_remaining = 0;
-            $is_paid = false; // Mark as partially paid
-            $date_paid = $latest_payment_date; 
+            $applied_amount = min($amount_from_payment, $running_balance);
+            $amount_paid_this_period += $applied_amount;
+            $running_balance -= $applied_amount;
+            
+            // Mark the date paid if any amount was applied
+            if ($applied_amount > 0) {
+                $date_paid = $current_payment['date_payed'];
+            }
+            
+            // If the current payment is fully used, move to the next one
+            $payments_to_apply[$current_payment_index]['amount_paid'] -= $applied_amount;
+            if ($payments_to_apply[$current_payment_index]['amount_paid'] <= 0) {
+                $current_payment_index++;
+            }
         }
-
-        // FIX: The running balance is the total repayment minus the total amount paid
-        $running_balance = $total_repayment - ($total_paid - $total_paid_remaining);
-        $running_balance = max(0, round($running_balance, 2));
-
+        
+        // Determine if the installment is fully paid
+        if ($amount_paid_this_period >= $current_installment) {
+            $is_paid = true;
+        }
 
         $schedule[] = [
             'due_date' => $current_due_date->format('Y-m-d'),
             'installment_amount' => $current_installment,
-            'interest_component' => $installment_interest, // Interest component remains fixed
+            'interest_component' => $installment_interest,
             'amount_paid' => round($amount_paid_this_period, 2),
             'date_paid' => $date_paid,
-            'remaining_balance' => $running_balance,
+            'remaining_balance' => round($running_balance, 2),
             'is_paid' => $is_paid
         ];
         
@@ -155,5 +174,4 @@ try {
     $response['error'] = 'Database error: ' . $e->getMessage();
     echo json_encode($response);
 }
-
 ?>

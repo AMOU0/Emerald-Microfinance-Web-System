@@ -3,7 +3,7 @@
 -- https://www.phpmyadmin.net/
 --
 -- Host: 127.0.0.1
--- Generation Time: Sep 15, 2025 at 03:15 PM
+-- Generation Time: Sep 19, 2025 at 01:50 PM
 -- Server version: 10.4.32-MariaDB
 -- PHP Version: 8.2.12
 
@@ -53,10 +53,8 @@ CREATE TABLE `clients` (
 --
 
 INSERT INTO `clients` (`client_ID`, `last_name`, `first_name`, `middle_name`, `marital_status`, `gender`, `date_of_birth`, `city`, `barangay`, `postal_code`, `street_address`, `phone_number`, `email`, `employment_status`, `occupation`, `years_in_job`, `income`, `created_at`) VALUES
-(202500001, 'Mallari', 'Angel', 'Laurence P', 'Married', 'Male', '1988-10-25', 'Tarlac City', 'Aguso', '2300', '#205 Alvindia Segundo Tarlac City', '09212271315', 'laurence030703@gmail.com', 'Student', '', 0, '0 - 5,000', '2025-09-09 15:38:44'),
-(202500002, 'Mallari', 'Angel', 'Laurence P', 'Divorced', 'Non-binary', '1995-10-09', 'Tarlac City', 'Armenia', '2300', '#205 Alvindia Segundo Tarlac City', '09212271315', 'laurence030703@gmail.com', '', '', 0, '5,000 - 10,000', '2025-09-09 15:43:24'),
-(202500003, 'Mallari', 'Angel', 'Laurence P', 'Divorced', 'Male', '1998-03-11', 'Tarlac City', 'Alvindia', '2300', '#205 Alvindia Segundo Tarlac City', '09212271315', 'laurence030703@gmail.com', '', '', 0, '20,000+', '2025-09-09 15:44:38'),
-(202500004, 'Mallari', 'Angel', 'Laurence P', 'Divorced', 'Male', '1998-07-14', 'Tarlac City', 'Amucao', '2300', '#205 Alvindia Segundo Tarlac City', '09212271315', 'laurence030703@gmail.com', '', '', 0, '5,000 - 10,000', '2025-09-14 14:08:34');
+(202500001, 'Mallari', 'Angel', 'Laurence P', 'Single', 'Male', '2003-03-07', 'Tarlac City', 'Alvindia', '2300', '#205 Alvindia Segundo Tarlac City', '09212271315', 'laurence030703@gmail.com', '', '', 0, '20,000+', '2025-09-18 18:11:56'),
+(202500002, 'Medns', 'huds', 'sonssss', 'Single', 'Male', '1998-07-08', 'Tarlac City', 'Amucao', '2300', 'amucao ', '21312412356', '', '', '', 0, '5,000 - 10,000', '2025-09-18 18:16:16');
 
 -- --------------------------------------------------------
 
@@ -76,10 +74,8 @@ CREATE TABLE `client_requirements` (
 --
 
 INSERT INTO `client_requirements` (`has_valid_id`, `has_barangay_clearance`, `client_ID`, `created_at`) VALUES
-('Tax Identification Number (TIN) ID', 0, 202500001, '2025-09-09 23:38:44'),
-('Tax Identification Number (TIN) ID', 0, 202500002, '2025-09-09 23:43:24'),
-('Social Security System (SSS) ID', 0, 202500003, '2025-09-09 23:44:38'),
-('Social Security System (SSS) ID', 0, 202500004, '2025-09-14 22:08:34');
+('Driver\'s License', 0, 202500001, '2025-09-19 02:11:56'),
+('Passport', 0, 202500002, '2025-09-19 02:16:16');
 
 -- --------------------------------------------------------
 
@@ -125,29 +121,8 @@ CREATE TABLE `guarantor` (
 --
 
 INSERT INTO `guarantor` (`guarantor_id`, `guarantor_last_name`, `guarantor_first_name`, `guarantor_middle_name`, `guarantor_street_address`, `guarantor_phone_number`, `loan_application_id`, `client_ID`, `created_at`) VALUES
-(1, 'Mallari', 'Angel', 'Laurence P', '#205 Alvindia Segundo Tarlac City', '09212271315', 2025090900001, 202500001, '2025-09-10 01:00:44'),
-(2, 'Mallari', 'Angel', 'Laurence P', '#205 Alvindia Segundo Tarlac City', '09212271315', 2025090900002, 202500003, '2025-09-10 01:02:39'),
-(3, 'Mallari', 'Angel', 'Laurence P', '#205 Alvindia Segundo Tarlac City', '09212271315', 2025090900003, 202500003, '2025-09-10 01:03:02'),
-(4, 'Mallari', 'Angel', 'Laurence P', '#205 Alvindia Segundo Tarlac City', '09212271315', 2025090900001, 202500003, '2025-09-10 01:07:15'),
-(5, 'Mallari', 'Angel', 'Laurence P', '#205 Alvindia Segundo Tarlac City', '09212271315', 2025090900002, 202500003, '2025-09-10 01:09:52'),
-(6, 'Mallari', 'Angel', 'Laurence P', '#205 Alvindia Segundo Tarlac City', '09212271315', 2025090900003, 202500003, '2025-09-10 01:09:53'),
-(7, 'Mallari', 'Angel', 'Laurence P', '#205 Alvindia Segundo Tarlac City', '09212271315', 2025090900004, 202500003, '2025-09-10 01:09:55'),
-(8, 'Mallari', 'Angel', 'Laurence P', '#205 Alvindia Segundo Tarlac City', '09212271315', 2025090900005, 202500003, '2025-09-10 01:09:55'),
-(9, 'Mallari', 'Angel', 'Laurence P', '#205 Alvindia Segundo Tarlac City', '09212271315', 2025090900006, 202500003, '2025-09-10 01:09:55'),
-(10, 'Mallari', 'Angel', 'Laurence P', '#205 Alvindia Segundo Tarlac City', '09212271315', 2025090900007, 202500003, '2025-09-10 01:09:55'),
-(11, 'Mallari', 'Angel', 'Laurence P', '#205 Alvindia Segundo Tarlac City', '09212271315', 2025090900008, 202500003, '2025-09-10 01:09:55'),
-(12, 'Mallari', 'Angel', 'Laurence P', '#205 Alvindia Segundo Tarlac City', '09212271315', 2025090900009, 202500003, '2025-09-10 01:09:56'),
-(13, 'Mallari', 'Angel', 'Laurence P', '#205 Alvindia Segundo Tarlac City', '09212271315', 2025090900010, 202500003, '2025-09-10 01:09:56'),
-(14, 'Mallari', 'Angel', 'Laurence P', '#205 Alvindia Segundo Tarlac City', '09212271315', 2025090900011, 202500003, '2025-09-10 01:09:56'),
-(15, 'Mallari', 'Angel', 'Laurence P', '#205 Alvindia Segundo Tarlac City', '09212271315', 2025090900012, 202500003, '2025-09-10 01:09:56'),
-(16, 'Mallari', 'Angel', 'Laurence P', '#205 Alvindia Segundo Tarlac City', '09212271315', 2025090900013, 202500003, '2025-09-10 01:09:57'),
-(17, 'Mallari', 'Angel', 'Laurence P', '#205 Alvindia Segundo Tarlac City', '09212271315', 2025090900014, 202500003, '2025-09-10 01:09:58'),
-(18, 'Mallari', 'Angel', 'Laurence P', '#205 Alvindia Segundo Tarlac City', '09212271315', 2025090900015, 202500003, '2025-09-10 01:11:23'),
-(19, 'Mallari', 'Angel', 'Laurence P', '#205 Alvindia Segundo Tarlac City', '12312312312', 202500001, 202500002, '2025-09-10 01:33:53'),
-(20, 'Mallari', 'Angel', 'Laurence P', '#205 Alvindia Segundo Tarlac City', '09628785256', 202500002, 202500001, '2025-09-10 01:35:56'),
-(21, 'Mallari', 'Angel', 'Laurence P', '#205 Alvindia Segundo Tarlac City', '09628785256', 202500001, 202500004, '2025-09-14 22:09:03'),
-(22, 'Mallari', 'Angel', 'Laurence P', '#205 Alvindia Segundo Tarlac City', '09628785256', 202500002, 202500004, '2025-09-14 22:10:10'),
-(23, 'Mallari', 'Angel', 'Laurence P', '#205 Alvindia Segundo Tarlac City', '09212271315', 202500003, 202500001, '2025-09-15 20:38:53');
+(1, 'James', 'Ride', 'Exitssss', 'Manila ph', '09283733333', 202500001, 202500001, '2025-09-19 02:12:35'),
+(2, 'jake', 'asd', 'mads', 'Amucao', '21415135135', 202500002, 202500002, '2025-09-19 02:17:08');
 
 -- --------------------------------------------------------
 
@@ -216,9 +191,8 @@ CREATE TABLE `loan_applications` (
 --
 
 INSERT INTO `loan_applications` (`loan_application_id`, `colateral`, `loan_amount`, `payment_frequency`, `date_start`, `duration_of_loan`, `interest_rate`, `date_end`, `client_ID`, `status`, `paid`, `created_at`) VALUES
-(202500001, 'motor', 25000.00, 'monthly', '2018-06-21', '100 days', 20, '2018-09-29', 202500004, 'approved', 'Unpaid', '2025-09-14 22:09:03'),
-(202500002, 'motor', 20000.00, 'monthly', '2025-09-15', '100 days', 20, '2025-12-24', 202500004, 'approved', 'Unpaid', '2025-09-14 22:10:10'),
-(202500003, 'motor', 30000.00, 'monthly', '2025-09-16', '100 days', 20, '2025-12-25', 202500001, 'approved', 'Unpaid', '2025-09-15 20:38:53');
+(202500001, 'motor', 10000.00, 'monthly', '2025-09-20', '100 days', 20, '2025-12-29', 202500001, 'approved', 'Unpaid', '2025-09-19 02:12:35'),
+(202500002, 'Dragon', 20000.00, 'weekly', '2024-07-19', '100 days', 20, '2024-10-27', 202500002, 'approved', 'Unpaid', '2025-09-19 02:17:08');
 
 -- --------------------------------------------------------
 
@@ -236,6 +210,13 @@ CREATE TABLE `loan_reconstruct` (
   `duration` varchar(100) NOT NULL,
   `date_end` date NOT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
+
+--
+-- Dumping data for table `loan_reconstruct`
+--
+
+INSERT INTO `loan_reconstruct` (`loan_reconstruct_id`, `loan_application_id`, `reconstruct_amount`, `payment_frequency`, `interest_rate`, `date_start`, `duration`, `date_end`) VALUES
+(1, 202500002, 8573.39, 'monthly', 20, '2025-09-20', '100 days', '2025-12-29');
 
 -- --------------------------------------------------------
 
@@ -266,6 +247,7 @@ INSERT INTO `marital_statuses` (`id`, `status`) VALUES
 
 CREATE TABLE `payment` (
   `payment_id` int(11) NOT NULL,
+  `loan_reconstruct_id` int(11) NOT NULL,
   `loan_application_id` bigint(20) NOT NULL,
   `client_id` bigint(20) NOT NULL,
   `amount_paid` decimal(10,2) NOT NULL,
@@ -277,10 +259,19 @@ CREATE TABLE `payment` (
 -- Dumping data for table `payment`
 --
 
-INSERT INTO `payment` (`payment_id`, `loan_application_id`, `client_id`, `amount_paid`, `date_payed`, `processby`) VALUES
-(1, 202500001, 202500004, 2322.00, '2025-09-15 12:26:23', 'system'),
-(2, 202500001, 202500004, 3321.00, '2025-09-15 12:26:34', 'system'),
-(3, 202500001, 202500004, 4357.00, '2025-09-15 12:33:26', 'system');
+INSERT INTO `payment` (`payment_id`, `loan_reconstruct_id`, `loan_application_id`, `client_id`, `amount_paid`, `date_payed`, `processby`) VALUES
+(1, 0, 202500002, 202500002, 1714.29, '2024-07-26 06:32:15', 'system'),
+(2, 0, 202500002, 202500002, 1714.29, '2024-08-02 03:54:09', 'system'),
+(3, 0, 202500002, 202500002, 1714.29, '2024-08-09 08:05:41', 'system'),
+(4, 0, 202500002, 202500002, 1714.29, '2024-08-16 02:18:22', 'system'),
+(5, 0, 202500002, 202500002, 1713.29, '2024-08-23 05:47:36', 'system'),
+(6, 0, 202500002, 202500002, 1714.29, '2024-08-30 07:29:50', 'system'),
+(7, 0, 202500002, 202500002, 1714.29, '2024-09-06 03:10:03', 'system'),
+(8, 0, 202500002, 202500002, 1713.29, '2024-09-13 08:55:18', 'system'),
+(9, 0, 202500002, 202500002, 1714.29, '2024-09-20 04:21:44', 'system'),
+(12, 0, 202500002, 202500002, 2.00, '2025-09-19 11:38:54', 'system'),
+(13, 0, 202500002, 202500002, 1714.29, '2025-09-19 11:38:57', 'system'),
+(14, 1, 202500002, 202500002, 2000.00, '2025-09-19 11:48:35', 'system');
 
 -- --------------------------------------------------------
 
@@ -557,7 +548,7 @@ ALTER TABLE `genders`
 -- AUTO_INCREMENT for table `guarantor`
 --
 ALTER TABLE `guarantor`
-  MODIFY `guarantor_id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=24;
+  MODIFY `guarantor_id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=3;
 
 --
 -- AUTO_INCREMENT for table `income_salaries`
@@ -569,7 +560,7 @@ ALTER TABLE `income_salaries`
 -- AUTO_INCREMENT for table `loan_reconstruct`
 --
 ALTER TABLE `loan_reconstruct`
-  MODIFY `loan_reconstruct_id` int(20) NOT NULL AUTO_INCREMENT;
+  MODIFY `loan_reconstruct_id` int(20) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=2;
 
 --
 -- AUTO_INCREMENT for table `marital_statuses`
@@ -581,7 +572,7 @@ ALTER TABLE `marital_statuses`
 -- AUTO_INCREMENT for table `payment`
 --
 ALTER TABLE `payment`
-  MODIFY `payment_id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=4;
+  MODIFY `payment_id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=15;
 
 --
 -- AUTO_INCREMENT for table `philippine_barangays`

@@ -64,6 +64,8 @@ document.addEventListener('DOMContentLoaded', function() {
     const urlParams = new URLSearchParams(window.location.search);
     const clientId = urlParams.get('clientID');
     const loanId = urlParams.get('loanID');
+    // ADDED: Check for reconstructID in the URL
+    const reconstructId = urlParams.get('reconstructID'); 
 
     if (!clientId || !loanId) {
         // If loan details are missing, stop here but don't halt the general listeners above.
@@ -98,9 +100,16 @@ document.addEventListener('DOMContentLoaded', function() {
         messageContainer.style.color = 'blue';
         scheduleTableBody.innerHTML = ''; // Clear existing table data
 
+        // Build the query string with optional reconstructID
+        let queryString = `client_id=${clientId}&loan_id=${loanId}`;
+        if (reconstructId) {
+            queryString += `&reconstructID=${reconstructId}`;
+        }
+
         // --- Fetch Summary Details ---
         try {
-            const summaryUrl = `PHP/accountsreceivableselect_handler.php?client_id=${clientId}&loan_id=${loanId}`;
+            // UPDATED: Use the combined queryString for the API call
+            const summaryUrl = `PHP/accountsreceivableselect_handler.php?${queryString}`;
             const summaryRes = await fetch(summaryUrl);
             const summaryData = await summaryRes.json();
 
@@ -129,7 +138,8 @@ document.addEventListener('DOMContentLoaded', function() {
 
         // --- Fetch Amortization Schedule ---
         try {
-            const scheduleUrl = `PHP/accountsreceivableselectsched_handle.php?client_id=${clientId}&loan_id=${loanId}`;
+            // UPDATED: Use the combined queryString for the API call
+            const scheduleUrl = `PHP/accountsreceivableselectsched_handle.php?${queryString}`;
             const scheduleRes = await fetch(scheduleUrl);
             const scheduleData = await scheduleRes.json();
 
@@ -219,6 +229,11 @@ document.addEventListener('DOMContentLoaded', function() {
             formData.append('loan_id', loanId);
             formData.append('amount', amount);
             formData.append('processby', 'system');
+            
+            // ADDED: Pass the reconstructID to the payment handler if it exists
+            if (reconstructId) {
+                formData.append('reconstructID', reconstructId);
+            }
 
             messageContainer.textContent = 'Processing payment...';
             messageContainer.style.color = 'blue';

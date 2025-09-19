@@ -38,8 +38,32 @@ $approved_accounts = [];
 
 if ($result->num_rows > 0) {
     while($row = $result->fetch_assoc()) {
+        $loan_application_id = $row['loan_application_id'];
         $principal_amount = (float)$row['principal_amount'];
         $interest_rate = (int)$row['interest_rate'];
+        $payment_frequency = $row['payment_frequency'];
+        $date_end = $row['date_end'];
+
+        // Check for a reconstructed loan and get the ID
+        $reconstruct_sql = "SELECT loan_reconstruct_id, reconstruct_amount, payment_frequency, interest_rate, date_end 
+                            FROM loan_reconstruct 
+                            WHERE loan_application_id = ?";
+        $stmt = $conn->prepare($reconstruct_sql);
+        $stmt->bind_param("i", $loan_application_id);
+        $stmt->execute();
+        $reconstruct_result = $stmt->get_result();
+        
+        $reconstruct_id = null;
+        if ($reconstruct_result->num_rows > 0) {
+            // Use reconstructed loan details
+            $reconstruct_row = $reconstruct_result->fetch_assoc();
+            $principal_amount = (float)$reconstruct_row['reconstruct_amount'];
+            $interest_rate = (int)$reconstruct_row['interest_rate'];
+            $payment_frequency = $reconstruct_row['payment_frequency'];
+            $date_end = $reconstruct_row['date_end'];
+            $reconstruct_id = (int)$reconstruct_row['loan_reconstruct_id'];
+        }
+        $stmt->close();
         
         // Calculate Interest Amount: Principal * (Rate / 100)
         $interest_amount = $principal_amount * ($interest_rate / 100.0);
@@ -48,19 +72,20 @@ if ($result->num_rows > 0) {
         $total_loan_amount = $principal_amount + $interest_amount;
 
         // Check if the loan is overdue
-        $is_overdue = (strtotime($row['date_end']) < time());
+        $is_overdue = (strtotime($date_end) < time());
 
         $approved_accounts[] = [
-            'loan_application_id' => $row['loan_application_id'],
+            'loan_application_id' => $loan_application_id,
             'client_ID' => $row['client_ID'],
             'first_name' => htmlspecialchars($row['first_name']),
             'last_name' => htmlspecialchars($row['last_name']),
             'principal_amount' => $principal_amount,
             'interest_amount' => $interest_amount,
             'total_loan_amount' => $total_loan_amount,
-            'payment_frequency' => $row['payment_frequency'],
-            'date_end' => $row['date_end'],
-            'is_overdue' => $is_overdue
+            'payment_frequency' => $payment_frequency,
+            'date_end' => $date_end,
+            'is_overdue' => $is_overdue,
+            'reconstruct_id' => $reconstruct_id
         ];
     }
 }

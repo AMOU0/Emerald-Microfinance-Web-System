@@ -1,107 +1,105 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Emerald Microfinance</title>
-            <script src="JS/enforce_login.js"></script>
-    <link rel="stylesheet" href="CSS/accountrecivablereconstruct_style.css">
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Emerald Microfinance</title>
+  <script src="JS/enforce_login.js"></script>
+  <link rel="stylesheet" href="CSS/accountrecivablereconstruct_style.css">
 </head>
 <body>
-    <aside class="sidebar">
-        <div class="sidebar-header">
-            Emerald Microfinance
-        </div>
-        <nav class="sidebar-nav">
-            <ul>
-                <li><a href="#" class="nav-link">Dashboard</a></li>
-                <li><a href="#" class="nav-link">Client Creation</a></li>
-                <li><a href="#" class="nav-link">Loan Application</a></li>
-                <li><a href="#" class="nav-link">Pending Accounts</a></li>
-                <li><a href="#" class="nav-link active">Payment Collection</a></li>
-                <li><a href="#" class="nav-link">Ledger</a></li>
-                <li><a href="#" class="nav-link">Reports</a></li>
-                <li><a href="#" class="nav-link">User Management</a></li>
-                <li><a href="#" class="nav-link">Tools</a></li>
-            </ul>
-        </nav>
-        <div class="sidebar-footer">
-            <button class="logout-button">
-                Logout
-            </button>
-        </div>
-    </aside>
+  <aside class="sidebar">
+    <div class="sidebar-header">
+      Emerald Microfinance
+    </div>
+    <nav class="sidebar-nav">
+      <ul>
+        <li><a href="#" class="nav-link">Dashboard</a></li>
+        <li><a href="#" class="nav-link">Client Creation</a></li>
+        <li><a href="#" class="nav-link">Loan Application</a></li>
+        <li><a href="#" class="nav-link">Pending Accounts</a></li>
+        <li><a href="#" class="nav-link active">Payment Collection</a></li>
+        <li><a href="#" class="nav-link">Ledger</a></li>
+        <li><a href="#" class="nav-link">Reports</a></li>
+        <li><a href="#" class="nav-link">User Management</a></li>
+        <li><a href="#" class="nav-link">Tools</a></li>
+      </ul>
+    </nav>
+    <div class="sidebar-footer">
+      <button class="logout-button">
+        Logout
+      </button>
+    </div>
+  </aside>
 
-    <main class="main-content">
-        <header class="header">
-            <h1 class="header-title">Loan Reconstruction</h1>
-             <button class="action-button return-button">RETURN</button>
-        </header>
-        <div class="main-content-form">
-            <form class="loan-application-container" id="loanApplicationForm">
-                <section class="form-section">
-                    <h2 class="section-title">Loan Details</h2>
-                    <div class="grid-container">
-                        <div class="input-group">
-                            <label for="loan-amount" class="form-label">Loan Amount</label>
-                            <input type="text" id="loan-amount" class="form-input" readonly>
-
-                        </div>
-                        <div class="input-group">
-                            <label for="payment-frequency" class="form-label">Terms</label>
-                            <input type="text" id="payment-frequency" class="form-input" readonly>
-                        </div>
-                        <div class="input-group">
-                            <label for="date-start" class="form-label">Date Start</label>
-                            <input type="date" id="date-start" class="form-input" readonly>
-                        </div>
-                        <div class="input-group">
-                            <label for="Balance-amount" class="form-label">Balance Amount</label>
-                            <input type="text" id="Balance-amount" class="form-input" readonly>
-
-                        </div>
-                        <div class="input-group">
-                            <label for="duration-of-loan" class="form-label">Duration of Loan</label>
-                            <input type="text" id="duration-of-loan" class="form-input" readonly>
-                        </div>
-                        <div class="input-group">
-                            <label for="date-end" class="form-label">Date End</label>
-                            <input type="date" id="date-end" class="form-input" readonly>
-                        </div>
-                    </div>
-                </section>
-                <section class="form-section">
-                    <h2 class="section-title">Reconstruct Details</h2>
-                        <div class="input-group">
-                            <label for="payment-frequency" class="form-label">Terms</label>
-                            <select id="payment-frequency" class="form-select">
-                                <option value="">Select...</option>
-                                <option value="daily">Daily</option>
-                                <option value="weekly">Weekly</option>
-                                <option value="monthly">Monthly</option>
-                            </select>
-                        </div>
-                        <div class="input-group">
-                            <label for="date-start" class="form-label">Date Start</label>
-                            <input type="date" id="date-start" class="form-input">
-                        </div>
-                        <div class="input-group">
-                            <label for="duration-of-loan" class="form-label">Duration of Loan</label>
-                            <input type="text" id="duration-of-loan" class="form-input" >
-                        </div>
-                        <div class="input-group">
-                            <label for="date-end" class="form-label">Date End</label>
-                            <input type="date" id="date-end" class="form-input">
-                        </div>
-                            <div class="form-actions">
-                            <button type="submit" class="apply-button">Apply</button>
-                        </div>
-                    </div>
-                </section>
-
-            </form>
-        </div>
-    </main>
-    <script src="JS/accountsreceivablereconstruct_function.js"></script>
+  <main class="main-content">
+    <header class="header">
+      <h1 class="header-title">Loan Reconstruction</h1>
+      <button class="action-button return-button">RETURN</button>
+    </header>
+    <div class="main-content-form">
+      <form class="loan-reconstruction-container" id="loanReconstructionForm">
+        <section class="form-section">
+          <h2 class="section-title">Loan Details</h2>
+          <div class="grid-container">
+            <div class="input-group">
+              <label for="loan-amount" class="form-label">Loan Amount</label>
+              <input type="text" id="loan-amount" class="form-input" readonly>
+            </div>
+            <div class="input-group">
+              <label for="original-terms" class="form-label">Terms</label>
+              <input type="text" id="original-terms" class="form-input" readonly>
+            </div>
+            <div class="input-group">
+              <label for="original-date-start" class="form-label">Date Start</label>
+              <input type="date" id="original-date-start" class="form-input" readonly>
+            </div>
+            <div class="input-group">
+              <label for="balance-amount" class="form-label">Balance Amount</label>
+              <input type="text" id="balance-amount" class="form-input" readonly>
+            </div>
+            <div class="input-group">
+              <label for="original-duration-of-loan" class="form-label">Duration of Loan</label>
+              <input type="text" id="original-duration-of-loan" class="form-input" readonly>
+            </div>
+            <div class="input-group">
+              <label for="original-date-end" class="form-label">Date End</label>
+              <input type="date" id="original-date-end" class="form-input" readonly>
+            </div>
+          </div>
+        </section>
+        <section class="form-section">
+          <h2 class="section-title">Reconstruct Details</h2>
+          <div class="grid-container">
+            <div class="input-group">
+              <label for="reconstruct-terms" class="form-label">Terms</label>
+              <select id="reconstruct-terms" class="form-select">
+                <option value="">Select...</option>
+                <option value="daily">Daily</option>
+                <option value="weekly">Weekly</option>
+                <option value="monthly">Monthly</option>
+              </select>
+            </div>
+            <div class="input-group">
+              <label for="reconstruct-date-start" class="form-label">Date Start</label>
+              <input type="date" id="reconstruct-date-start" class="form-input">
+            </div>
+            <div class="input-group">
+              <label for="reconstruct-duration-of-loan" class="form-label">Duration of Loan</label>
+              <input type="text" id="reconstruct-duration-of-loan" class="form-input">
+            </div>
+            <div class="input-group">
+              <label for="reconstruct-date-end" class="form-label">Date End</label>
+              <input type="date" id="reconstruct-date-end" class="form-input">
+            </div>
+          </div>
+          <div class="form-actions">
+            <button type="submit" class="apply-button">Apply</button>
+          </div>
+        </section>
+      </form>
+    </div>
+  </main>
+  <script src="JS/accountsreceivablereconstruct_function.js"></script>
 </body>
 </html>

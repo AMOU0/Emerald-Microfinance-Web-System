@@ -1,92 +1,107 @@
 <?php
-// PHP/accountsreceivableselectpay_handle.php
+// PHP/accountsreceivableselectpay_handle.php - CORRECTED
 header('Content-Type: application/json');
+
 $servername = "localhost";
 $username = "root";
 $password = "";
 $dbname = "emerald_microfinance";
-
-$client_id = $_POST['client_id'] ?? null;
-$loan_id = $_POST['loan_id'] ?? null;
-$payment_amount = $_POST['amount'] ?? null;
-$processby = $_POST['processby'] ?? 'system';
-
-if (!$client_id || !$loan_id || !$payment_amount) {
-    echo json_encode(['error' => 'Missing parameters']);
-    exit;
-}
-
-$payment_amount = floatval($payment_amount);
-if ($payment_amount <= 0) {
-    echo json_encode(['error' => 'Invalid payment amount']);
-    exit;
-}
 
 try {
     $pdo = new PDO("mysql:host=$servername;dbname=$dbname;charset=utf8mb4", $username, $password, [
         PDO::ATTR_ERRMODE => PDO::ERRMODE_EXCEPTION
     ]);
 
-    // Fetch loan info
-    $stmt = $pdo->prepare("SELECT loan_amount, interest_rate FROM loan_applications WHERE loan_application_id = ? AND client_ID = ?");
-    $stmt->execute([$loan_id, $client_id]);
-    $loan = $stmt->fetch(PDO::FETCH_ASSOC);
-    if (!$loan) {
-        echo json_encode(['error' => 'Loan not found']);
+    // Get data from POST request
+    $client_id = $_POST['client_id'] ?? null;
+    $loan_id = $_POST['loan_id'] ?? null;
+    $amount = $_POST['amount'] ?? null;
+    $processby = $_POST['processby'] ?? 'system';
+    $reconstruct_id = $_POST['reconstructID'] ?? 0;
+
+    if (!$client_id || !$loan_id || !$amount || !$processby) {
+        echo json_encode(['error' => 'Missing required data']);
         exit;
     }
 
-    // Calculate total payable
-    $principal = floatval($loan['loan_amount']);
-    $interest_rate = intval($loan['interest_rate']);
-    $interest_amount = ($principal * $interest_rate) / 100;
-    $total_payable = $principal + $interest_amount;
+    $amount = floatval($amount);
+    
+    $pdo->beginTransaction();
+
+    // Determine the total repayable amount based on whether it's a reconstructed loan or not
+    $total_repayable = 0;
+    if ($reconstruct_id > 0) {
+        $loan_sql = "SELECT reconstruct_amount, interest_rate FROM loan_reconstruct WHERE loan_reconstruct_id = ? AND loan_application_id = ?";
+        $stmt = $pdo->prepare($loan_sql);
+        $stmt->execute([$reconstruct_id, $loan_id]);
+        $loan_data = $stmt->fetch(PDO::FETCH_ASSOC);
+        if ($loan_data) {
+            $principal = floatval($loan_data['reconstruct_amount']);
+            $interest_rate = intval($loan_data['interest_rate']);
+            $total_repayable = $principal + ($principal * $interest_rate / 100);
+        }
+    } else {
+        $loan_sql = "SELECT loan_amount, interest_rate FROM loan_applications WHERE loan_application_id = ? AND client_ID = ?";
+        $stmt = $pdo->prepare($loan_sql);
+        $stmt->execute([$loan_id, $client_id]);
+        $loan_data = $stmt->fetch(PDO::FETCH_ASSOC);
+        if ($loan_data) {
+            $principal = floatval($loan_data['loan_amount']);
+            $interest_rate = intval($loan_data['interest_rate']);
+            $total_repayable = $principal + ($principal * $interest_rate / 100);
+        }
+    }
+    
+    if ($total_repayable == 0) {
+        $pdo->rollBack();
+        echo json_encode(['error' => 'Loan not found or invalid.']);
+        exit;
+    }
 
     // Sum total payments made *before* this payment
-    $stmt = $pdo->prepare("SELECT IFNULL(SUM(amount_paid),0) as total_paid FROM payment WHERE loan_application_id = ?");
-    $stmt->execute([$loan_id]);
+    $stmt = $pdo->prepare("SELECT IFNULL(SUM(amount_paid), 0) as total_paid FROM payment WHERE loan_application_id = ? AND loan_reconstruct_id = ?");
+    $stmt->execute([$loan_id, $reconstruct_id]);
     $total_paid_before = floatval($stmt->fetchColumn());
 
-    // Calculate remaining balance before this payment
-    $remaining_balance_before = $total_payable - $total_paid_before;
+    $remaining_balance_before = $total_repayable - $total_paid_before;
 
-    // 1. Check if loan is already fully paid
+    // Check if loan is already fully paid
     if ($remaining_balance_before <= 0.01) {
+        $pdo->rollBack();
         echo json_encode(['error' => 'Loan is already fully settled.']);
         exit;
     }
 
-    // 2. Validate and adjust payment amount against the remaining loan balance
-    // This ensures we don't insert a payment larger than the amount required for settlement
-    $final_payment_amount = min($payment_amount, $remaining_balance_before);
+    // Validate and adjust payment amount against the remaining loan balance
+    $final_payment_amount = min($amount, $remaining_balance_before);
 
-    // --- BEGIN TRANSACTION ---
-    $pdo->beginTransaction();
+    // Insert payment into the payment table with the reconstruct_id
+    $insert_sql = "INSERT INTO payment (loan_reconstruct_id, loan_application_id, client_id, amount_paid, processby) VALUES (?, ?, ?, ?, ?)";
+    $stmt = $pdo->prepare($insert_sql);
+    $stmt->execute([$reconstruct_id, $loan_id, $client_id, $final_payment_amount, $processby]);
 
-    // 3. Insert payment
-    $stmt = $pdo->prepare("INSERT INTO payment (loan_application_id, client_id, amount_paid, date_payed, processby) VALUES (?, ?, ?, NOW(), ?)");
-    $stmt->execute([$loan_id, $client_id, $final_payment_amount, $processby]);
-
-    // 4. Check if the loan is now fully paid
+    // Check if the loan is now fully paid
     $new_remaining_balance = $remaining_balance_before - $final_payment_amount;
 
-    if ($new_remaining_balance <= 0.01) { 
-        // Update ONLY the 'paid' column to 'fully paid'
-        $stmt = $pdo->prepare("UPDATE loan_applications SET paid = '1' WHERE loan_application_id = ?");
+    if ($new_remaining_balance <= 0.01) {
+        // If it's a reconstructed loan, update the reconstruct table status
+        if ($reconstruct_id > 0) {
+            $update_sql = "UPDATE loan_reconstruct SET status = 'fully_paid' WHERE loan_reconstruct_id = ? AND loan_application_id = ?";
+            $stmt = $pdo->prepare($update_sql);
+            $stmt->execute([$reconstruct_id, $loan_id]);
+        }
+        
+        // Always update the original loan application status
+        $update_sql = "UPDATE loan_applications SET status = 'fully_paid' WHERE loan_application_id = ?";
+        $stmt = $pdo->prepare($update_sql);
         $stmt->execute([$loan_id]);
         
         $message = 'Payment recorded successfully! Loan is now fully paid.';
-        
-        if ($final_payment_amount < $payment_amount) {
-            $message .= ' (Only $' . number_format($final_payment_amount, 2) . ' was applied as the final settlement amount).';
-        }
-
     } else {
         $message = 'Payment recorded successfully.';
     }
     
     $pdo->commit();
-    // --- END TRANSACTION ---
 
     echo json_encode(['success' => true, 'message' => $message]);
 
