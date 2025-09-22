@@ -12,7 +12,7 @@ $response = [];
 
 $client_id = $_GET['client_id'] ?? null;
 $loan_id = $_GET['loan_id'] ?? null;
-$reconstruct_id = $_GET['reconstructID'] ?? null;
+$reconstruct_id = $_GET['reconstructID'] ?? 0; // Default to 0 if not set
 
 if (!$client_id || !$loan_id) {
     $response['error'] = 'Missing client ID or loan ID.';
@@ -95,76 +95,71 @@ try {
     $payment_sql = "
         SELECT amount_paid, DATE(date_payed) AS date_payed 
         FROM payment 
-        WHERE loan_application_id = ? AND loan_reconstruct_id = ?
+        WHERE loan_application_id = ? AND (loan_reconstruct_id = ? OR (? = 0 AND loan_reconstruct_id = 0))
         ORDER BY date_payed ASC
     ";
     $stmt = $pdo->prepare($payment_sql);
-    $stmt->execute([$loan_id, $reconstruct_id]);
+    $stmt->execute([$loan_id, $reconstruct_id, $reconstruct_id]);
     $payments = $stmt->fetchAll(PDO::FETCH_ASSOC);
     
-    $total_paid = array_sum(array_column($payments, 'amount_paid'));
-
     // --- 4. Generate Schedule and Apply Payments ---
     $schedule = [];
     $current_due_date = clone $start_date_obj;
     $current_due_date->modify("+$freq_days days");
     
-    // MODIFIED: Use a running balance that is decremented for each installment
-    $running_balance = $total_repayment; 
-    
-    // MODIFIED: Track payments applied to each installment individually
-    $payments_to_apply = $payments;
-    $current_payment_index = 0;
+    $remaining_loan_balance = $total_repayment;
+    $payments_index = 0;
+    $current_payment_amount = isset($payments[$payments_index]) ? $payments[$payments_index]['amount_paid'] : 0;
 
     for ($i = 1; $i <= $num_payments; $i++) {
+        $current_installment = $installment_amount;
         $amount_paid_this_period = 0;
         $is_paid = false;
         $date_paid = null;
-        $current_installment = $installment_amount;
 
         // Apply rounding difference to the last installment
         if ($i === $num_payments) {
-            $current_installment = $total_repayment - (($num_payments - 1) * $installment_amount);
-            $current_installment = round($current_installment, 2);
+            $current_installment = $remaining_loan_balance;
         }
 
-        // Apply payments from the payments array
-        while ($current_payment_index < count($payments_to_apply) && $running_balance > 0) {
-            $current_payment = $payments_to_apply[$current_payment_index];
-            $amount_from_payment = $current_payment['amount_paid'];
+        $installment_to_pay = $current_installment;
+        
+        while ($installment_to_pay > 0 && $current_payment_amount > 0) {
+            $amount_to_apply = min($installment_to_pay, $current_payment_amount);
+            $amount_paid_this_period += $amount_to_apply;
             
-            $applied_amount = min($amount_from_payment, $running_balance);
-            $amount_paid_this_period += $applied_amount;
-            $running_balance -= $applied_amount;
+            $current_payment_amount -= $amount_to_apply;
+            $installment_to_pay -= $amount_to_apply;
             
-            // Mark the date paid if any amount was applied
-            if ($applied_amount > 0) {
-                $date_paid = $current_payment['date_payed'];
+            // Get the date of the first payment that contributes to this installment
+            if ($date_paid === null) {
+                $date_paid = $payments[$payments_index]['date_payed'];
             }
             
-            // If the current payment is fully used, move to the next one
-            $payments_to_apply[$current_payment_index]['amount_paid'] -= $applied_amount;
-            if ($payments_to_apply[$current_payment_index]['amount_paid'] <= 0) {
-                $current_payment_index++;
+            if ($current_payment_amount <= 0) {
+                $payments_index++;
+                if (isset($payments[$payments_index])) {
+                    $current_payment_amount = $payments[$payments_index]['amount_paid'];
+                }
             }
         }
         
-        // Determine if the installment is fully paid
-        if ($amount_paid_this_period >= $current_installment) {
+        $remaining_loan_balance -= $amount_paid_this_period;
+
+        if (round($amount_paid_this_period, 2) >= round($current_installment, 2)) {
             $is_paid = true;
         }
 
         $schedule[] = [
             'due_date' => $current_due_date->format('Y-m-d'),
-            'installment_amount' => $current_installment,
-            'interest_component' => $installment_interest,
+            'installment_amount' => round($current_installment, 2),
+            'interest_component' => round($installment_interest, 2),
             'amount_paid' => round($amount_paid_this_period, 2),
-            'date_paid' => $date_paid,
-            'remaining_balance' => round($running_balance, 2),
+            'date_paid' => $is_paid ? $date_paid : null,
+            'remaining_balance' => round(max(0, $remaining_loan_balance), 2),
             'is_paid' => $is_paid
         ];
         
-        // Move to the next due date
         $current_due_date->modify("+$freq_days days");
     }
 
