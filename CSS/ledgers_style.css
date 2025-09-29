@@ -44,7 +44,7 @@ body {
     transition: background-color 0.2s ease-in-out;
     border-radius: 8px;
     margin: 0 12px 8px;
-    text-decoration: none; /* Add this to remove the underline */
+    text-decoration: none;
 }
 
 .nav-link:hover {
@@ -81,104 +81,86 @@ body {
     background-color: #C53030;
 }
 
-
-
 .main-content {
     flex-grow: 1;
-    padding: 1.5rem; /* p-6 */
-    background-color: #F7FAFC; /* bg-gray-100 */
-    border: 2px solid #597997; /* Blue border around main content */
-    border-radius: 0.75rem; /* rounded-xl */
-    margin: 1.5rem; /* m-6 */
+    padding: 1.5rem;
+    background-color: #F7FAFC;
+    border: 2px solid #597997;
+    border-radius: 0.75rem;
+    margin: 1.5rem;
     display: flex;
     flex-direction: column;
-    gap: 1.5rem; /* gap-6 */
+    gap: 1.5rem;
 }
 
 /* Specific styles for the Ledger main content */
 .ledger-main-content {
-    border: none; /* Remove blue border for ledger page as per image */
-    margin: 0; /* Remove margin to expand full width in the main area */
-    border-radius: 0; /* Remove border-radius */
-    background-color: #ffffff; /* Darker background as per image */
+    border: none;
+    margin: 0;
+    border-radius: 0;
+    background-color: #ffffff;
     display: flex;
     flex-direction: column;
 }
 
 .header {
-    background-color: #48BB78; /* Green background */
+    background-color: #48BB78;
     color: #FFFFFF;
-    padding: 1rem 1.5rem; /* py-4 px-6 */
-    border-radius: 0.75rem; /* rounded-xl */
+    padding: 1rem 1.5rem;
+    border-radius: 0.75rem;
     display: flex;
     justify-content: space-between;
     align-items: center;
-    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1); /* shadow-sm */
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
 }
 
-/* Specific styles for the Ledger header */
 .ledger-header {
-    background-color: #48BB78; /* Green background */
-    border-radius: 0; /* No rounded corners as per image */
-    padding: 1.5rem 1.5rem; /* Increased padding */
-    box-shadow: none; /* No shadow */
-    color: #000; /* Black text for header title */
+    background-color: #48BB78;
+    border-radius: 0;
+    padding: 1.5rem 1.5rem;
+    box-shadow: none;
+    color: #000;
 }
 
 .header-title {
-    font-size: 1.75rem; /* text-3xl */
-    font-weight: 700; /* font-bold */
+    font-size: 1.75rem;
+    font-weight: 700;
 }
 
 .view-button {
     background-color: #FFFFFF;
-    color: #2D3748; /* Dark gray text */
-    padding: 0.5rem 1rem; /* py-2 px-4 */
-    border-radius: 0.5rem; /* rounded-lg */
-    font-weight: 600; /* font-semibold */
+    color: #2D3748;
+    padding: 0.5rem 1rem;
+    border-radius: 0.5rem;
+    font-weight: 600;
     transition: background-color 0.2s ease-in-out;
-    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1); /* shadow */
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+    border: none;
+    cursor: pointer;
 }
 
-    .view-button:hover {
-        background-color: #EDF2F7; /* bg-gray-200 */
-    }
+.view-button:hover {
+    background-color: #EDF2F7;
+}
 
-/* New styles for Ledger Table */
-.ledger-table-section {
-    margin: 1.5rem; /* Margin to create space around it */
-    background-color: #FFFFFF; /* White background for the table */
-    border: 1px solid #CBD5E0; /* Light gray border */
-    border-radius: 0.5rem; /* Slightly rounded corners */
-    overflow: hidden; /* Ensures borders/background apply correctly */
-    flex-grow: 1; /* Allow table to fill available vertical space */
+/* Updated Ledger Table Styles */
+.updated-ledger-table-section {
+    margin: 0 1.5rem 1.5rem;
+    background-color: #4A5568;
+    border: none;
+    border-radius: 0;
+    flex-grow: 1;
     display: flex;
     flex-direction: column;
 }
 
-.updated-ledger-table-section {
-    margin: 0 1.5rem 1.5rem; /* Adjust margin to align with header */
-    background-color: #4A5568; /* Dark gray background for the table area */
-    border: none; /* No border for the table area itself */
-    border-radius: 0; /* No rounded corners */
-}
-
-.ledger-table-header {
-    display: grid;
-    grid-template-columns: repeat(3, 1fr); /* 3 columns for date, amount, balance */
-    background-color: #48BB78; /* Green header background */
-    color: #FFFFFF;
-    font-weight: 600;
-    padding: 0.75rem 1rem; /* Padding for header cells */
-    border-bottom: 1px solid #38A169; /* Darker green border */
-}
-
 .updated-ledger-table-header {
-    grid-template-columns: repeat(4, 1fr); /* 4 columns: Name, Contact Number, Date of Payment, Balance */
-    background-color: #2D3748; /* Darker gray for the table header */
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    background-color: #2D3748;
     color: #FFFFFF;
-    padding: 1rem 1.5rem; /* Increased padding */
-    border-bottom: none; /* No bottom border for header */
+    font-weight: bold;
+    padding: 1rem 1.5rem;
 }
 
 .ledger-header-cell {
@@ -186,55 +168,116 @@ body {
     padding: 0 0.5rem;
 }
 
-.ledger-table-body {
+.updated-ledger-table-body {
+    flex-grow: 1;
+    max-height: 400px;
+    overflow-y: auto;
+}
+
+.ledger-row {
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    padding: 10px;
+    border-bottom: 1px solid #6B7280;
+    transition: background-color 0.2s ease-in-out;
+}
+
+/* Use a single rule for row background to avoid redundancy and conflict */
+.ledger-row:nth-child(even) {
+    background-color: #4A5568;
+}
+.ledger-row:nth-child(odd) {
+    background-color: #4A5568;
+}
+
+.ledger-row:hover {
+    background-color: #556075;
+}
+
+.ledger-cell {
+    padding: 5px;
+    word-wrap: break-word;
+    color: #FFFFFF;
+}
+/* Styling for the main table container on the Ledger page */
+.updated-ledger-table-section {
+    margin: 0 1.5rem 1.5rem;
+    background-color: #4A5568; /* Dark gray background */
+    border: none;
+    border-radius: 0;
+    flex-grow: 1;
     display: flex;
     flex-direction: column;
 }
 
-.updated-ledger-table-body {
-    flex-grow: 1; /* Allow table body to grow and fill space */
-}
-
-.ledger-table-row {
+/* Styling for the table header */
+.updated-ledger-table-header {
     display: grid;
-    grid-template-columns: repeat(3, 1fr);
-    border-bottom: 1px solid #E2E8F0; /* Light gray border between rows */
+    grid-template-columns: repeat(4, 1fr);
+    background-color: #2D3748; /* Darker header background */
+    color: #FFFFFF;
+    font-weight: bold;
+    padding: 1rem 1.5rem;
+    border-bottom: 1px solid #6B7280; /* A subtle divider */
 }
 
-    .ledger-table-row:last-child {
-        border-bottom: none; /* No border for the last row */
-    }
-
-.updated-ledger-table-body .ledger-table-row {
-    grid-template-columns: repeat(4, 1fr); /* 4 columns for table rows */
-    border-bottom: 1px solid #6B7280; /* Darker border for rows */
+.ledger-header-cell {
+    text-align: left;
+    padding: 0 0.5rem;
 }
 
-.ledger-cell {
-    padding: 0.75rem 1rem;
-    min-height: 2.5rem; /* Minimum height for cells */
-    display: flex;
-    align-items: center;
-    color: #2D3748; /* Dark text color */
-    background-color: #FFFFFF; /* White cell background */
-    border-right: 1px solid #E2E8F0; /* Vertical border between cells */
+/* 🌟 ALIGN THE BALANCE HEADER TO THE RIGHT 🌟 */
+/* Selects the 4th header cell (Balance) using the nth-child selector */
+.updated-ledger-table-header .ledger-header-cell:nth-child(4) {
+    text-align: right;
+}
+/* ------------------------------------------- */
+
+
+/* Styling for the table body, making it scrollable */
+.clients-table-body {
+    flex-grow: 1;
+    max-height: 400px; /* Adjust as needed */
+    overflow-y: auto;
 }
 
-.updated-ledger-table-body .ledger-cell {
-    background-color: #4A5568; /* Darker gray for table cells */
-    color: #FFFFFF; /* White text for cells */
-    border-right: 1px solid #6B7280; /* Darker vertical border */
+/* Styling for individual rows within the table body */
+.clients-row {
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    padding: 10px;
+    border-bottom: 1px solid #6B7280;
+    transition: background-color 0.2s ease-in-out;
 }
 
-.ledger-cell:last-child {
-    border-right: none; /* No right border for the last cell in a row */
+.clients-row:nth-child(even) {
+    background-color: #4A5568;
 }
 
-/* Alternating row background for better readability (optional) */
-.ledger-table-row:nth-child(even) .ledger-cell {
-    background-color: #F7FAFC; /* Slightly lighter background for even rows */
+.clients-row:hover {
+    background-color: #556075;
 }
 
-.updated-ledger-table-body .ledger-table-row:nth-child(even) .ledger-cell {
-    background-color: #4A5568; /* Even rows remain dark gray, as per image */
+/* Styling for individual cells within a row */
+.clients-cell {
+    padding: 5px;
+    word-wrap: break-word;
+    color: #FFFFFF;
+}
+
+/* 🌟 ALIGN THE BALANCE DATA CELLS TO THE RIGHT 🌟 */
+/* Selects the 4th data cell (Balance) in every row */
+.clients-row .clients-cell:nth-child(4) {
+    text-align: right;
+}
+/* ------------------------------------------------ */
+
+/* Inside ledgers_style.css or similar file */
+.clickable-row {
+    cursor: pointer; /* Change mouse cursor to a pointer */
+    transition: background-color 0.15s ease;
+}
+
+.clickable-row:hover {
+    background-color: #f0f0f0; /* Subtle hover effect */
 }

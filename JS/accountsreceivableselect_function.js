@@ -1,11 +1,4 @@
 document.addEventListener('DOMContentLoaded', function() {
-    // ==========================================================
-    // 1. Initial Checks and Navigation (Original First Block)
-    // ==========================================================
-    
-    // Call the session check function as soon as the page loads. (Assuming checkSessionAndRedirect is defined elsewhere)
-    // checkSessionAndRedirect(); 
-
     const navLinks = document.querySelectorAll('.nav-link');
     const logoutButton = document.querySelector('.logout-button');
 
@@ -37,17 +30,11 @@ document.addEventListener('DOMContentLoaded', function() {
         });
     });
 
-    // Handle the logout button securely
     if (logoutButton) {
         logoutButton.addEventListener('click', function() {
-            // Redirect to the PHP script that handles session destruction
             window.location.href = 'PHP/check_logout.php'; 
         });
     }
-
-    // ==========================================================
-    // 2. RETURN Button Handler (Original Second Block)
-    // ==========================================================
     
     const returnButton = document.querySelector('.return-button'); 
 

@@ -3,7 +3,7 @@
 -- https://www.phpmyadmin.net/
 --
 -- Host: 127.0.0.1
--- Generation Time: Sep 22, 2025 at 04:57 AM
+-- Generation Time: Sep 29, 2025 at 03:05 AM
 -- Server version: 10.4.32-MariaDB
 -- PHP Version: 8.2.12
 
@@ -54,7 +54,8 @@ CREATE TABLE `clients` (
 
 INSERT INTO `clients` (`client_ID`, `last_name`, `first_name`, `middle_name`, `marital_status`, `gender`, `date_of_birth`, `city`, `barangay`, `postal_code`, `street_address`, `phone_number`, `email`, `employment_status`, `occupation`, `years_in_job`, `income`, `created_at`) VALUES
 (202500001, 'Mallari', 'Angel', 'Laurence P', 'Single', 'Male', '2003-03-07', 'Tarlac City', 'Alvindia', '2300', '#205 Alvindia Segundo Tarlac City', '09212271315', 'laurence030703@gmail.com', '', '', 0, '20,000+', '2025-09-18 18:11:56'),
-(202500002, 'Medns', 'huds', 'sonssss', 'Single', 'Male', '1998-07-08', 'Tarlac City', 'Amucao', '2300', 'amucao ', '21312412356', '', '', '', 0, '5,000 - 10,000', '2025-09-18 18:16:16');
+(202500002, 'Medns', 'huds', 'sonssss', 'Single', 'Male', '1998-07-08', 'Tarlac City', 'Amucao', '2300', 'amucao ', '21312412356', '', '', '', 0, '5,000 - 10,000', '2025-09-18 18:16:16'),
+(202500003, 'jake ', 'syrus', 'paras', 'Married', 'Non-binary', '2005-06-16', 'Tarlac City', 'Amucao', '2300', 'amucao ty 02', '12312312312', 'Hambi@gmail.com', '', '', 0, '20,000+', '2025-09-23 10:16:24');
 
 -- --------------------------------------------------------
 
@@ -75,7 +76,8 @@ CREATE TABLE `client_requirements` (
 
 INSERT INTO `client_requirements` (`has_valid_id`, `has_barangay_clearance`, `client_ID`, `created_at`) VALUES
 ('Driver\'s License', 0, 202500001, '2025-09-19 02:11:56'),
-('Passport', 0, 202500002, '2025-09-19 02:16:16');
+('Passport', 0, 202500002, '2025-09-19 02:16:16'),
+('Unified Multi-Purpose ID (UMID)', 0, 202500003, '2025-09-23 18:16:24');
 
 -- --------------------------------------------------------
 
@@ -122,7 +124,9 @@ CREATE TABLE `guarantor` (
 
 INSERT INTO `guarantor` (`guarantor_id`, `guarantor_last_name`, `guarantor_first_name`, `guarantor_middle_name`, `guarantor_street_address`, `guarantor_phone_number`, `loan_application_id`, `client_ID`, `created_at`) VALUES
 (1, 'James', 'Ride', 'Exitssss', 'Manila ph', '09283733333', 202500001, 202500001, '2025-09-19 02:12:35'),
-(2, 'jake', 'asd', 'mads', 'Amucao', '21415135135', 202500002, 202500002, '2025-09-19 02:17:08');
+(2, 'jake', 'asd', 'mads', 'Amucao', '21415135135', 202500002, 202500002, '2025-09-19 02:17:08'),
+(3, 'Kate', 'Fernan', 'Kase', 'Amucao Tarlac', '12312312312', 202500003, 202500003, '2025-09-23 18:17:31'),
+(4, 'Mallari', 'Angel', 'Laurence P', '#205 Alvindia Segundo Tarlac City', '09212271315', 202500004, 202500002, '2025-09-29 03:51:59');
 
 -- --------------------------------------------------------
 
@@ -192,7 +196,8 @@ CREATE TABLE `loan_applications` (
 
 INSERT INTO `loan_applications` (`loan_application_id`, `colateral`, `loan_amount`, `payment_frequency`, `date_start`, `duration_of_loan`, `interest_rate`, `date_end`, `client_ID`, `status`, `paid`, `created_at`) VALUES
 (202500001, 'motor', 10000.00, 'monthly', '2025-09-20', '100 days', 20, '2025-12-29', 202500001, 'approved', 'Unpaid', '2025-09-19 02:12:35'),
-(202500002, 'Dragon', 20000.00, 'weekly', '2024-07-19', '100 days', 20, '2024-10-27', 202500002, 'approved', 'Unpaid', '2025-09-19 02:17:08');
+(202500002, 'Dragon', 20000.00, 'weekly', '2024-07-19', '100 days', 20, '2024-10-27', 202500002, 'approved', 'Unpaid', '2025-09-19 02:17:08'),
+(202500003, 'Single Motor(Rusi 125)', 30000.00, 'monthly', '2025-09-27', '100 days', 20, '2026-01-05', 202500003, 'approved', 'Unpaid', '2025-09-23 18:17:31');
 
 -- --------------------------------------------------------
 
@@ -208,15 +213,17 @@ CREATE TABLE `loan_reconstruct` (
   `interest_rate` int(11) NOT NULL,
   `date_start` date NOT NULL,
   `duration` varchar(100) NOT NULL,
-  `date_end` date NOT NULL
+  `date_end` date NOT NULL,
+  `status` varchar(25) NOT NULL,
+  `date_created` date NOT NULL DEFAULT current_timestamp()
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 
 --
 -- Dumping data for table `loan_reconstruct`
 --
 
-INSERT INTO `loan_reconstruct` (`loan_reconstruct_id`, `loan_application_id`, `reconstruct_amount`, `payment_frequency`, `interest_rate`, `date_start`, `duration`, `date_end`) VALUES
-(1, 202500002, 8573.39, 'monthly', 20, '2025-09-20', '100 days', '2025-12-29');
+INSERT INTO `loan_reconstruct` (`loan_reconstruct_id`, `loan_application_id`, `reconstruct_amount`, `payment_frequency`, `interest_rate`, `date_start`, `duration`, `date_end`, `status`, `date_created`) VALUES
+(4, 202500002, 22285.71, 'monthly', 20, '2025-09-30', '100 days', '2026-01-08', 'active', '2025-09-29');
 
 -- --------------------------------------------------------
 
@@ -247,7 +254,7 @@ INSERT INTO `marital_statuses` (`id`, `status`) VALUES
 
 CREATE TABLE `payment` (
   `payment_id` int(11) NOT NULL,
-  `loan_reconstruct_id` int(11) NOT NULL,
+  `loan_reconstruct_id` int(11) DEFAULT NULL,
   `loan_application_id` bigint(20) NOT NULL,
   `client_id` bigint(20) NOT NULL,
   `amount_paid` decimal(10,2) NOT NULL,
@@ -260,18 +267,8 @@ CREATE TABLE `payment` (
 --
 
 INSERT INTO `payment` (`payment_id`, `loan_reconstruct_id`, `loan_application_id`, `client_id`, `amount_paid`, `date_payed`, `processby`) VALUES
-(1, 0, 202500002, 202500002, 1714.29, '2024-07-26 06:32:15', 'system'),
-(2, 0, 202500002, 202500002, 1714.29, '2024-08-02 03:54:09', 'system'),
-(3, 0, 202500002, 202500002, 1714.29, '2024-08-09 08:05:41', 'system'),
-(4, 0, 202500002, 202500002, 1714.29, '2024-08-16 02:18:22', 'system'),
-(5, 0, 202500002, 202500002, 1713.29, '2024-08-23 05:47:36', 'system'),
-(6, 0, 202500002, 202500002, 1714.29, '2024-08-30 07:29:50', 'system'),
-(7, 0, 202500002, 202500002, 1714.29, '2024-09-06 03:10:03', 'system'),
-(8, 0, 202500002, 202500002, 1713.29, '2024-09-13 08:55:18', 'system'),
-(9, 0, 202500002, 202500002, 1714.29, '2024-09-20 04:21:44', 'system'),
-(12, 0, 202500002, 202500002, 2.00, '2025-09-19 11:38:54', 'system'),
-(13, 0, 202500002, 202500002, 1714.29, '2025-09-19 11:38:57', 'system'),
-(14, 1, 202500002, 202500002, 2000.00, '2025-09-19 11:48:35', 'system');
+(10, NULL, 202500002, 202500002, 1714.29, '2025-09-29 00:53:01', 'system'),
+(11, 4, 202500002, 202500002, 8914.28, '2025-09-29 00:53:55', 'system');
 
 -- --------------------------------------------------------
 
@@ -503,7 +500,8 @@ ALTER TABLE `marital_statuses`
 ALTER TABLE `payment`
   ADD PRIMARY KEY (`payment_id`),
   ADD KEY `client_id` (`client_id`),
-  ADD KEY `loan_application_id` (`loan_application_id`) USING BTREE;
+  ADD KEY `loan_application_id` (`loan_application_id`) USING BTREE,
+  ADD KEY `fk_payment_loan_reconstruct` (`loan_reconstruct_id`);
 
 --
 -- Indexes for table `philippine_barangays`
@@ -548,7 +546,7 @@ ALTER TABLE `genders`
 -- AUTO_INCREMENT for table `guarantor`
 --
 ALTER TABLE `guarantor`
-  MODIFY `guarantor_id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=3;
+  MODIFY `guarantor_id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=5;
 
 --
 -- AUTO_INCREMENT for table `income_salaries`
@@ -560,7 +558,7 @@ ALTER TABLE `income_salaries`
 -- AUTO_INCREMENT for table `loan_reconstruct`
 --
 ALTER TABLE `loan_reconstruct`
-  MODIFY `loan_reconstruct_id` int(20) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=2;
+  MODIFY `loan_reconstruct_id` int(20) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=5;
 
 --
 -- AUTO_INCREMENT for table `marital_statuses`
@@ -572,7 +570,7 @@ ALTER TABLE `marital_statuses`
 -- AUTO_INCREMENT for table `payment`
 --
 ALTER TABLE `payment`
-  MODIFY `payment_id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=15;
+  MODIFY `payment_id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=12;
 
 --
 -- AUTO_INCREMENT for table `philippine_barangays`
@@ -624,6 +622,7 @@ ALTER TABLE `loan_reconstruct`
 -- Constraints for table `payment`
 --
 ALTER TABLE `payment`
+  ADD CONSTRAINT `fk_payment_loan_reconstruct` FOREIGN KEY (`loan_reconstruct_id`) REFERENCES `loan_reconstruct` (`loan_reconstruct_id`) ON DELETE NO ACTION ON UPDATE CASCADE,
   ADD CONSTRAINT `payment_ibfk_1` FOREIGN KEY (`loan_application_id`) REFERENCES `loan_applications` (`loan_application_id`),
   ADD CONSTRAINT `payment_ibfk_2` FOREIGN KEY (`client_id`) REFERENCES `clients` (`client_ID`);
 COMMIT;

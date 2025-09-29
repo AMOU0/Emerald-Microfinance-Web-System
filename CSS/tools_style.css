@@ -44,7 +44,7 @@ body {
     transition: background-color 0.2s ease-in-out;
     border-radius: 8px;
     margin: 0 12px 8px;
-    text-decoration: none; /* Add this to remove the underline */
+    text-decoration: none;
 }
 
 .nav-link:hover {
@@ -114,6 +114,8 @@ body {
     box-sizing: border-box;
     display: flex;
     flex-direction: column;
+    /* Added to space out buttons from the top */
+    gap: 10px;
 }
 
 .menu-button {
@@ -127,13 +129,17 @@ body {
     font-size: 14px;
     font-weight: bold;
     border-radius: 20px; /* Pill shape */
+    /* Fix: Add margin-bottom for vertical spacing,
+    or use 'gap' on the parent .tools-menu (as done above) */
+    /* transition for hover effect */
+    transition: background-color 0.2s ease-in-out;
 }
 
-.menu-button.active {
-    border: 1px solid #000;
-    color: #000;
-    background-color: #E0E0E0;
+.menu-button:hover {
+    background-color: #D3D3D3; /* Slightly darker on hover for feedback */
 }
+
+/* Removed the redundant .menu-button.active */
 
 .content-area {
     flex-grow: 1;
@@ -142,7 +148,7 @@ body {
     margin: 20px;
     border: 1px solid #ccc;
     display: flex;
-    gap: 15px; /* Spacing between buttons */
+    gap: 15px; /* Spacing between action-buttons */
     align-items: flex-start; /* Aligns buttons at the top */
 }
 

@@ -178,7 +178,7 @@ if (loanReconstructionForm) {
         postData.append('date_start', reconstructDateStart);
         postData.append('duration', reconstructDuration + ' days');
         postData.append('date_end', reconstructDateEnd);
-        
+        postData.append('status', 'active'); 
         // Send the data to the PHP handler
         fetch('PHP/save_reconstruction.php', {
             method: 'POST',

@@ -44,7 +44,7 @@ body {
     transition: background-color 0.2s ease-in-out;
     border-radius: 8px;
     margin: 0 12px 8px;
-    text-decoration: none; /* Add this to remove the underline */
+    text-decoration: none;
 }
 
 .nav-link:hover {
@@ -81,330 +81,492 @@ body {
     background-color: #C53030;
 }
 
-
-
+/* Main Content Styling */
 .main-content {
     flex-grow: 1;
-    padding: 1.5rem; /* p-6 */
-    background-color: #F7FAFC; /* bg-gray-100 */
-    border: 2px solid #3182CE; /* Blue border around main content */
-    border-radius: 0.75rem; /* rounded-xl */
-    margin: 1.5rem; /* m-6 */
     display: flex;
     flex-direction: column;
-    gap: 1.5rem; /* gap-6 */
+    background-color: #F8F9FA;
+    padding: 32px;
+    color: #000;
 }
 
-/* Specific styles for the Ledger main content */
-.ledger-main-content {
-    border: none; /* Remove blue border for ledger page as per image */
-    margin: 0; /* Remove margin to expand full width in the main area */
-    border-radius: 0; /* Remove border-radius */
-    background-color: #F7FAFC; /* Lighter background */
-    display: flex;
-    flex-direction: column;
-}
-
-.header {
-    background-color: #48BB78; /* Green background */
-    color: #FFFFFF;
-    padding: 1rem 1.5rem; /* py-4 px-6 */
-    border-radius: 0.75rem; /* rounded-xl */
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1); /* shadow-sm */
-}
-
-/* Specific styles for the Ledger header */
-.ledger-header {
-    background-color: #48BB78; /* Green background */
-    border-radius: 0; /* No rounded corners as per image */
-    padding: 1.5rem 1.5rem; /* Increased padding */
-    box-shadow: none; /* No shadow */
+.header.reports-header {
+    background-color: #A0D3B4;
+    color: #2D3748;
+    padding: 16px 24px;
+    border-radius: 12px;
+    margin-bottom: 24px;
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
 }
 
 .header-title {
-    font-size: 1.75rem; /* text-3xl */
-    font-weight: 700; /* font-bold */
+    font-size: 1.75rem;
+    font-weight: 700;
+    color: #2D3748;
+    margin: 0;
 }
 
-.return-button {
+/* Reports Specific Styling */
+.reports-container {
+    display: flex;
+    gap: 24px;
+}
+
+.reports-sidebar {
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+}
+
+.report-button {
+    width: 180px;
+    padding: 12px 24px;
+    border: 1px solid #4A5568;
+    border-radius: 8px;
     background-color: #FFFFFF;
-    color: #48BB78; /* Green text */
-    padding: 0.5rem 1rem; /* py-2 px-4 */
-    border-radius: 0.5rem; /* rounded-lg */
-    font-weight: 600; /* font-semibold */
+    color: #4A5568;
+    font-weight: 600;
+    cursor: pointer;
+    transition: background-color 0.2s, color 0.2s;
+}
+
+.report-button:hover {
+    background-color: #4A5568;
+    color: #FFFFFF;
+}
+
+.report-button.active {
+    background-color: #4A5568;
+    color: #FFFFFF;
+}
+
+.report-viewer {
+    flex-grow: 1;
+    background-color: #FFFFFF;
+    border-radius: 12px;
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+    padding: 24px;
+}
+
+.report-controls {
+    display: flex;
+    align-items: center;
+    gap: 16px;
+    margin-bottom: 24px;
+}
+
+.date-input-container {
+    position: relative;
+    display: flex;
+    align-items: center;
+    border: 1px solid #E2E8F0;
+    border-radius: 8px;
+    padding: 8px 12px;
+    background-color: #F7FAFC;
+}
+
+.date-input {
+    border: none;
+    outline: none;
+    background: transparent;
+    font-size: 16px;
+    color: #4A5568;
+}
+
+.calendar-button {
+    background: url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="%23A0AEC0"><path d="M19 4h-1V2h-2v2H8V2H6v2H5c-1.11 0-1.99.9-1.99 2L3 20c0 1.1.89 2 2 2h14c1.1 0 2-.9 2-2V6c0-1.1-.9-2-2-2zm0 16H5V9h14v11zM12 13h-2v-2h2v2zm4 0h-2v-2h2v2zm-4 4h-2v-2h2v2zm4 0h-2v-2h2v2zm-4-4h-2v-2h2v2zm-4 0H6v-2h2v2z"/></svg>') no-repeat center center;
+    background-size: 20px;
+    border: none;
+    width: 20px;
+    height: 20px;
+    cursor: pointer;
+    margin-left: 8px;
+}
+
+.find-button, .print-button {
+    padding: 10px 20px;
+    border: none;
+    border-radius: 8px;
+    font-weight: 600;
+    cursor: pointer;
     transition: background-color 0.2s ease-in-out;
-    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1); /* shadow */
 }
 
-    .return-button:hover {
-        background-color: #EDF2F7; /* bg-gray-200 */
-    }
-
-.form-section {
-    background-color: #FFFFFF;
-    border-radius: 0.75rem; /* rounded-xl */
-    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1); /* shadow-md */
-    overflow: hidden; /* Ensures rounded corners apply to children */
+.find-button {
+    background-color: #48BB78;
+    color: #FFFFFF;
 }
 
-/* Specific styles for the personal info section on ledger page */
-.personal-info-section {
-    background-color: #E2E8F0; /* Light gray background for the section */
-    border: 2px solid #3182CE; /* Blue border */
-    box-shadow: none; /* No shadow */
-    border-radius: 0; /* No rounded corners */
-    margin: 1.5rem; /* Margin to create space around it */
+.find-button:hover {
+    background-color: #38A169;
 }
 
-.section-title {
-    background-color: #E2E8F0; /* bg-gray-200 */
-    padding: 0.75rem 1.5rem; /* py-3 px-6 */
-    font-size: 1.25rem; /* text-xl */
-    font-weight: 600; /* font-semibold */
-    color: #2D3748; /* text-gray-800 */
-    border-top-left-radius: 0.75rem; /* rounded-tl-xl */
-    border-top-right-radius: 0.75rem; /* rounded-tr-xl */
+.print-button {
+    background-color: #CBD5E0;
+    color: #2D3748;
 }
 
-/* Specific styles for the personal info section title */
-.personal-info-title {
-    background-color: #CAD2D9; /* Slightly darker gray for the title bar */
-    border-bottom: 2px solid #3182CE; /* Blue bottom border */
+.print-button:hover {
+    background-color: #A0AEC0;
+}
+
+.report-content {
+    border: 1px solid #E2E8F0;
+    border-radius: 8px;
+    background-color: #F7FAFC;
+    height: 400px;
+}
+
+/* Modal Styling */
+.modal-overlay {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background-color: rgba(0, 0, 0, 0.7); /* Dark semi-transparent background */
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    z-index: 1000; /* Ensures the modal is on top of other content */
+    visibility: hidden;
+    opacity: 0;
+    transition: visibility 0s, opacity 0.3s linear;
+}
+
+.modal-overlay.is-active {
+    visibility: visible;
+    opacity: 1;
+}
+
+.modal-content-details {
+    background-color: white;
+    padding: 2rem;
+    border-radius: 8px;
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+    width: 90%;
+    max-width: 900px;
+    max-height: 80vh;
+    overflow-y: auto;
+    transform: scale(0.95);
+    transition: transform 0.3s cubic-bezier(0.25, 0.46, 0.45, 0.94);
+}
+
+.modal-content-details.is-active {
+    transform: scale(1);
+}
+
+.modal-header {
     display: flex;
     justify-content: space-between;
     align-items: center;
-    border-radius: 0; /* No rounded corners */
+    border-bottom: 1px solid #e5e7eb;
+    padding-bottom: 1rem;
+    margin-bottom: 1rem;
 }
 
-.more-button {
-    background-color: transparent;
-    color: #4A5568; /* Darker text color */
-    font-size: 0.875rem; /* text-sm */
-    font-weight: 600; /* font-semibold */
-    padding: 0.25rem 0.5rem;
+.close-button {
+    background: none;
+    border: none;
     cursor: pointer;
 }
 
+/* Form Sections */
+.form-section {
+    background-color: #E2E8F0;
+    padding: 24px;
+    border-radius: 12px;
+    margin-bottom: 24px;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+    color: #2D3748;
+}
+
+.section-title {
+    font-size: 1.25rem;
+    font-weight: 600;
+    margin-top: 0;
+    margin-bottom: 24px;
+    padding-bottom: 8px;
+    border-bottom: 2px solid #A0D3B4;
+}
+
 .grid-container {
-    padding: 1.5rem; /* p-6 */
     display: grid;
-    grid-template-columns: repeat(1, minmax(0, 1fr));
-    gap: 1rem; /* gap-4 */
-}
-
-@media (min-width: 768px) { /* md breakpoint */
-    .grid-container {
-        grid-template-columns: repeat(3, minmax(0, 1fr));
-    }
-}
-
-/* Specific styles for the personal info grid on ledger page */
-.personal-info-grid {
-    grid-template-columns: repeat(3, minmax(0, 1fr)); /* Always 3 columns */
-    padding-top: 0.5rem; /* Less top padding */
-    padding-bottom: 0; /* No bottom padding */
-    gap: 0.5rem 1rem; /* Smaller vertical gap, similar horizontal */
+    grid-template-columns: repeat(3, 1fr);
+    gap: 24px;
 }
 
 .form-group {
-    margin-bottom: 0.5rem; /* mb-2, adjusted for grid gap */
-}
-
-/* Specific adjustment for phone number group in ledger personal info */
-.phone-number-group {
-    grid-column: span 1 / span 1; /* Occupy 1 column */
+    display: flex;
+    flex-direction: column;
 }
 
 .form-label {
-    display: block;
-    font-size: 0.875rem; /* text-sm */
-    font-weight: 500; /* font-medium */
-    color: #4A5568; /* text-gray-700 */
-    margin-bottom: 0.25rem; /* mb-1 */
+    font-size: 0.875rem;
+    font-weight: 500;
+    color: #4A5568;
+    margin-bottom: 8px;
 }
 
 .form-input,
 .form-select {
-    width: 100%;
-    padding: 0.625rem 0.75rem; /* py-2.5 px-3 */
-    border: 1px solid #CBD5E0; /* border-gray-300 */
-    border-radius: 0.375rem; /* rounded-md */
-    background-color: #F7FAFC; /* bg-gray-100 */
-    color: #2D3748; /* text-gray-800 */
-    transition: border-color 0.2s ease-in-out, box-shadow 0.2s ease-in-out;
-}
-
-/* Specific styles for readonly inputs in ledger personal info */
-.personal-info-grid .form-input {
-    background-color: #FFFFFF; /* White background */
-    border-color: #A0AEC0; /* Gray border */
+    padding: 10px 12px;
+    border: 1px solid #CBD5E0;
+    border-radius: 8px;
+    background-color: #F7FAFC;
     color: #2D3748;
-    box-shadow: inset 0 1px 2px rgba(0, 0, 0, 0.05); /* subtle inset shadow */
+    font-size: 1rem;
+    width: 100%;
+    box-sizing: border-box;
 }
 
-.form-input:focus,
-.form-select:focus {
-    outline: none;
-    border-color: #4299E1; /* border-blue-500 */
-    box-shadow: 0 0 0 2px rgba(66, 153, 225, 0.5); /* ring-blue-500 */
+.form-input:disabled,
+.form-select:disabled {
+    background-color: #EDF2F7;
+    cursor: not-allowed;
+    color: #718096;
 }
 
-.date-input .input-with-icon {
-    position: relative;
+.form-input::placeholder {
+    color: #A0AEC0;
 }
-
-    .date-input .input-with-icon .fas {
-        position: absolute;
-        right: 0.75rem; /* px-3 */
-        top: 50%;
-        transform: translateY(-50%);
-        color: #A0AEC0; /* text-gray-400 */
-        pointer-events: none; /* Allows clicks to pass through to input */
-    }
 
 .full-width {
-    grid-column: span 1 / span 1; /* Default for mobile */
+    grid-column: 1 / -1;
 }
 
-@media (min-width: 768px) { /* md breakpoint */
-    .full-width {
-        grid-column: span 3 / span 3;
-    }
-}
-
+/* Checkbox specific styles */
 .checkbox-group {
-    display: flex;
+    flex-direction: row;
     align-items: center;
-    margin-bottom: 0.5rem; /* mb-2 */
 }
 
 .form-checkbox {
-    margin-right: 0.5rem; /* mr-2 */
-    width: 1.25rem; /* w-5 */
-    height: 1.25rem; /* h-5 */
-    border-radius: 0.25rem; /* rounded */
-    border: 1px solid #CBD5E0; /* border-gray-300 */
-    background-color: #F7FAFC; /* bg-gray-100 */
-    appearance: none; /* Hide default checkbox */
-    -webkit-appearance: none;
-    -moz-appearance: none;
+    width: auto;
+    margin-right: 8px;
     cursor: pointer;
-    position: relative;
-    transition: background-color 0.2s ease-in-out, border-color 0.2s ease-in-out;
 }
-
-    .form-checkbox:checked {
-        background-color: #48BB78; /* bg-green-500 */
-        border-color: #48BB78;
-    }
-
-        .form-checkbox:checked::before {
-            content: '\2713'; /* Checkmark character */
-            display: block;
-            position: absolute;
-            top: 50%;
-            left: 50%;
-            transform: translate(-50%, -50%);
-            color: #FFFFFF;
-            font-size: 0.875rem; /* text-sm */
-            line-height: 1;
-        }
 
 .form-checkbox-label {
-    font-size: 0.875rem; /* text-sm */
-    font-weight: 500; /* font-medium */
-    color: #4A5568; /* text-gray-700 */
-    cursor: pointer;
+    margin-bottom: 0;
 }
 
-.form-actions-bottom {
-    display: flex;
-    justify-content: flex-end;
-    padding: 0 1.5rem 1.5rem; /* px-6 pb-6 */
+.date-input-container {
+    position: relative;
 }
 
-.create-button {
-    background-color: #3182CE; /* bg-blue-600 */
-    color: #FFFFFF;
-    padding: 0.75rem 1.5rem; /* py-3 px-6 */
-    border-radius: 0.5rem; /* rounded-lg */
-    font-weight: 600; /* font-semibold */
-    transition: background-color 0.2s ease-in-out;
-    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1); /* shadow-sm */
-}
-
-    .create-button:hover {
-        background-color: #2B6CB0; /* bg-blue-700 */
-    }
-
-/* Specific adjustments for the Application Requirements grid */
-.grid-container-requirements {
-    grid-template-columns: repeat(1, minmax(0, 1fr));
-}
-
-@media (min-width: 768px) {
-    .grid-container-requirements {
-        grid-template-columns: repeat(2, minmax(0, 1fr)); /* Two columns for requirements */
-    }
-}
-
-/* New styles for Ledger Table */
-.ledger-table-section {
-    margin: 0 1.5rem 1.5rem; /* Match sidebar margin and bottom spacing */
-    background-color: #FFFFFF; /* White background for the table */
-    border: 1px solid #CBD5E0; /* Light gray border */
-    border-radius: 0.5rem; /* Slightly rounded corners */
-    overflow: hidden; /* Ensures borders/background apply correctly */
-}
-
-.ledger-table-header {
-    display: grid;
-    grid-template-columns: repeat(3, 1fr); /* 3 columns for date, amount, balance */
-    background-color: #48BB78; /* Green header background */
-    color: #FFFFFF;
-    font-weight: 600;
-    padding: 0.75rem 1rem; /* Padding for header cells */
-    border-bottom: 1px solid #38A169; /* Darker green border */
-}
-
-.ledger-header-cell {
-    text-align: left;
-    padding: 0 0.5rem;
-}
-
-.ledger-table-body {
+/* Additional styling for Loan Details section */
+.input-group {
     display: flex;
     flex-direction: column;
 }
 
-.ledger-table-row {
-    display: grid;
-    grid-template-columns: repeat(3, 1fr);
-    border-bottom: 1px solid #E2E8F0; /* Light gray border between rows */
+/* Table Styles (from previous conversation) */
+.table-responsive {
+    overflow-x: auto;
 }
 
-    .ledger-table-row:last-child {
-        border-bottom: none; /* No border for the last row */
-    }
+.loan-table {
+    width: 100%;
+    border-collapse: collapse;
+    margin-top: 20px;
+}
 
-.ledger-cell {
-    padding: 0.75rem 1rem;
-    min-height: 2.5rem; /* Minimum height for cells */
+.loan-table th,
+.loan-table td {
+    border: 1px solid #e0e0e0;
+    padding: 12px;
+    text-align: left;
+}
+
+.loan-table th {
+    background-color: #A0D3B4;
+    color: #2D3748;
+    font-weight: bold;
+}
+
+.loan-table tr:nth-child(even) {
+    background-color: #f9f9f9;
+}
+
+.loan-table tr:hover {
+    background-color: #f1f1f1;
+}
+
+.view-loan-btn {
+    padding: 8px 12px;
+    background-color: #48BB78;
+    color: #fff;
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+    transition: background-color 0.3s;
+}
+
+.view-loan-btn:hover {
+    background-color: #38A169;
+}
+
+/* Modal and Loan Detail Styles (from previous conversation, updated to match new theme) */
+.loan-details-container p, .guarantor-info p {
+    font-size: 1rem;
+    color: #2D3748;
+}
+
+.modal-content-details {
+    max-width: 900px; /* Increased max-width for better display */
+}
+
+.modal-header h2 {
+    color: #2D3748;
+}
+
+.close-modal-btn {
+    background: none;
+    border: none;
+    font-size: 1.5rem;
+    cursor: pointer;
+    color: #A0AEC0;
+}
+
+.loan-info h3, .guarantor-info h3, .loan-schedule h3 {
+    font-size: 1.1rem;
+    font-weight: 600;
+    color: #4A5568;
+    margin-top: 20px;
+    margin-bottom: 10px;
+}
+
+.loan-info p, .guarantor-info p {
+    margin: 5px 0;
+    color: #4a687c;
+}
+
+.loan-schedule table {
+    width: 100%;
+    border-collapse: collapse;
+    margin-top: 15px;
+}
+
+.loan-schedule th, .loan-schedule td {
+    border: 1px solid #ddd;
+    padding: 8px;
+    text-align: left;
+    color: #2D3748;
+}
+
+.loan-schedule th {
+    background-color: #f2f2f2;
+}
+/* The semi-transparent backdrop that covers the entire page */
+.modal-overlay {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background-color: rgba(0, 0, 0, 0.7); /* Dark semi-transparent background */
     display: flex;
+    justify-content: center;
     align-items: center;
-    color: #2D3748; /* Dark text color */
-    background-color: #FFFFFF; /* White cell background */
-    border-right: 1px solid #E2E8F0; /* Vertical border between cells */
+    z-index: 1000; /* Ensures the modal is on top of other content */
 }
 
-    .ledger-cell:last-child {
-        border-right: none; /* No right border for the last cell in a row */
-    }
+.modal-content {
+    background: #fff;
+    padding: 30px;
+    border-radius: 8px;
+    box-shadow: 0 4px 20px rgba(0, 0, 0, 0.2);
+    max-width: 900px;
+    max-height: 90vh; /* Limits height on smaller screens */
+    width: 95%;
+    overflow-y: auto; /* Allows scrolling if content is too long */
+    position: relative;
+    opacity: 0; /* Hidden by default for the animation */
+    transform: translateY(-50px); /* Starts off-screen for a slide-down effect */
+    transition: opacity 0.3s ease, transform 0.3s ease; /* Smooth transition */
+}
 
-/* Alternating row background for better readability (optional) */
-.ledger-table-row:nth-child(even) .ledger-cell {
-    background-color: #F7FAFC; /* Slightly lighter background for even rows */
+/* State for when the modal is active (visible) */
+.modal-content.is-active {
+    opacity: 1;
+    transform: translateY(0); /* Slides into place */
+}
+
+/* Header, body, and footer sections */
+.modal-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    border-bottom: 1px solid #eee;
+    padding-bottom: 15px;
+    margin-bottom: 20px;
+}
+
+.modal-header h2 {
+    margin: 0;
+    color: #333;
+}
+
+.modal-body {
+    line-height: 1.6;
+}
+
+.modal-footer {
+    text-align: right;
+    border-top: 1px solid #eee;
+    padding-top: 15px;
+    margin-top: 20px;
+}
+.close-modal-btn {
+    background: none;
+    border: none;
+    font-size: 30px;
+    color: #aaa;
+    cursor: pointer;
+    transition: color 0.2s ease;
+    padding: 0;
+    line-height: 1;
+}
+
+.close-modal-btn:hover {
+    color: #888;
+}
+
+.print-btn {
+    padding: 10px 20px;
+    background-color: #007bff;
+    color: white;
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+    font-size: 16px;
+    transition: background-color 0.2s ease;
+}
+
+.print-btn:hover {
+    background-color: #0056b3;
+}
+.loan-info p {
+    margin: 8px 0;
+}
+
+.loan-schedule table {
+    width: 100%;
+    border-collapse: collapse;
+    margin-top: 20px;
+    font-size: 14px;
+}
+
+.loan-schedule th,
+.loan-schedule td {
+    border: 1px solid #ddd;
+    padding: 10px;
+    text-align: left;
+}
+
+.loan-schedule th {
+    background-color: #f2f2f2;
+    font-weight: bold;
 }
