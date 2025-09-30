@@ -3,7 +3,7 @@
 -- https://www.phpmyadmin.net/
 --
 -- Host: 127.0.0.1
--- Generation Time: Sep 30, 2025 at 02:53 AM
+-- Generation Time: Sep 30, 2025 at 05:09 AM
 -- Server version: 10.4.32-MariaDB
 -- PHP Version: 8.2.12
 
@@ -20,6 +20,19 @@ SET time_zone = "+00:00";
 --
 -- Database: `emerald_microfinance`
 --
+
+-- --------------------------------------------------------
+
+--
+-- Table structure for table `audit_logs`
+--
+
+CREATE TABLE `audit_logs` (
+  `log_id` int(11) NOT NULL,
+  `user_id` int(11) NOT NULL,
+  `action` varchar(255) NOT NULL,
+  `created_at` timestamp NOT NULL DEFAULT current_timestamp()
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 
 -- --------------------------------------------------------
 
@@ -267,14 +280,14 @@ CREATE TABLE `payment` (
 --
 
 INSERT INTO `payment` (`payment_id`, `loan_reconstruct_id`, `loan_application_id`, `client_id`, `amount_paid`, `date_payed`, `processby`) VALUES
-(12, NULL, 202500002, 202500002, 1000.00, '2024-08-01 02:00:00', 'admin'),
-(13, NULL, 202500002, 202500002, 1000.00, '2024-08-08 03:30:00', 'admin'),
-(14, NULL, 202500002, 202500002, 500.00, '2024-08-15 06:45:00', 'admin'),
-(15, NULL, 202500002, 202500002, 1500.00, '2024-08-22 01:00:00', 'admin'),
-(16, NULL, 202500001, 202500001, 2000.00, '2025-10-20 01:15:00', 'admin'),
-(19, NULL, 202500003, 202500003, 5000.00, '2025-10-27 07:00:00', 'admin'),
-(20, NULL, 202500003, 202500003, 12000.00, '2025-09-26 16:00:00', 'admin'),
-(21, 5, 202500002, 202500002, 2025.00, '2025-09-30 16:00:00', 'system');
+(1, NULL, 202500002, 202500002, 1000.00, '2024-08-01 02:00:00', 'admin'),
+(2, NULL, 202500002, 202500002, 1000.00, '2024-08-08 03:30:00', 'admin'),
+(3, NULL, 202500002, 202500002, 500.00, '2024-08-15 06:45:00', 'admin'),
+(4, NULL, 202500002, 202500002, 1500.00, '2024-08-22 01:00:00', 'admin'),
+(5, NULL, 202500001, 202500001, 2000.00, '2025-10-20 01:15:00', 'admin'),
+(6, NULL, 202500003, 202500003, 5000.00, '2025-10-27 07:00:00', 'admin'),
+(7, NULL, 202500003, 202500003, 12000.00, '2025-09-26 16:00:00', 'admin'),
+(8, 5, 202500002, 202500002, 2025.00, '2025-09-30 16:00:00', 'system');
 
 -- --------------------------------------------------------
 
@@ -439,11 +452,19 @@ CREATE TABLE `user_accounts` (
 --
 
 INSERT INTO `user_accounts` (`id`, `name`, `email`, `username`, `password_hash`, `role`, `created_at`) VALUES
-(1, 'Angel Laurence Paras Mallari', 'laurence030703@gmail.com', 'admin', '12345678', 'Admin', '2025-08-25 10:45:49');
+(1, 'Angel Laurence Paras Mallari', 'laurence030703@gmail.com', 'admin', '12345678', 'Admin', '2025-08-25 10:45:49'),
+(2, 'Lebron James', 'LebronJames@gmail.com', 'Cashier', '1234567890', 'loan-officer', '2025-09-30 02:26:43');
 
 --
 -- Indexes for dumped tables
 --
+
+--
+-- Indexes for table `audit_logs`
+--
+ALTER TABLE `audit_logs`
+  ADD PRIMARY KEY (`log_id`),
+  ADD KEY `fk_audit_user` (`user_id`);
 
 --
 -- Indexes for table `clients`
@@ -543,6 +564,12 @@ ALTER TABLE `user_accounts`
 --
 
 --
+-- AUTO_INCREMENT for table `audit_logs`
+--
+ALTER TABLE `audit_logs`
+  MODIFY `log_id` int(11) NOT NULL AUTO_INCREMENT;
+
+--
 -- AUTO_INCREMENT for table `genders`
 --
 ALTER TABLE `genders`
@@ -576,7 +603,7 @@ ALTER TABLE `marital_statuses`
 -- AUTO_INCREMENT for table `payment`
 --
 ALTER TABLE `payment`
-  MODIFY `payment_id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=22;
+  MODIFY `payment_id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=1656;
 
 --
 -- AUTO_INCREMENT for table `philippine_barangays`
@@ -600,11 +627,17 @@ ALTER TABLE `philippine_valid_ids`
 -- AUTO_INCREMENT for table `user_accounts`
 --
 ALTER TABLE `user_accounts`
-  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=4;
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=5;
 
 --
 -- Constraints for dumped tables
 --
+
+--
+-- Constraints for table `audit_logs`
+--
+ALTER TABLE `audit_logs`
+  ADD CONSTRAINT `fk_audit_user` FOREIGN KEY (`user_id`) REFERENCES `user_accounts` (`id`) ON DELETE NO ACTION ON UPDATE CASCADE;
 
 --
 -- Constraints for table `guarantor`
