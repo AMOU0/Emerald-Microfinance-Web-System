@@ -4,6 +4,9 @@ session_start();
 
 header('Content-Type: application/json');
 
+// 1. INCLUDE THE AUDIT TRAIL FUNCTION
+require_once 'audittrail_function.php'; 
+
 // Database credentials
 $servername = "localhost";
 $username = "root"; // XAMPP default username
@@ -49,12 +52,23 @@ if ($result->num_rows > 0) {
         $_SESSION['user_id'] = $user_id;
         $_SESSION['username'] = $username_logged_in;
         $_SESSION['logged_in'] = true;
+        
+        // 2. LOG SUCCESSFUL LOGIN
+        log_audit_trail($conn, $user_id, "User logged in successfully: " . $username_logged_in);
 
         echo json_encode(['success' => true, 'message' => 'Login successful!', 'redirect_url' => 'DashBoard.html']);
     } else {
+        // 3. LOG FAILED LOGIN - INCORRECT PASSWORD
+        // We still use the fetched user ID since we know the username exists
+        log_audit_trail($conn, $user_id, "Failed login attempt (Incorrect Password) for user: " . $user_username); 
+        
         echo json_encode(['success' => false, 'message' => 'Invalid username or password.']);
     }
 } else {
+    // 4. LOG FAILED LOGIN - USERNAME NOT FOUND
+    // Use user_id = 0 to signify an unknown or system-level event
+    log_audit_trail($conn, 0, "Failed login attempt (Username Not Found) for username: " . $user_username); 
+    
     echo json_encode(['success' => false, 'message' => 'Invalid username or password.']);
 }
 
