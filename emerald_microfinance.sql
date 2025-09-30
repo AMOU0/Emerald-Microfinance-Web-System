@@ -3,7 +3,7 @@
 -- https://www.phpmyadmin.net/
 --
 -- Host: 127.0.0.1
--- Generation Time: Sep 29, 2025 at 03:05 AM
+-- Generation Time: Sep 30, 2025 at 02:53 AM
 -- Server version: 10.4.32-MariaDB
 -- PHP Version: 8.2.12
 
@@ -223,7 +223,7 @@ CREATE TABLE `loan_reconstruct` (
 --
 
 INSERT INTO `loan_reconstruct` (`loan_reconstruct_id`, `loan_application_id`, `reconstruct_amount`, `payment_frequency`, `interest_rate`, `date_start`, `duration`, `date_end`, `status`, `date_created`) VALUES
-(4, 202500002, 22285.71, 'monthly', 20, '2025-09-30', '100 days', '2026-01-08', 'active', '2025-09-29');
+(5, 202500002, 20000.00, 'monthly', 20, '2025-10-01', '100 days', '2026-01-09', 'active', '2025-09-30');
 
 -- --------------------------------------------------------
 
@@ -267,8 +267,14 @@ CREATE TABLE `payment` (
 --
 
 INSERT INTO `payment` (`payment_id`, `loan_reconstruct_id`, `loan_application_id`, `client_id`, `amount_paid`, `date_payed`, `processby`) VALUES
-(10, NULL, 202500002, 202500002, 1714.29, '2025-09-29 00:53:01', 'system'),
-(11, 4, 202500002, 202500002, 8914.28, '2025-09-29 00:53:55', 'system');
+(12, NULL, 202500002, 202500002, 1000.00, '2024-08-01 02:00:00', 'admin'),
+(13, NULL, 202500002, 202500002, 1000.00, '2024-08-08 03:30:00', 'admin'),
+(14, NULL, 202500002, 202500002, 500.00, '2024-08-15 06:45:00', 'admin'),
+(15, NULL, 202500002, 202500002, 1500.00, '2024-08-22 01:00:00', 'admin'),
+(16, NULL, 202500001, 202500001, 2000.00, '2025-10-20 01:15:00', 'admin'),
+(19, NULL, 202500003, 202500003, 5000.00, '2025-10-27 07:00:00', 'admin'),
+(20, NULL, 202500003, 202500003, 12000.00, '2025-09-26 16:00:00', 'admin'),
+(21, 5, 202500002, 202500002, 2025.00, '2025-09-30 16:00:00', 'system');
 
 -- --------------------------------------------------------
 
@@ -558,7 +564,7 @@ ALTER TABLE `income_salaries`
 -- AUTO_INCREMENT for table `loan_reconstruct`
 --
 ALTER TABLE `loan_reconstruct`
-  MODIFY `loan_reconstruct_id` int(20) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=5;
+  MODIFY `loan_reconstruct_id` int(20) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=6;
 
 --
 -- AUTO_INCREMENT for table `marital_statuses`
@@ -570,7 +576,7 @@ ALTER TABLE `marital_statuses`
 -- AUTO_INCREMENT for table `payment`
 --
 ALTER TABLE `payment`
-  MODIFY `payment_id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=12;
+  MODIFY `payment_id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=22;
 
 --
 -- AUTO_INCREMENT for table `philippine_barangays`
