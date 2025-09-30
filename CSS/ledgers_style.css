@@ -1,30 +1,39 @@
 /* General Body and Container Styling */
 body {
     font-family: 'Inter', sans-serif;
-    background-color: #333;
+    /* Changed background to the light color from the image */
+    background-color: #F0F2F5; 
     margin: 0;
     padding: 0;
     display: flex;
     min-height: 100vh;
-    color: #fff;
+    /* Default body color should be dark now */
+    color: #2D3748; 
+    box-sizing: border-box;
 }
 
+/* Sidebar Styling - Kept dark to match the image's sidebar style */
 .sidebar {
     width: 280px;
     background-color: #2D3748;
     color: #FFFFFF;
     display: flex;
     flex-direction: column;
-    padding: 24px 0;
-    border-top-right-radius: 16px;
-    border-bottom-right-radius: 16px;
-    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+    padding: 0; 
+    border-radius: 0; 
+    box-shadow: none; 
+    position: sticky; 
+    top: 0;
+    left: 0;
+    height: 100vh;
+    overflow-y: auto;
 }
 
 .sidebar-header {
     font-size: 24px;
     font-weight: 700;
-    padding: 0 24px 24px;
+    padding: 24px;
+    text-align: center;
     border-bottom: 1px solid #4A5568;
     margin-bottom: 24px;
 }
@@ -39,16 +48,17 @@ body {
 .nav-link {
     display: block;
     padding: 12px 24px;
-    color: #CBD5E0;
+    color: #A0AEC0;
     font-weight: 500;
-    transition: background-color 0.2s ease-in-out;
-    border-radius: 8px;
-    margin: 0 12px 8px;
+    transition: background-color 0.2s ease-in-out, color 0.2s ease-in-out;
+    border-radius: 0; 
+    margin: 0;
     text-decoration: none;
+    position: relative;
 }
 
 .nav-link:hover {
-    background-color: #4A5568;
+    background-color: rgba(74, 85, 104, 0.5);
     color: #FFFFFF;
 }
 
@@ -61,7 +71,7 @@ body {
 .sidebar-footer {
     padding: 24px;
     border-top: 1px solid #4A5568;
-    margin-top: 24px;
+    margin-top: auto;
 }
 
 .logout-button {
@@ -69,10 +79,10 @@ body {
     background-color: #E53E3E;
     color: #FFFFFF;
     padding: 12px 24px;
-    border-radius: 8px;
+    border-radius: 4px; 
     font-weight: 600;
     transition: background-color 0.2s ease-in-out;
-    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+    box-shadow: none;
     border: none;
     cursor: pointer;
 }
@@ -81,203 +91,167 @@ body {
     background-color: #C53030;
 }
 
+/* Main Content Styling - Switched to light theme */
 .main-content {
     flex-grow: 1;
-    padding: 1.5rem;
-    background-color: #F7FAFC;
-    border: 2px solid #597997;
-    border-radius: 0.75rem;
-    margin: 1.5rem;
     display: flex;
     flex-direction: column;
-    gap: 1.5rem;
-}
-
-/* Specific styles for the Ledger main content */
-.ledger-main-content {
+    padding: 24px; /* Matches the new standard padding */
+    background-color: #F0F2F5;
+    /* Removed redundant border/margin/radius from generic .main-content to rely on .ledger-main-content */
     border: none;
     margin: 0;
     border-radius: 0;
-    background-color: #ffffff;
-    display: flex;
-    flex-direction: column;
 }
 
-.header {
-    background-color: #48BB78;
-    color: #FFFFFF;
-    padding: 1rem 1.5rem;
-    border-radius: 0.75rem;
+/* Specific styles for the Ledger main content container */
+.ledger-main-content {
+    /* Uses the light grey background from the main content area */
+    background-color: #F0F2F5;
+    border: none;
+    margin: 0;
+    border-radius: 0;
     display: flex;
-    justify-content: space-between;
+    flex-direction: column;
+    /* Add padding to the whole content area if needed, otherwise rely on .main-content */
+}
+
+/* --- UPDATED HEADER STYLES --- */
+.header {
+    /* Base header is overridden by .ledger-header */
+    display: flex;
+    justify-content: flex-start; /* Aligns content to the start */
     align-items: center;
-    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+    box-shadow: none; /* Remove default shadow */
 }
 
 .ledger-header {
-    background-color: #48BB78;
-    border-radius: 0;
-    padding: 1.5rem 1.5rem;
-    box-shadow: none;
-    color: #000;
+    /* Set to the vibrant green color from the image */
+    background-color: #48BB78; 
+    color: #FFFFFF; /* White text for contrast */
+    border-radius: 8px; /* Rounded corners */
+    /* Increased vertical padding for a prominent banner look */
+    padding: 20px 24px; 
+    /* Heavy shadow to match the block effect in the image */
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
+    width: 100%; /* Ensure it spans the full width */
+    margin-bottom: 24px; /* Keep space below the header */
 }
 
 .header-title {
-    font-size: 1.75rem;
+    font-size: 32px; /* Large, bold text */
     font-weight: 700;
+    color: #FFFFFF; /* Ensure title is white */
+    margin: 0; /* Remove default h1 margin */
 }
+/* --- END UPDATED HEADER STYLES --- */
 
-.view-button {
+/* Search Container & Input Styling */
+.search-container {
+    margin: 0 24px 24px; /* Left/Right padding and bottom margin */
     background-color: #FFFFFF;
+    padding: 15px 20px;
+    border-radius: 8px;
+    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.08);
+    border: 1px solid #E2E8F0;
+}
+
+#searchInput {
+    width: 100%;
+    padding: 10px;
+    border: 1px solid #CBD5E0;
+    border-radius: 4px;
+    font-size: 15px;
+    box-shadow: inset 0 1px 2px rgba(0, 0, 0, 0.05);
+    box-sizing: border-box; 
     color: #2D3748;
-    padding: 0.5rem 1rem;
-    border-radius: 0.5rem;
-    font-weight: 600;
-    transition: background-color 0.2s ease-in-out;
-    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
-    border: none;
-    cursor: pointer;
 }
 
-.view-button:hover {
-    background-color: #EDF2F7;
-}
-
-/* Updated Ledger Table Styles */
+/* Table Section - Major changes for light theme */
 .updated-ledger-table-section {
-    margin: 0 1.5rem 1.5rem;
-    background-color: #4A5568;
-    border: none;
-    border-radius: 0;
+    margin: 0 24px 24px; /* Left/Right padding and bottom margin */
+    background-color: #FFFFFF; /* White background for the whole table block */
+    border: 1px solid #E2E8F0; /* Light border */
+    border-radius: 8px; /* Rounded corners */
+    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.08);
     flex-grow: 1;
-    display: flex;
-    flex-direction: column;
+    overflow: hidden; /* Ensures borders/radius work */
 }
 
+/* Table Header - Light green header row */
 .updated-ledger-table-header {
     display: grid;
-    grid-template-columns: repeat(4, 1fr);
-    background-color: #2D3748;
-    color: #FFFFFF;
-    font-weight: bold;
-    padding: 1rem 1.5rem;
+    /* Grid structure from your HTML: Name, Contact, Date, Balance (4 columns) */
+    grid-template-columns: 2fr 1.5fr 1.5fr 1fr;
+    background-color: #A0D3B4; /* Header color */
+    color: #2D3748; /* Dark text */
+    font-weight: 600;
+    padding: 12px 15px; /* Tighter padding for cells */
+    border-bottom: 1px solid #D1FAE5; /* Subtle divider */
+    position: sticky;
+    top: 0;
+    z-index: 5;
 }
 
 .ledger-header-cell {
     text-align: left;
-    padding: 0 0.5rem;
+    padding: 0 10px; /* Keep cell padding minimal here */
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
 }
 
-.updated-ledger-table-body {
+/* Align the Balance header cell to the right */
+.updated-ledger-table-header .ledger-header-cell:nth-child(4) {
+    text-align: right;
+}
+
+/* Table Body */
+.clients-table-body {
     flex-grow: 1;
     max-height: 400px;
     overflow-y: auto;
 }
 
-.ledger-row {
-    display: grid;
-    grid-template-columns: repeat(4, 1fr);
-    padding: 10px;
-    border-bottom: 1px solid #6B7280;
-    transition: background-color 0.2s ease-in-out;
-}
-
-/* Use a single rule for row background to avoid redundancy and conflict */
-.ledger-row:nth-child(even) {
-    background-color: #4A5568;
-}
-.ledger-row:nth-child(odd) {
-    background-color: #4A5568;
-}
-
-.ledger-row:hover {
-    background-color: #556075;
-}
-
-.ledger-cell {
-    padding: 5px;
-    word-wrap: break-word;
-    color: #FFFFFF;
-}
-/* Styling for the main table container on the Ledger page */
-.updated-ledger-table-section {
-    margin: 0 1.5rem 1.5rem;
-    background-color: #4A5568; /* Dark gray background */
-    border: none;
-    border-radius: 0;
-    flex-grow: 1;
-    display: flex;
-    flex-direction: column;
-}
-
-/* Styling for the table header */
-.updated-ledger-table-header {
-    display: grid;
-    grid-template-columns: repeat(4, 1fr);
-    background-color: #2D3748; /* Darker header background */
-    color: #FFFFFF;
-    font-weight: bold;
-    padding: 1rem 1.5rem;
-    border-bottom: 1px solid #6B7280; /* A subtle divider */
-}
-
-.ledger-header-cell {
-    text-align: left;
-    padding: 0 0.5rem;
-}
-
-/* 🌟 ALIGN THE BALANCE HEADER TO THE RIGHT 🌟 */
-/* Selects the 4th header cell (Balance) using the nth-child selector */
-.updated-ledger-table-header .ledger-header-cell:nth-child(4) {
-    text-align: right;
-}
-/* ------------------------------------------- */
-
-
-/* Styling for the table body, making it scrollable */
-.clients-table-body {
-    flex-grow: 1;
-    max-height: 400px; /* Adjust as needed */
-    overflow-y: auto;
-}
-
-/* Styling for individual rows within the table body */
+/* Table Rows - White/Off-White alternating rows */
 .clients-row {
     display: grid;
-    grid-template-columns: repeat(4, 1fr);
-    padding: 10px;
-    border-bottom: 1px solid #6B7280;
-    transition: background-color 0.2s ease-in-out;
-}
-
-.clients-row:nth-child(even) {
-    background-color: #4A5568;
-}
-
-.clients-row:hover {
-    background-color: #556075;
-}
-
-/* Styling for individual cells within a row */
-.clients-cell {
-    padding: 5px;
-    word-wrap: break-word;
-    color: #FFFFFF;
-}
-
-/* 🌟 ALIGN THE BALANCE DATA CELLS TO THE RIGHT 🌟 */
-/* Selects the 4th data cell (Balance) in every row */
-.clients-row .clients-cell:nth-child(4) {
-    text-align: right;
-}
-/* ------------------------------------------------ */
-
-/* Inside ledgers_style.css or similar file */
-.clickable-row {
-    cursor: pointer; /* Change mouse cursor to a pointer */
+    grid-template-columns: 2fr 1.5fr 1.5fr 1fr; /* Must match the header grid */
+    padding: 10px 15px; /* Horizontal padding added here instead of individual cell */
+    border-bottom: 1px solid #EDF2F7; /* Very light row divider */
     transition: background-color 0.15s ease;
 }
 
-.clickable-row:hover {
-    background-color: #f0f0f0; /* Subtle hover effect */
+/* Odd rows: White */
+.clients-row:nth-child(odd) {
+    background-color: #FFFFFF;
+}
+/* Even rows: Off-white */
+.clients-row:nth-child(even) {
+    background-color: #F7FAFC;
+}
+
+.clients-row.clickable-row:hover {
+    background-color: #E6FFFA; /* Light green hover effect */
+    cursor: pointer;
+}
+
+/* Table Cells */
+.clients-cell {
+    padding: 5px 10px; /* Vertical padding and horizontal internal padding */
+    word-wrap: break-word;
+    color: #4A5568; /* Standard dark text color */
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+
+/* Align the Balance data cell to the right */
+.clients-row .clients-cell:nth-child(4) {
+    text-align: right;
+}
+
+/* Last row should not have a bottom border */
+.clients-row:last-child {
+    border-bottom: none;
 }

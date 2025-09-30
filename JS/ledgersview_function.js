@@ -44,11 +44,12 @@ document.addEventListener('DOMContentLoaded', function() {
 });
 
 /*===============================================================================================================*/
+/**
+ * Global object to store client data for use by other functions (like the modal builder).
+ * Initialized to null. Will hold { last_name, first_name, middle_name, etc. }
+ */
+window.CURRENT_CLIENT_DATA = null;
 
-function getClientIdFromUrl() {
-    const urlParams = new URLSearchParams(window.location.search);
-    return urlParams.get('client_id');
-}
 
 function loadClientData() {
     const clientId = getClientIdFromUrl();
@@ -80,6 +81,9 @@ function loadClientData() {
         .then(data => {
             if (data.success) {
                 const client = data.client;
+                // --- CRITICAL FIX: Store client data globally ---
+                window.CURRENT_CLIENT_DATA = client;
+                
                 // --- Populate Personal Information ---
                 document.getElementById('lastName').value = client.last_name || '';
                 document.getElementById('firstName').value = client.first_name || '';
@@ -130,30 +134,365 @@ window.onload = loadClientData;
 
 
 
+
+
+
+
+
+// =========================================================================================
+// UTILITY FUNCTIONS
+// =========================================================================================
+
+/**
+ * Parses the URL query parameters to retrieve the 'client_id'.
+ * @returns {string | null} The client ID or null if not found.
+ */
+function getClientIdFromUrl() {
+    const params = new URLSearchParams(window.location.search);
+    return params.get('client_id'); 
+}
+
 /**
  * Formats a number as currency (e.g., 10000.00 -> 10,000.00).
  * @param {string | number} value - The number to format.
  * @returns {string} The formatted currency string.
  */
 function formatCurrency(value) {
-    // Ensure the value is treated as a number with 2 decimal places
     const num = parseFloat(value);
     if (isNaN(num)) return '0.00';
     return num.toLocaleString('en-PH', { minimumFractionDigits: 2, maximumFractionDigits: 2 });
 }
 
+// =========================================================================================
+// DATA FETCHING FUNCTIONS (Replaces Mock Data)
+// =========================================================================================
+
+/**
+ * Fetches the detailed loan information, including guarantor data, from the database.
+ * @param {string} loanId - The ID of the loan.
+ * @returns {Promise<Object>} The loan details object.
+ */
+async function fetchLoanDetails(loanId) {
+    const formData = new FormData();
+    formData.append('loan_application_id', loanId);
+
+    // Call the new PHP handler to get loan and guarantor details
+    const response = await fetch('PHP/ledgersviewguarantor_handler.php', {
+        method: 'POST',
+        body: formData
+    });
+
+    if (!response.ok) {
+        const errorText = await response.text();
+        throw new Error(`HTTP Error ${response.status}: ${errorText}`);
+    }
+
+    const result = await response.json();
+    
+    if (result.success) {
+        // The PHP script now returns a single object containing all necessary details
+        return result; 
+    } else {
+        throw new Error(result.message || 'Failed to fetch loan details from the server.');
+    }
+}
+
+/**
+ * Fetches the amortization schedule. (Kept separate as it was originally)
+ */
+async function fetchAmortizationSchedule(loanId) {
+    const formData = new FormData();
+    formData.append('loan_application_id', loanId);
+
+    const response = await fetch('PHP/ledgersviewschedule_handler.php', {
+        method: 'POST',
+        body: formData
+    });
+
+    if (!response.ok) {
+        const errorText = await response.text();
+        try {
+            const errorJson = JSON.parse(errorText);
+            throw new Error(errorJson.message || `HTTP Error ${response.status}: Failed to connect to server.`);
+        } catch (e) {
+            throw new Error(`HTTP Error ${response.status}: Server did not return a valid JSON response.`);
+        }
+    }
+
+    const result = await response.json();
+    if (result.success) {
+        return result;
+    } else {
+        throw new Error(result.message || 'An unknown server error occurred while fetching the schedule.');
+    }
+}
+
+// =========================================================================================
+// MODAL & AMORTIZATION FUNCTIONS (RESPONSIVENESS ADJUSTED)
+// =========================================================================================
+
+/**
+ * Creates and displays the generic modal container.
+ */
+function createModal(contentHtml, title, maxWidthClass = 'max-w-4xl') {
+    document.getElementById('customModal')?.remove();
+
+    const closeAction = "document.getElementById('customModal').remove();";
+    
+    const modalHtml = `
+        <div id="customModal" class="modal-overlay is-active fixed inset-0 z-50 overflow-y-auto bg-gray-600 bg-opacity-75 flex justify-center items-center">
+            <div class="modal-content modal-content-transition is-active m-4 ${maxWidthClass} w-full relative bg-white rounded-lg shadow-xl">
+                
+                <div class="modal-header p-4 sm:p-6 border-b flex justify-between items-center">
+                    <h2 class="text-xl font-bold text-gray-900">${title}</h2>
+                    <button onclick="${closeAction}" 
+                            class="close-modal-btn text-gray-500 hover:text-gray-900 text-3xl font-light leading-none transition duration-150 ease-in-out"
+                            aria-label="Close modal">
+                        &times; 
+                    </button>
+                </div>
+                
+                <div class="modal-body p-4 sm:p-6 overflow-y-auto max-h-[80vh]">
+                    ${contentHtml}
+                </div>
+                
+                <div class="modal-footer p-4 sm:p-6 text-right border-t">
+                    <button onclick="window.print()"
+                            class="print-btn px-4 py-2 bg-gray-500 text-white font-semibold rounded-lg shadow-md hover:bg-gray-600 focus:outline-none focus:ring-2 focus:ring-gray-500 focus:ring-offset-2 mr-2">
+                        Print
+                    </button>
+                    <button onclick="${closeAction}" 
+                            class="px-4 py-2 bg-indigo-600 text-white font-semibold rounded-lg shadow-md hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:ring-offset-2">
+                        Close
+                    </button>
+                </div>
+            </div>
+        </div>
+    `;
+    document.body.insertAdjacentHTML('beforeend', modalHtml);
+}
+
+/**
+ * Displays a non-schedule related error in the modal.
+ */
+function displayErrorModal(title, message) {
+    const contentHtml = `
+        <div class="p-4 bg-red-100 border border-red-400 text-red-700 rounded-lg" role="alert">
+            <p class="font-bold">${title}</p>
+            <p class="mt-1">${message}</p>
+        </div>
+    `;
+    createModal(contentHtml, 'Error Occurred', 'max-w-lg');
+}
+
+/**
+ * **MODIFIED:** Only displays Guarantor Information and minimal Loan Context.
+ * @param {Object} details - The detailed loan information from the database.
+ * @returns {string} The HTML string for the info section.
+ */
+function createLoanDetailsSection(details) {
+    
+    // --- Guarantor Section (Mandatory) ---
+    const guarantorInfo = `
+        <div class="md:col-span-1">
+            <h3 class="text-lg font-bold text-gray-900 mb-2 border-b-2 pb-1">Guarantor Information</h3>
+            <p><strong>Guarantor Name:</strong> ${details.guarantor_name}</p>
+            <p><strong>Address:</strong> ${details.guarantor_address}</p>
+            <p><strong>Phone Number:</strong> ${details.guarantor_phone}</p>
+        </div>
+    `;
+
+    // --- Minimal Loan Terms Details (To provide context for the guarantor) ---
+    const loanTerms = `
+        <div class="md:col-span-1">
+            <h3 class="text-lg font-bold text-gray-900 mb-2 border-b-2 pb-1">Loan Details</h3>
+            <p><strong>Loan ID:</strong> ${details.loan_application_id}</p>
+            <p><strong>Client Name:</strong> ${details.client_name}</p>
+            <p><strong>Principal Amount:</strong> PHP ${formatCurrency(details.loan_amount_principal)}</p>
+        </div>
+    `;
+
+    // Note: The original request was ONLY for the guarantor. The loan terms 
+    // are included here for context, as per the modified PHP fetch.
+    
+    return `
+        <div class="loan-info grid grid-cols-1 md:grid-cols-2 gap-6 text-base mb-6">
+            ${guarantorInfo}
+            ${loanTerms}
+        </div>
+        
+        <h3 class="text-xl font-bold text-gray-900 mt-6 mb-4 pt-4 border-t">Amortization Schedule</h3>
+    `;
+}
+
+/**
+ * Creates the HTML for the amortization schedule table.
+ * **MODIFIED** to interleave scheduled payments with actual payments chronologically.
+ * It assumes the 'schedule' array is a chronologically merged list of all events 
+ * (schedule installments and payments) from the server.
+ */
+function createScheduleTableHtml(schedule, title) {
+    const HEADING_COLOR = 'text-gray-900'; 
+    const EMPTY_CELL = `<td class="px-3 py-1 whitespace-nowrap text-sm text-gray-500">&mdash;</td>`;
+
+    if (!schedule || schedule.length === 0) {
+        return `<h3 class="text-lg font-semibold mt-4 mb-2 ${HEADING_COLOR}">${title}</h3><p class="text-gray-500 italic mt-2">No schedule data available.</p>`;
+    }
+
+    const rows = schedule.map(item => {
+        // Check for a scheduled installment (has a due date and installment amount)
+        const isScheduledInstallment = item.due_date && item.payment_amount;
+
+        // Check for an independent payment event (has a payment date and amount paid)
+        const isActualPayment = item.date_payed && item.amount_paid;
+
+        // Determine the row style
+        const rowClass = isActualPayment && !isScheduledInstallment ? 'bg-green-50/50 font-medium' : '';
+
+        // --- SCHEDULED COLUMNS ---
+        const dueDateCell = isScheduledInstallment ? `<td class="px-3 py-1 whitespace-nowrap text-sm text-gray-900">${item.due_date}</td>` : EMPTY_CELL;
+        const installmentAmountCell = isScheduledInstallment ? `<td class="px-3 py-1 whitespace-nowrap text-sm text-gray-900">PHP ${formatCurrency(item.payment_amount)}</td>` : EMPTY_CELL;
+        const principalCell = isScheduledInstallment ? `<td class="px-3 py-1 whitespace-nowrap text-sm text-gray-900">PHP ${formatCurrency(item.principal_paid)}</td>` : EMPTY_CELL;
+        const interestCell = isScheduledInstallment ? `<td class="px-3 py-1 whitespace-nowrap text-sm text-gray-900">PHP ${formatCurrency(item.interest_paid)}</td>` : EMPTY_CELL;
+        const balanceCell = isScheduledInstallment ? `<td class="px-3 py-1 whitespace-nowrap text-sm text-gray-900">PHP ${formatCurrency(item.remaining_balance)}</td>` : EMPTY_CELL;
+        
+        // --- PAYMENT COLUMNS ---
+        // Note: The server should use 'date_payed' and 'amount_paid' for payments.
+        const paymentDateCell = isActualPayment ? `<td class="px-3 py-1 whitespace-nowrap text-sm text-gray-900">${item.date_payed}</td>` : EMPTY_CELL;
+        const amountPaidCell = isActualPayment ? `<td class="px-3 py-1 whitespace-nowrap text-sm text-green-700">PHP ${formatCurrency(item.amount_paid)}</td>` : EMPTY_CELL;
+
+
+        return `
+            <tr class="${rowClass}">
+                ${dueDateCell}
+                ${installmentAmountCell}
+                ${principalCell}
+                ${interestCell}
+                ${balanceCell}
+                ${paymentDateCell}
+                ${amountPaidCell}
+            </tr>
+        `;
+    }).join('');
+
+    return `
+        <h3 class="text-lg font-semibold mt-4 mb-2 ${HEADING_COLOR}">${title}</h3>
+        <div class="loan-schedule schedule-table-container max-h-60 overflow-y-auto border rounded-lg shadow-sm">
+            <table class="min-w-full divide-y divide-gray-200">
+                <thead class="bg-indigo-100 sticky top-0">
+                    <tr>
+                        <th class="px-3 py-2 text-left text-xs font-medium text-gray-700 uppercase tracking-wider">Due Date</th>
+                        <th class="px-3 py-2 text-left text-xs font-medium text-gray-700 uppercase tracking-wider">Installment Amount</th>
+                        <th class="px-3 py-2 text-left text-xs font-medium text-gray-700 uppercase tracking-wider">Principal Amount</th>
+                        <th class="px-3 py-2 text-left text-xs font-medium text-gray-700 uppercase tracking-wider">Interest Amount</th>
+                        <th class="px-3 py-2 text-left text-xs font-medium text-gray-700 uppercase tracking-wider">Balance</th>
+                        <th class="px-3 py-2 text-left text-xs font-medium text-gray-700 uppercase tracking-wider">Payment Date</th>                        
+                        <th class="px-3 py-2 text-left text-xs font-medium text-gray-700 uppercase tracking-wider">Payment Amount</th>
+                    </tr>
+                </thead>
+                <tbody class="bg-white divide-y divide-gray-200">${rows}</tbody>
+            </table>
+        </div>
+    `;
+}
+
+/**
+ * Displays the full loan details and amortization schedule in a modal.
+ */
+function displayLoanDetailsModal(loanId, details, scheduleData) {
+    let contentHtml = createLoanDetailsSection(details);
+
+    // 2. Original Loan Schedule
+    contentHtml += createScheduleTableHtml(scheduleData.original_schedule, 'Original Loan Schedule');
+
+    // 3. Reconstruct Schedule (if available)
+    if (scheduleData.reconstruct_schedule && scheduleData.reconstruct_schedule.length > 0) {
+        contentHtml += `
+            <div class="mt-6 border-t pt-4">
+                ${createScheduleTableHtml(scheduleData.reconstruct_schedule, 'LATEST Reconstructed Loan Schedule')}
+                <p class="px-3 py-2 text-left text-xs font-medium text-gray-700 uppercase tracking-wider">⚠️ **Note:** The current loan balance in the main table is based on the terms of this latest reconstruction.</p>
+            </div>
+        `;
+    }
+    
+    createModal(contentHtml, `Guarantor and Loan Details for ID: ${loanId}`);
+}
+
+/**
+ * Function to handle the amortization fetching and modal display
+ */
+async function handleAmortizationClick(loanId, clickedElement) {
+    // Check if client data is available before proceeding
+    if (!window.CURRENT_CLIENT_DATA) {
+        // This check is often for the main client table data, less critical now 
+        // that details are fetched by the new PHP script, but kept for safety.
+        // displayErrorModal('Client Data Unavailable', 'Client demographic data has not loaded yet. Cannot show full loan details.');
+        // return; 
+    }
+
+    const row = clickedElement.closest('.loan-row');
+    if (!row) return;
+
+    row.classList.add('loading-row'); 
+
+    try {
+        // 1. Fetch Loan and Guarantor Details from the database
+        const loanDetails = await fetchLoanDetails(loanId); 
+        
+        // 2. Fetch Amortization Schedule (kept separate as per original structure)
+        const scheduleData = await fetchAmortizationSchedule(loanId);
+
+        // 3. Display the modal with the fetched data
+        displayLoanDetailsModal(loanId, loanDetails, scheduleData);
+    } catch (error) {
+        console.error('Data fetch error:', error);
+        displayErrorModal('Failed to Fetch Loan Data', error.message);
+    } finally {
+        row.classList.remove('loading-row');
+    }
+}
+
+// Global click handler for the clickable rows
+document.addEventListener('click', async (event) => {
+    const clickedRow = event.target.closest('.loan-row');
+    
+    if (clickedRow) {
+        const loanId = clickedRow.dataset.loanId;
+        if (loanId) {
+            handleAmortizationClick(loanId, event.target);
+        }
+    }
+});
+
+// =========================================================================================
+// Original Loan Table Functions (for completeness)
+// =========================================================================================
+
 /**
  * Creates the HTML table based on the fetched loan data.
- * @param {Array<Object>} loans - An array of loan objects from the API.
- * @returns {string} The complete HTML string for the table.
  */
 function createLoansTable(loans) {
     if (loans.length === 0) {
-        // NOTE: Keeping utility classes here for the container and message is acceptable
         return '<div class="text-center p-6 text-gray-500 bg-white shadow-md rounded-lg mt-4">No active or historical loans found for this client.</div>';
     }
 
     let tableHtml = `
+        <style>
+            .loan-row {
+                cursor: pointer;
+                transition: background-color 0.1s ease;
+            }
+            .loan-row:hover {
+                background-color: #f3f4f6;
+            }
+            .loan-row.loading-row {
+                pointer-events: none;
+                opacity: 0.7;
+            }
+            .modal-content {
+                max-width: 90%;
+            }
+        </style>
         <div class="loan-table-container">
             <table class="loan-table">
                 <thead class="loan-header-group">
@@ -171,33 +510,21 @@ function createLoansTable(loans) {
     `;
 
     loans.forEach(loan => {
-        // NOTE: loan.loan_amount now holds the Total Repayable Amount (Principal + Interest)
         const loanAmountRepayable = parseFloat(loan.loan_amount); 
         const totalPaid = parseFloat(loan.total_paid);
         const remaining = parseFloat(loan.amount_remaining);
         
-        // Use custom classes for conditional styling
-        const remainingClass = remaining <= 0 ? 'status-green' : 'status-red';
-
-        // NOTE: Status styling logic is kept but not used in the table cell anymore.
-        // let statusClass;
-        // if (loan.status === 'approved') {
-        //     statusClass = 'status-badge status-badge-yellow';
-        // } else if (loan.status === 'fully_paid') {
-        //     statusClass = 'status-badge status-badge-green';
-        // } else {
-        //     statusClass = 'status-badge status-badge-gray';
-        // }
+        const remainingClass = remaining <= 0 ? 'text-green-600' : 'text-red-600';
 
         tableHtml += `
-            <tr class="loan-row">
-                <td class="loan-data-cell id-col">${loan.loan_application_id}</td>
-                <td class="loan-data-cell amount-col amount-color">${formatCurrency(loanAmountRepayable)}</td>
-                <td class="loan-data-cell amount-col">${formatCurrency(totalPaid)}</td>
-                <td class="loan-data-cell amount-col ${remainingClass}">${formatCurrency(remaining)}</td>
-                <td class="loan-data-cell term-col">${loan.duration_of_loan} (${loan.payment_frequency})</td>
-                <td class="loan-data-cell date-col">${loan.date_start}</td>
-                <td class="loan-data-cell date-col">${loan.date_end}</td>
+            <tr class="loan-row hover:bg-gray-100" data-loan-id="${loan.loan_application_id}">
+                <td class="loan-data-cell id-col px-3 py-2 whitespace-nowrap">${loan.loan_application_id}</td>
+                <td class="loan-data-cell amount-col amount-color px-3 py-2 whitespace-nowrap">PHP ${formatCurrency(loanAmountRepayable)}</td>
+                <td class="loan-data-cell amount-col px-3 py-2 whitespace-nowrap">PHP ${formatCurrency(totalPaid)}</td>
+                <td class="loan-data-cell amount-col ${remainingClass} px-3 py-2 whitespace-nowrap">PHP ${formatCurrency(remaining)}</td>
+                <td class="loan-data-cell term-col px-3 py-2 whitespace-nowrap">${loan.duration_of_loan} (${loan.payment_frequency})</td>
+                <td class="loan-data-cell date-col px-3 py-2 whitespace-nowrap">${loan.date_start}</td>
+                <td class="loan-data-cell date-col px-3 py-2 whitespace-nowrap">${loan.date_end}</td>
                 </tr>
         `;
     });
@@ -211,12 +538,8 @@ function createLoansTable(loans) {
     return tableHtml;
 }
 
-// Get the client ID from the URL now
-const CLIENT_ID_TO_FETCH = getClientIdFromUrl();
-
 /**
  * Fetches loan data for a specific client and renders the table.
- * @param {string} clientId - The ID of the client to fetch loans for.
  */
 async function fetchClientLoans(clientId) {
     const container = document.getElementById('loanTableContainer');
@@ -225,16 +548,11 @@ async function fetchClientLoans(clientId) {
         return;
     }
 
-    // Set loading state
     container.innerHTML = '<div class="text-center p-6"><div class="animate-spin rounded-full h-8 w-8 border-b-2 border-indigo-600 inline-block"></div><p class="mt-2 text-indigo-600">Loading loan data...</p></div>';
 
-    // Check if client ID is valid before proceeding
     if (!clientId) {
-        container.innerHTML = `<div class="p-4 bg-yellow-100 border border-yellow-400 text-yellow-700 rounded-lg" role="alert">
-                                     <p class="font-bold">Missing Client ID</p>
-                                     <p>The client ID could not be found in the URL parameter 'client_id'.</p>
-                                   </div>`;
-        console.error('Error: client_id parameter is missing from the URL.');
+        displayErrorModal('Missing Client ID', 'The client ID could not be found in the URL parameter. Please check the URL.');
+        container.innerHTML = `<div class="p-4 bg-yellow-100 border border-yellow-400 text-yellow-700 rounded-lg" role="alert"><p class="font-bold">Missing Client ID</p><p>Check the URL parameters.</p></div>`;
         return;
     }
     
@@ -254,29 +572,22 @@ async function fetchClientLoans(clientId) {
         const result = await response.json();
 
         if (result.success) {
-            // Render the table with the fetched data
             container.innerHTML = createLoansTable(result.loans);
         } else {
-            // Display error message from PHP
-            container.innerHTML = `<div class="p-4 bg-red-100 border border-red-400 text-red-700 rounded-lg" role="alert">
-                                             <p class="font-bold">Error Loading Loans</p>
-                                             <p>${result.message || 'An unknown error occurred on the server.'}</p>
-                                           </div>`;
+            container.innerHTML = `<div class="p-4 bg-red-100 border border-red-400 text-red-700 rounded-lg" role="alert"><p class="font-bold">Error Loading Loans</p><p>${result.message || 'An unknown error occurred on the server.'}</p></div>`;
             console.error('Server error:', result.message);
         }
 
     } catch (error) {
-        // Display generic network/parsing error
-        container.innerHTML = `<div class="p-4 bg-red-100 border border-red-400 text-red-700 rounded-lg" role="alert">
-                                   <p class="font-bold">Network Error</p>
-                                   <p>Could not connect to the loan data service. Details: ${error.message}</p>
-                                 </div>`;
+        container.innerHTML = `<div class="p-4 bg-red-100 border border-red-400 text-red-700 rounded-lg" role="alert"><p class="font-bold">Network Error</p><p>Could not connect to the loan data service. Details: ${error.message}</p></div>`;
         console.error('Fetch error:', error);
     }
 }
 
-// Start the process when the document is ready
+// Get the client ID from the URL now
+const CLIENT_ID_TO_FETCH = getClientIdFromUrl(); 
+
+//Start the process when the document is ready
 document.addEventListener('DOMContentLoaded', () => {
-    // Pass the extracted CLIENT_ID_TO_FETCH to the fetch function
     fetchClientLoans(CLIENT_ID_TO_FETCH);
 });
