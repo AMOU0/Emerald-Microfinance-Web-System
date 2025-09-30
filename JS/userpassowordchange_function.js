@@ -13,8 +13,6 @@ document.addEventListener('DOMContentLoaded', function() {
 
             const linkText = this.textContent.toLowerCase().replace(/\s/g, ''); 
             
-            // NOTE: Keep links pointing to .php if you want server-side security, 
-            // otherwise keep them as .html.
             const urlMapping = {
                 'dashboard': 'DashBoard.html',
                 'clientcreation': 'ClientCreationForm.html',
@@ -27,8 +25,30 @@ document.addEventListener('DOMContentLoaded', function() {
                 'tools': 'Tools.html'
             };
 
-            if (urlMapping[linkText]) {
-                window.location.href = urlMapping[linkText];
+            const targetPage = urlMapping[linkText];
+            if (targetPage) {
+                // 1. Define the action for the audit log
+                const actionDescription = `Maps to ${this.textContent} (${targetPage})`;
+
+                // 2. ASYNCHRONOUS AUDIT LOG: Call PHP to log the action. 
+                //    This will not block the page from redirecting.
+                fetch('PHP/log_action.php', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/x-www-form-urlencoded',
+                    },
+                    body: `action=${encodeURIComponent(actionDescription)}`
+                })
+                .then(response => {
+                    if (!response.ok) {
+                        console.warn('Audit log failed to record for navigation:', actionDescription);
+                    }
+                })
+                .catch(error => {
+                    console.error('Audit log fetch error:', error);
+                })
+                // 3. Perform the page redirect immediately
+                window.location.href = targetPage;
             } else {
                 console.error('No page defined for this link:', linkText);
             }
@@ -36,8 +56,8 @@ document.addEventListener('DOMContentLoaded', function() {
     });
 
     // Handle the logout button securely
+    // NOTE: The PHP script 'PHP/check_logout.php' will now handle the log *before* session destruction.
     logoutButton.addEventListener('click', function() {
-        // Redirect to the PHP script that handles session destruction
         window.location.href = 'PHP/check_logout.php'; 
     });
 });

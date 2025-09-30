@@ -1,4 +1,5 @@
 document.addEventListener('DOMContentLoaded', function() {
+    // Call the session check function as soon as the page loads.
     checkSessionAndRedirect(); 
 
     const navLinks = document.querySelectorAll('.nav-link');
@@ -11,6 +12,7 @@ document.addEventListener('DOMContentLoaded', function() {
             this.classList.add('active');
 
             const linkText = this.textContent.toLowerCase().replace(/\s/g, ''); 
+            
             const urlMapping = {
                 'dashboard': 'DashBoard.html',
                 'clientcreation': 'ClientCreationForm.html',
@@ -23,18 +25,42 @@ document.addEventListener('DOMContentLoaded', function() {
                 'tools': 'Tools.html'
             };
 
-            if (urlMapping[linkText]) {
-                window.location.href = urlMapping[linkText];
+            const targetPage = urlMapping[linkText];
+            if (targetPage) {
+                // 1. Define the action for the audit log
+                const actionDescription = `Maps to ${this.textContent} (${targetPage})`;
+
+                // 2. ASYNCHRONOUS AUDIT LOG: Call PHP to log the action. 
+                //    This will not block the page from redirecting.
+                fetch('PHP/log_action.php', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/x-www-form-urlencoded',
+                    },
+                    body: `action=${encodeURIComponent(actionDescription)}`
+                })
+                .then(response => {
+                    if (!response.ok) {
+                        console.warn('Audit log failed to record for navigation:', actionDescription);
+                    }
+                })
+                .catch(error => {
+                    console.error('Audit log fetch error:', error);
+                })
+                // 3. Perform the page redirect immediately
+                window.location.href = targetPage;
             } else {
                 console.error('No page defined for this link:', linkText);
             }
         });
     });
 
+    // Handle the logout button securely
+    // NOTE: The PHP script 'PHP/check_logout.php' will now handle the log *before* session destruction.
     logoutButton.addEventListener('click', function() {
         window.location.href = 'PHP/check_logout.php'; 
     });
-  });
+});
 /*=============================================================================================================================================================================*/
 
 const showMessage = (message, type = 'error') => {
