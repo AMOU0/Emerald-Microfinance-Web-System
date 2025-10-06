@@ -1,0 +1,125 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Emerald Microfinance</title>
+    <script src="JS/enforce_login.js"></script>
+    <link rel="stylesheet" href="CSS/toolsbr_style.css">
+</head>
+<body>
+    <aside class="sidebar">
+        <div class="sidebar-header">
+            Emerald Microfinance
+        </div>
+        <nav class="sidebar-nav">
+            <ul>
+                <li><a href="#" class="nav-link">Dashboard</a></li>
+                <li><a href="#" class="nav-link">Client Creation</a></li>
+                <li><a href="#" class="nav-link">Loan Application</a></li>
+                <li><a href="#" class="nav-link">Pending Accounts</a></li>
+                <li><a href="#" class="nav-link">Payment Collection</a></li>
+                <li><a href="#" class="nav-link">Ledger</a></li>
+                <li><a href="#" class="nav-link">Reports</a></li>
+                <li><a href="#" class="nav-link">User Management</a></li>
+                <li><a href="#" class="nav-link active">Tools</a></li>
+            </ul>
+        </nav>
+        <div class="sidebar-footer">
+            <button class="logout-button">
+                Logout
+            </button>
+        </div>
+    </aside>
+
+    <main class="main-content">
+        <header class="header">
+            <h1>Tools</h1>
+        </header>
+        <div class="content-panel">
+            <div class="tools-menu">    
+                <button class="menu-button-active">Backup And Restore</button>
+                <button class="menu-button">Interest Ammount</button>
+                <button class="menu-button">File Maintenance</button>
+                <button class="menu-button">City/ Barangays</button>
+            </div>
+            
+            <div class="tool-area">
+                <div id="backup-restore-tool" class="tool-block">
+                    <h2 class="tool-block__heading">Database Backup And Restore</h2>
+
+                    <div id="messageBox" class="message-box message-box--hidden" role="alert"></div>
+
+                    <div class="card-grid">
+
+                        <div class="card card--backup">
+                            <h3 class="card__title card__title--green">Manual Backup</h3>
+                            <p class="card__description">Create a secure, local copy of all application data from the cloud.</p>
+                            <button id="manualBackupBtn" class="btn btn--primary btn--download" disabled>
+                                <svg class="btn__icon" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-4l-4 4m0 0l-4-4m4 4V4"></path></svg>
+                                Download Backup (.json)
+                            </button>
+                            <p class="card__note">**Exports data from all core collections.**</p>
+                        </div>
+
+                        <div class="card card--restore">
+                            <h3 class="card__title card__title--red">Manual Restore</h3>
+                            <p class="card__description">Upload a backup file to restore data. This action is irreversible.</p>
+                            <input type="file" id="restoreFile" accept=".json" class="file-input--hidden" onchange="document.getElementById('restoreFileName').textContent = this.files[0] ? this.files[0].name : 'No file selected'">
+                            
+                            <label for="restoreFile" class="file-label">
+                                <svg class="btn__icon" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 13h6m-3-3v6m5 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"></path></svg>
+                                Choose Backup File
+                            </label>
+                            <p id="restoreFileName" class="file-name-display">No file selected</p>
+                            
+                            <button id="manualRestoreBtn" class="btn btn--danger btn--restore" disabled>
+                                <svg class="btn__icon" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15"></path></svg>
+                                Start Restore
+                            </button>
+                        </div>
+                        
+                        <div class="card card--auto">
+                            <h3 class="card__title card__title--blue">Auto Backup Preference</h3>
+                            <p class="card__description">Set how often the system should remind or attempt a background backup.</p>
+                            
+                            <label for="autoBackupInterval" class="form__label">Interval:</label>
+                            <select id="autoBackupInterval" class="form__select">
+                                <option value="off">Off</option>
+                                <option value="daily">Daily</option>
+                                <option value="weekly">Weekly</option>
+                            </select>
+                            
+                            <button id="saveAutoBackupBtn" class="btn btn--secondary btn--save" disabled>
+                                <svg class="btn__icon btn__icon--inline" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7H5a2 2 0 00-2 2v10a2 2 0 002 2h14a2 2 0 002-2V9a2 2 0 00-2-2h-3m-1 4l-3 3m0 0l-3-3m3 3V4"></path></svg>
+                                Save Preference
+                            </button>
+                            <p id="currentAutoBackup" class="card__preference-status"></p>
+                        </div>
+                    </div>
+
+                    <h2 class="tool-block__heading log-heading">Backup/Restore Activity Log</h2>
+                    <div class="log-table-container">
+                        <table class="data-table">
+                            <thead class="data-table__head">
+                                <tr>
+                                    <th class="data-table__th">Timestamp</th>
+                                    <th class="data-table__th">Operation</th>
+                                    <th class="data-table__th">Status</th>
+                                    <th class="data-table__th">Processed By</th>
+                                    <th class="data-table__th">Details</th>
+                                </tr>
+                            </thead>
+                            <tbody id="backupLogTableBody" class="data-table__body">
+                                <tr><td colspan="5" class="data-table__no-data">Loading log history...</td></tr>
+                            </tbody>
+                        </table>
+                    </div>
+
+                </div>
+            </div>
+        </div>
+    </main>
+    <script src="JS\toolbr_function.js"></script>
+</body>
+</html>

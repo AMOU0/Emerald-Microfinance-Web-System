@@ -1,0 +1,74 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Emerald Microfinance</title>
+    <script src="JS/enforce_login.js"></script>
+    <link rel="stylesheet" href="CSS/toolsinterest_style.css">
+</head>
+<body>
+    <aside class="sidebar">
+        <div class="sidebar-header">
+            Emerald Microfinance
+        </div>
+        <nav class="sidebar-nav">
+            <ul>
+                <li><a href="#" class="nav-link">Dashboard</a></li>
+                <li><a href="#" class="nav-link">Client Creation</a></li>
+                <li><a href="#" class="nav-link">Loan Application</a></li>
+                <li><a href="#" class="nav-link">Pending Accounts</a></li>
+                <li><a href="#" class="nav-link">Payment Collection</a></li>
+                <li><a href="#" class="nav-link">Ledger</a></li>
+                <li><a href="#" class="nav-link">Reports</a></li>
+                <li><a href="#" class="nav-link">User Management</a></li>
+                <li><a href="#" class="nav-link active">Tools</a></li>
+            </ul>
+        </nav>
+        <div class="sidebar-footer">
+            <button class="logout-button">
+                Logout
+            </button>
+        </div>
+    </aside>
+
+    <main class="main-content">
+        <header class="header">
+            <h1>Tools</h1>
+        </header>
+        <div class="content-panel">
+            <div class="tools-menu">
+                <button class="menu-button">Backup And Restore</button>
+                <button class="menu-button-active">Interest Ammount</button>
+                <button class="menu-button">File Maintenance</button>
+                <button class="menu-button">City/ Barangays</button>
+            </div>
+            <div class="content-area">
+                <div id="interest-amount-tool">
+                    <h2>Interest Rate Management</h2>
+                    <p>Configure and maintain the standard interest rate percentage applied to new loans.</p>
+                        <div class="tool-section" style="margin-bottom: 20px; padding: 15px; border: 2px solid #007bff; border-radius: 5px; background-color: #e9f7ff;">
+                            <h3>Current Active Interest Rate: <span id="active-interest-rate" style="color: #28a745; font-size: 1.5em; font-weight: bold;">20%</span></h3>
+                </div>
+                <div class="tool-section">
+                    <h3>Set New Interest Rate</h3>
+                        <form id="new-interest-form" style="display: flex; gap: 10px; align-items: flex-end; padding: 15px; border: 1px solid #ccc; border-radius: 5px;">
+                            <div style="flex-grow: 1;">
+                                <label for="new_rate" style="display: block; margin-bottom: 5px; font-weight: bold;">New Interest Percentage:</label>
+                                <input type="number" id="new_rate" name="new_rate" min="1" max="100" required style="width: 100%; padding: 8px; border: 1px solid #ddd; border-radius: 3px;" placeholder="e.g., 20">
+                            </div>
+                                <button type="submit" style="padding: 10px 20px; background-color: #28a745; color: white; border: none; border-radius: 3px; cursor: pointer;">Activate New Rate</button>
+                        </form>
+                            <p style="font-size: 0.8em; color: #777; margin-top: 5px;">Setting a new rate will automatically **deactivate** the current rate.</p>
+                </div>
+                <hr style="margin: 20px 0; border: 0; border-top: 1px solid #ccc;">
+                <div id="interest-history-container">
+                </div>
+
+            </div>
+        </div>
+    </div>
+</main>
+    <script src="JS\toolsinterest_function.js"></script>
+</body>
+</html>
