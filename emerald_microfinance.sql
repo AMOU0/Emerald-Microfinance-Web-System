@@ -3,7 +3,7 @@
 -- https://www.phpmyadmin.net/
 --
 -- Host: 127.0.0.1
--- Generation Time: Sep 30, 2025 at 05:09 AM
+-- Generation Time: Oct 06, 2025 at 12:00 PM
 -- Server version: 10.4.32-MariaDB
 -- PHP Version: 8.2.12
 
@@ -61,15 +61,6 @@ CREATE TABLE `clients` (
   `created_at` timestamp NOT NULL DEFAULT current_timestamp() ON UPDATE current_timestamp()
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 
---
--- Dumping data for table `clients`
---
-
-INSERT INTO `clients` (`client_ID`, `last_name`, `first_name`, `middle_name`, `marital_status`, `gender`, `date_of_birth`, `city`, `barangay`, `postal_code`, `street_address`, `phone_number`, `email`, `employment_status`, `occupation`, `years_in_job`, `income`, `created_at`) VALUES
-(202500001, 'Mallari', 'Angel', 'Laurence P', 'Single', 'Male', '2003-03-07', 'Tarlac City', 'Alvindia', '2300', '#205 Alvindia Segundo Tarlac City', '09212271315', 'laurence030703@gmail.com', '', '', 0, '20,000+', '2025-09-18 18:11:56'),
-(202500002, 'Medns', 'huds', 'sonssss', 'Single', 'Male', '1998-07-08', 'Tarlac City', 'Amucao', '2300', 'amucao ', '21312412356', '', '', '', 0, '5,000 - 10,000', '2025-09-18 18:16:16'),
-(202500003, 'jake ', 'syrus', 'paras', 'Married', 'Non-binary', '2005-06-16', 'Tarlac City', 'Amucao', '2300', 'amucao ty 02', '12312312312', 'Hambi@gmail.com', '', '', 0, '20,000+', '2025-09-23 10:16:24');
-
 -- --------------------------------------------------------
 
 --
@@ -82,15 +73,6 @@ CREATE TABLE `client_requirements` (
   `client_ID` bigint(20) NOT NULL,
   `created_at` text DEFAULT current_timestamp()
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
-
---
--- Dumping data for table `client_requirements`
---
-
-INSERT INTO `client_requirements` (`has_valid_id`, `has_barangay_clearance`, `client_ID`, `created_at`) VALUES
-('Driver\'s License', 0, 202500001, '2025-09-19 02:11:56'),
-('Passport', 0, 202500002, '2025-09-19 02:16:16'),
-('Unified Multi-Purpose ID (UMID)', 0, 202500003, '2025-09-23 18:16:24');
 
 -- --------------------------------------------------------
 
@@ -131,16 +113,6 @@ CREATE TABLE `guarantor` (
   `created_at` text DEFAULT current_timestamp()
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 
---
--- Dumping data for table `guarantor`
---
-
-INSERT INTO `guarantor` (`guarantor_id`, `guarantor_last_name`, `guarantor_first_name`, `guarantor_middle_name`, `guarantor_street_address`, `guarantor_phone_number`, `loan_application_id`, `client_ID`, `created_at`) VALUES
-(1, 'James', 'Ride', 'Exitssss', 'Manila ph', '09283733333', 202500001, 202500001, '2025-09-19 02:12:35'),
-(2, 'jake', 'asd', 'mads', 'Amucao', '21415135135', 202500002, 202500002, '2025-09-19 02:17:08'),
-(3, 'Kate', 'Fernan', 'Kase', 'Amucao Tarlac', '12312312312', 202500003, 202500003, '2025-09-23 18:17:31'),
-(4, 'Mallari', 'Angel', 'Laurence P', '#205 Alvindia Segundo Tarlac City', '09212271315', 202500004, 202500002, '2025-09-29 03:51:59');
-
 -- --------------------------------------------------------
 
 --
@@ -180,7 +152,10 @@ CREATE TABLE `interest_pecent` (
 --
 
 INSERT INTO `interest_pecent` (`interest_ID`, `Interest_Pecent`, `status`, `date_created`) VALUES
-('I202050001', 20, 'activated', '2025-08-31');
+('I20250001', 20, 'deactivated', '2025-10-06'),
+('I20250002', 21, 'deactivated', '2025-10-06'),
+('I20250003', 2, 'deactivated', '2025-10-06'),
+('I20250004', 20, 'activated', '2025-10-06');
 
 -- --------------------------------------------------------
 
@@ -203,15 +178,6 @@ CREATE TABLE `loan_applications` (
   `created_at` text DEFAULT current_timestamp()
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 
---
--- Dumping data for table `loan_applications`
---
-
-INSERT INTO `loan_applications` (`loan_application_id`, `colateral`, `loan_amount`, `payment_frequency`, `date_start`, `duration_of_loan`, `interest_rate`, `date_end`, `client_ID`, `status`, `paid`, `created_at`) VALUES
-(202500001, 'motor', 10000.00, 'monthly', '2025-09-20', '100 days', 20, '2025-12-29', 202500001, 'approved', 'Unpaid', '2025-09-19 02:12:35'),
-(202500002, 'Dragon', 20000.00, 'weekly', '2024-07-19', '100 days', 20, '2024-10-27', 202500002, 'approved', 'Unpaid', '2025-09-19 02:17:08'),
-(202500003, 'Single Motor(Rusi 125)', 30000.00, 'monthly', '2025-09-27', '100 days', 20, '2026-01-05', 202500003, 'approved', 'Unpaid', '2025-09-23 18:17:31');
-
 -- --------------------------------------------------------
 
 --
@@ -230,13 +196,6 @@ CREATE TABLE `loan_reconstruct` (
   `status` varchar(25) NOT NULL,
   `date_created` date NOT NULL DEFAULT current_timestamp()
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
-
---
--- Dumping data for table `loan_reconstruct`
---
-
-INSERT INTO `loan_reconstruct` (`loan_reconstruct_id`, `loan_application_id`, `reconstruct_amount`, `payment_frequency`, `interest_rate`, `date_start`, `duration`, `date_end`, `status`, `date_created`) VALUES
-(5, 202500002, 20000.00, 'monthly', 20, '2025-10-01', '100 days', '2026-01-09', 'active', '2025-09-30');
 
 -- --------------------------------------------------------
 
@@ -274,20 +233,6 @@ CREATE TABLE `payment` (
   `date_payed` timestamp NOT NULL DEFAULT current_timestamp(),
   `processby` varchar(255) NOT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
-
---
--- Dumping data for table `payment`
---
-
-INSERT INTO `payment` (`payment_id`, `loan_reconstruct_id`, `loan_application_id`, `client_id`, `amount_paid`, `date_payed`, `processby`) VALUES
-(1, NULL, 202500002, 202500002, 1000.00, '2024-08-01 02:00:00', 'admin'),
-(2, NULL, 202500002, 202500002, 1000.00, '2024-08-08 03:30:00', 'admin'),
-(3, NULL, 202500002, 202500002, 500.00, '2024-08-15 06:45:00', 'admin'),
-(4, NULL, 202500002, 202500002, 1500.00, '2024-08-22 01:00:00', 'admin'),
-(5, NULL, 202500001, 202500001, 2000.00, '2025-10-20 01:15:00', 'admin'),
-(6, NULL, 202500003, 202500003, 5000.00, '2025-10-27 07:00:00', 'admin'),
-(7, NULL, 202500003, 202500003, 12000.00, '2025-09-26 16:00:00', 'admin'),
-(8, 5, 202500002, 202500002, 2025.00, '2025-09-30 16:00:00', 'system');
 
 -- --------------------------------------------------------
 
@@ -579,7 +524,7 @@ ALTER TABLE `genders`
 -- AUTO_INCREMENT for table `guarantor`
 --
 ALTER TABLE `guarantor`
-  MODIFY `guarantor_id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=5;
+  MODIFY `guarantor_id` int(11) NOT NULL AUTO_INCREMENT;
 
 --
 -- AUTO_INCREMENT for table `income_salaries`
@@ -591,7 +536,7 @@ ALTER TABLE `income_salaries`
 -- AUTO_INCREMENT for table `loan_reconstruct`
 --
 ALTER TABLE `loan_reconstruct`
-  MODIFY `loan_reconstruct_id` int(20) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=6;
+  MODIFY `loan_reconstruct_id` int(20) NOT NULL AUTO_INCREMENT;
 
 --
 -- AUTO_INCREMENT for table `marital_statuses`
@@ -603,7 +548,7 @@ ALTER TABLE `marital_statuses`
 -- AUTO_INCREMENT for table `payment`
 --
 ALTER TABLE `payment`
-  MODIFY `payment_id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=1656;
+  MODIFY `payment_id` int(11) NOT NULL AUTO_INCREMENT;
 
 --
 -- AUTO_INCREMENT for table `philippine_barangays`
@@ -638,6 +583,12 @@ ALTER TABLE `user_accounts`
 --
 ALTER TABLE `audit_logs`
   ADD CONSTRAINT `fk_audit_user` FOREIGN KEY (`user_id`) REFERENCES `user_accounts` (`id`) ON DELETE NO ACTION ON UPDATE CASCADE;
+
+--
+-- Constraints for table `client_requirements`
+--
+ALTER TABLE `client_requirements`
+  ADD CONSTRAINT `fk_client_requirements_client_id` FOREIGN KEY (`client_ID`) REFERENCES `clients` (`client_ID`) ON DELETE CASCADE ON UPDATE CASCADE;
 
 --
 -- Constraints for table `guarantor`
