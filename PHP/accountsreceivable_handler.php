@@ -17,6 +17,7 @@ if ($conn->connect_error) {
 }
 
 // SQL query to fetch all approved AND UNPAID accounts
+// The ORDER BY la.created_at DESC ensures that the newest loan approved (most recently created) is at the top.
 $sql = "SELECT 
             la.loan_application_id, 
             la.client_ID, 
@@ -30,7 +31,7 @@ $sql = "SELECT
         FROM loan_applications AS la
         JOIN clients AS c ON la.client_ID = c.client_ID
         WHERE la.status = 'approved' AND la.paid = 'Unpaid' 
-        ORDER BY la.created_at DESC";
+        ORDER BY la.created_at DESC"; // This sorts by newest first
 
 $result = $conn->query($sql);
 
@@ -85,7 +86,8 @@ if ($result->num_rows > 0) {
             'payment_frequency' => $payment_frequency,
             'date_end' => $date_end,
             'is_overdue' => $is_overdue,
-            'reconstruct_id' => $reconstruct_id
+            'reconstruct_id' => $reconstruct_id,
+            'created_at' => $row['created_at'] // Include for potential client-side sorting consistency
         ];
     }
 }

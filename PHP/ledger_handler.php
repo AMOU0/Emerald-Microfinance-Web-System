@@ -15,44 +15,82 @@ if ($conn->connect_error) {
     exit();
 }
 
-// 🌟 CRITICALLY REVISED SQL QUERY 🌟
-// This query calculates the net balance across all loans and payments for each client.
-$sql = "SELECT
+// 🌟 REVISED SQL QUERY 🌟
+// This query uses a Common Table Expression (CTE) to find the single latest active loan 
+// or reconstruction for each client, and then uses correlated subqueries to calculate payments 
+// based on the strict ID-linking rule.
+$sql = "
+-- 1. Find the single latest active loan/reconstruction for each client
+WITH LatestActiveLoan AS (
+    SELECT
+        la.client_ID,
+        la.loan_application_id,
+        lr.loan_reconstruct_id,
+        -- Effective Principal: Use reconstructed amount if active, otherwise use original loan amount
+        COALESCE(lr.reconstruct_amount, la.loan_amount) AS effective_principal,
+        COALESCE(lr.interest_rate, la.interest_rate) AS effective_rate,
+        la.date_start,
+        la.payment_frequency,
+        -- Flag to identify if the effective loan is a reconstruction
+        (lr.loan_reconstruct_id IS NOT NULL) AS is_reconstructed,
+        -- Use ROW_NUMBER to rank and select only the single latest loan per client
+        ROW_NUMBER() OVER (PARTITION BY la.client_ID ORDER BY la.loan_application_id DESC) as rn
+    FROM
+        loan_applications la
+    LEFT JOIN
+        loan_reconstruct lr ON la.loan_application_id = lr.loan_application_id AND lr.status = 'active'
+    WHERE
+        la.status IN ('approved', 'Unpaid')
+)
+SELECT
     c.client_ID,
     c.first_name,
     c.middle_name,
     c.last_name,
     c.phone_number,
     
-    -- Get the most recent date start and payment frequency for active loan context
-    MAX(la.date_start) AS date_start,
-    MAX(la.payment_frequency) AS payment_frequency,
+    -- Effective Loan Details
+    lal.effective_principal AS principal_loan_amount,
+    lal.effective_rate AS applicable_interest_rate,
+    lal.loan_application_id, -- Used for payment filtering
+    lal.loan_reconstruct_id, -- Used for payment filtering
+    lal.is_reconstructed, -- Used for payment filtering
+    lal.date_start,
+    lal.payment_frequency,
     
-    -- Calculate the total amount owed (Principal * (1 + Rate)) from all loan applications/reconstructions
-    SUM(CASE 
-        -- If an active reconstruction exists, use its total amount owed
-        WHEN lr.status = 'active' THEN lr.reconstruct_amount * (1 + (lr.interest_rate / 100))
-        -- Otherwise, use the original loan's total amount owed, but only if its status is 'approved' or 'unpaid'
-        WHEN la.status = 'approved' OR la.status = 'Unpaid' THEN la.loan_amount * (1 + (la.interest_rate / 100))
-        ELSE 0
-    END) AS total_amount_owed_with_interest,
+    -- 2. CRITICAL SUBQUERY: Calculate total payments based on the strict ID-linking rule
+    (
+        SELECT COALESCE(SUM(p.amount_paid), 0)
+        FROM payment p
+        WHERE p.client_id = c.client_ID 
+        AND p.loan_application_id = lal.loan_application_id 
+        AND (
+            -- RULE 1: If Reconstructed, only count payments linked to the RECONSTRUCTION ID
+            (lal.is_reconstructed = 1 AND p.loan_reconstruct_id = lal.loan_reconstruct_id)
+            -- RULE 2: If NOT Reconstructed, only count payments NOT linked to any reconstruction ID
+            OR (lal.is_reconstructed = 0 AND p.loan_reconstruct_id IS NULL)
+        )
+    ) AS total_amount_paid,
     
-    -- Calculate the total amount paid across all payments
-    SUM(p.amount_paid) AS total_amount_paid,
+    -- 3. Get the last payment date based on the *effective* payments
+    (
+        SELECT MAX(p.date_payed)
+        FROM payment p
+        WHERE p.client_id = c.client_ID 
+        AND p.loan_application_id = lal.loan_application_id 
+        AND (
+            (lal.is_reconstructed = 1 AND p.loan_reconstruct_id = lal.loan_reconstruct_id)
+            OR (lal.is_reconstructed = 0 AND p.loan_reconstruct_id IS NULL)
+        )
+    ) AS last_payment_date
     
-    MAX(p.date_payed) AS last_payment_date
 FROM
     clients c
 LEFT JOIN
-    loan_applications la ON c.client_ID = la.client_ID
-LEFT JOIN
-    loan_reconstruct lr ON la.loan_application_id = lr.loan_application_id AND lr.status = 'active'
-LEFT JOIN
-    payment p ON c.client_ID = p.client_id AND la.loan_application_id = p.loan_application_id
-GROUP BY
-    c.client_ID
+    LatestActiveLoan lal ON c.client_ID = lal.client_ID AND lal.rn = 1 -- Only join the single latest active loan
 ORDER BY
-    c.last_name ASC;";
+    c.last_name ASC;
+";
 
 $result = $conn->query($sql);
 
@@ -65,25 +103,30 @@ if (!$result) {
 }
 else {
     while($row = $result->fetch_assoc()) {
-        $total_owed = $row['total_amount_owed_with_interest'] ?? 0;
+        $total_principal = $row['principal_loan_amount'] ?? 0;
         $amount_paid = $row['total_amount_paid'] ?? 0;
+        $interest_rate = $row['applicable_interest_rate'] ?? 0; 
         
-        $balance = $total_owed - $amount_paid;
+        // Calculation: (Principal * (1 + Rate)) - Payments
+        // The total debt for one active loan (reconstructed or not).
+        $total_debt = $total_principal * (1 + ($interest_rate / 100));
+        $balance = $total_debt - $amount_paid;
 
-        // **FINAL BALANCE LOGIC:** Treat any balance <= 0.01 as fully paid.
-        if ($balance > 0.01) {
+        // **FINAL BALANCE LOGIC:**
+        if ($total_principal > 0 && $balance > 0.01) {
             // Active Loan: Display formatted balance
             $row['balance_display'] = "PHP " . number_format($balance, 2);
         } else {
             // Fully Paid, Overpaid, or No Loan: Display the requested status
-            $row['balance_display'] = 'Fully Paid'; // Changed from 'NO LOANS ACTIVE'
-            $row['date_start'] = null; 
+            $row['balance_display'] = 'PHP 0.00'; 
+            $row['date_start'] = null; // Clear date_start if no active balance
+            $row['payment_frequency'] = null;
         }
 
         $row['balance'] = $balance; // Raw balance for JS logic
         
         // Cleanup columns
-        unset($row['total_amount_owed_with_interest'], $row['total_amount_paid']);
+        unset($row['principal_loan_amount'], $row['total_amount_paid'], $row['applicable_interest_rate'], $row['loan_application_id'], $row['loan_reconstruct_id'], $row['is_reconstructed']);
         $data[] = $row;
     }
 }
