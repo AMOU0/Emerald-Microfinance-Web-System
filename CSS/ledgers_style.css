@@ -255,3 +255,18 @@ body {
 .clients-row:last-child {
     border-bottom: none;
 }
+        /* Minimal CSS for sort indicator, assuming a clean design */
+        .sortable-header {
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+        }
+        .sort-icon {
+            margin-left: 5px;
+            font-size: 0.8em;
+            opacity: 0.5; /* Hidden until sorted */
+        }
+        .sorted .sort-icon {
+            opacity: 1;
+        }
