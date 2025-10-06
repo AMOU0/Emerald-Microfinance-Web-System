@@ -1,7 +1,8 @@
+/* This block contains the original navigation logic and logout handler, kept for completeness. */
 document.addEventListener('DOMContentLoaded', function() {
     // Call the session check function as soon as the page loads.
     checkSessionAndRedirect(); 
-
+ 
     const navLinks = document.querySelectorAll('.nav-link');
     const logoutButton = document.querySelector('.logout-button');
 
@@ -66,7 +67,14 @@ document.addEventListener('DOMContentLoaded', function() {
 document.addEventListener('DOMContentLoaded', () => {
     const tableBody = document.querySelector('.clients-table-body');
     const searchInput = document.getElementById('searchInput');
+    const sortableHeaders = document.querySelectorAll('.sortable-header'); // 💡 NEW: Select sortable headers
     let allClientData = []; // Variable to store all fetched data
+    // 💡 NEW: Variables to track current sort state
+    let currentSort = {
+        key: null,
+        direction: 'asc' // 'asc' or 'desc'
+    };
+
 
     if (!tableBody) {
         console.error('Clients table body not found.');
@@ -106,8 +114,86 @@ document.addEventListener('DOMContentLoaded', () => {
         return currentDate.toLocaleDateString();
     };
 
-    // NEW: Function to render the table with the given data
+    // 💡 NEW: Helper function to get the display name
+    const getFullName = (item) => {
+        return `${item.first_name} ${item.middle_name ? item.middle_name + ' ' : ''}${item.last_name}`;
+    };
+    
+    // 💡 NEW: Helper function to get the next payment date for sorting
+    const getNextPaymentDateForSorting = (item) => {
+        if (item.balance > 0.01 && item.date_start && item.payment_frequency) {
+            const calculatedDate = calculateNextPaymentDate(item.date_start, item.payment_frequency, item.last_payment_date);
+            // Return the raw date string for comparison or a value that pushes 'N/A' to the end.
+            return (calculatedDate && calculatedDate !== 'Invalid Date' && calculatedDate !== 'Date Error' && calculatedDate !== 'N/A') ? new Date(calculatedDate).getTime() : Infinity; 
+        }
+        return Infinity; // Put N/A items at the end
+    }
+
+    // 💡 NEW: Function to handle sorting logic
+    const sortData = (data, key, direction) => {
+        return data.sort((a, b) => {
+            let aValue, bValue;
+
+            if (key === 'name') {
+                aValue = getFullName(a).toLowerCase();
+                bValue = getFullName(b).toLowerCase();
+            } else if (key === 'date') {
+                aValue = getNextPaymentDateForSorting(a);
+                bValue = getNextPaymentDateForSorting(b);
+                
+                // Special handling for dates (Infinity = N/A)
+                if (aValue === Infinity && bValue !== Infinity) return direction === 'asc' ? 1 : -1;
+                if (aValue !== Infinity && bValue === Infinity) return direction === 'asc' ? -1 : 1;
+                
+                return (aValue - bValue) * (direction === 'asc' ? 1 : -1);
+
+            } else if (key === 'balance') {
+                // Balance is a number (raw balance from the item)
+                aValue = parseFloat(a.balance || 0);
+                bValue = parseFloat(b.balance || 0);
+            } else {
+                // Default to string comparison for all others
+                aValue = String(a[key]).toLowerCase();
+                bValue = String(b[key]).toLowerCase();
+            }
+
+            // For numbers (like balance), the logic is different
+            if (key === 'balance' || key === 'date') {
+                return (aValue - bValue) * (direction === 'asc' ? 1 : -1);
+            }
+
+            // For strings (like name)
+            if (aValue < bValue) {
+                return direction === 'asc' ? -1 : 1;
+            }
+            if (aValue > bValue) {
+                return direction === 'asc' ? 1 : -1;
+            }
+            return 0;
+        });
+    };
+
+    // NEW: Function to update sort icons
+    const updateSortIcons = () => {
+        sortableHeaders.forEach(header => {
+            header.classList.remove('sorted');
+            const icon = header.querySelector('.sort-icon');
+            if (icon) {
+                icon.textContent = '↕'; // Default icon
+            }
+            
+            if (header.dataset.sortKey === currentSort.key) {
+                header.classList.add('sorted');
+                if (icon) {
+                    icon.textContent = currentSort.direction === 'asc' ? '▲' : '▼';
+                }
+            }
+        });
+    };
+
+    // Function to render the table with the given data
     const renderTable = (dataToRender) => {
+        // ... (renderTable logic is mostly the same, using getFullName) ...
         if (!Array.isArray(dataToRender) || dataToRender.length === 0) {
             tableBody.innerHTML = `<div style="padding: 10px; text-align: center;">No client data found.</div>`;
             return;
@@ -116,11 +202,11 @@ document.addEventListener('DOMContentLoaded', () => {
         tableBody.innerHTML = '';
         
         dataToRender.forEach(item => {
-            const fullName = `${item.first_name} ${item.middle_name ? item.middle_name + ' ' : ''}${item.last_name}`;
+            const fullName = getFullName(item); // Use the helper function
             
             let nextPaymentDate;
             
-            // Only calculate if the raw balance is positive AND we have necessary date info.
+            // Recalculate nextPaymentDate for display
             if (item.balance > 0.01 && item.date_start && item.payment_frequency) {
                 const calculatedDate = calculateNextPaymentDate(item.date_start, item.payment_frequency, item.last_payment_date);
                 
@@ -137,15 +223,9 @@ document.addEventListener('DOMContentLoaded', () => {
             const balanceDisplay = item.balance_display; 
 
             const row = document.createElement('div');
-            // Assuming the table is for the client list, but there's a disconnect with the HTML. 
-            // Using a generic row class for now. You might need to adjust the class name.
             row.className = item.client_ID ? 'clients-row clickable-row' : 'clients-row'; 
             row.dataset.clientId = item.client_ID; 
 
-            // IMPORTANT: Adjust these cells to match the structure of your HTML table, 
-            // which currently lists: Client ID, Loan ID, Name, Principal, Interest, Loan Amount, Due Date.
-            // The JS is generating: Full Name, Phone Number, Next Payment Date, Balance Display.
-            // I'm using the columns generated by the original JS logic.
             row.innerHTML = `
                 <div class="clients-cell">${fullName}</div>
                 <div class="clients-cell">${item.phone_number || ''}</div>
@@ -161,30 +241,78 @@ document.addEventListener('DOMContentLoaded', () => {
             
             tableBody.appendChild(row);
         });
+        
+        // Update icons after rendering
+        updateSortIcons();
     };
 
-    // NEW: Function to handle search input
+    // Function to handle search input (UPDATED to call renderTable with filtered *and sorted* data)
     const handleSearch = () => {
         const searchTerm = searchInput.value.toLowerCase().trim();
         
-        if (searchTerm === '') {
-            renderTable(allClientData); // Display all data if search is empty
-            return;
+        let dataToDisplay = allClientData;
+        
+        if (searchTerm !== '') {
+            dataToDisplay = allClientData.filter(item => {
+                const fullName = getFullName(item).toLowerCase(); // Use helper function
+                const clientId = String(item.client_ID).toLowerCase();
+                const loanId = String(item.loan_ID).toLowerCase(); 
+
+                // Search by Client ID, Loan ID, or Name
+                return clientId.includes(searchTerm) || 
+                       loanId.includes(searchTerm) ||
+                       fullName.includes(searchTerm);
+            });
         }
 
-        const filteredData = allClientData.filter(item => {
-            const fullName = `${item.first_name} ${item.middle_name ? item.middle_name + ' ' : ''}${item.last_name}`.toLowerCase();
-            const clientId = String(item.client_ID).toLowerCase();
-            const loanId = String(item.loan_ID).toLowerCase(); // Assuming there's a loan_ID field
+        // Re-sort the filtered or unfiltered data
+        if (currentSort.key) {
+            dataToDisplay = sortData([...dataToDisplay], currentSort.key, currentSort.direction);
+        }
 
-            // Search by Client ID, Loan ID, or Name
-            return clientId.includes(searchTerm) || 
-                   loanId.includes(searchTerm) ||
-                   fullName.includes(searchTerm);
-        });
-
-        renderTable(filteredData);
+        renderTable(dataToDisplay);
     };
+
+    // 💡 NEW: Event listener for sortable headers
+    sortableHeaders.forEach(header => {
+        header.addEventListener('click', function() {
+            const key = this.dataset.sortKey;
+            
+            if (!key) return;
+
+            // Determine the new sort direction
+            if (currentSort.key === key) {
+                // Toggle direction if same key is clicked
+                currentSort.direction = currentSort.direction === 'asc' ? 'desc' : 'asc';
+            } else {
+                // New key clicked, set to default ascending
+                currentSort.key = key;
+                currentSort.direction = 'asc';
+            }
+
+            // Re-sort the data based on the new state
+            let dataToDisplay = allClientData;
+            
+            // Preserve search filter if one is active
+            const searchTerm = searchInput.value.toLowerCase().trim();
+            if (searchTerm !== '') {
+                dataToDisplay = allClientData.filter(item => {
+                    const fullName = getFullName(item).toLowerCase();
+                    const clientId = String(item.client_ID).toLowerCase();
+                    const loanId = String(item.loan_ID).toLowerCase(); 
+
+                    return clientId.includes(searchTerm) || 
+                           loanId.includes(searchTerm) ||
+                           fullName.includes(searchTerm);
+                });
+            }
+
+            // Sort the current view (filtered or unfiltered)
+            const sortedData = sortData(dataToDisplay, currentSort.key, currentSort.direction);
+            
+            renderTable(sortedData);
+        });
+    });
 
     // Fetch data and attach listeners
     fetch('PHP/ledger_handler.php')
@@ -203,10 +331,10 @@ document.addEventListener('DOMContentLoaded', () => {
                 allClientData = data; // Store the fetched data
             }
 
-            // Initial render
+            // Initial render (no sorting applied yet, or apply default sort if desired)
             renderTable(allClientData);
             
-            // NEW: Attach the search event listener
+            // Attach the search event listener
             if (searchInput) {
                 searchInput.addEventListener('input', handleSearch);
             }

@@ -2,6 +2,7 @@ document.addEventListener('DOMContentLoaded', function() {
     const navLinks = document.querySelectorAll('.nav-link');
     const logoutButton = document.querySelector('.logout-button');
 
+    // ... (Navigation and Logout Handlers - KEEP AS IS) ...
     navLinks.forEach(link => {
         link.addEventListener('click', function(event) {
             event.preventDefault(); 
@@ -51,13 +52,9 @@ document.addEventListener('DOMContentLoaded', function() {
     const urlParams = new URLSearchParams(window.location.search);
     const clientId = urlParams.get('clientID');
     const loanId = urlParams.get('loanID');
-    // ADDED: Check for reconstructID in the URL
     const reconstructId = urlParams.get('reconstructID'); 
 
     if (!clientId || !loanId) {
-        // If loan details are missing, stop here but don't halt the general listeners above.
-        // You might want to display a message or redirect if this is an Accounts Receivable page.
-        // alert('Missing clientID or loanID in URL');
         return; 
     }
 
@@ -69,15 +66,20 @@ document.addEventListener('DOMContentLoaded', function() {
     const amountToPayInput = document.getElementById('amountToPay');
     const currentDueInput = document.getElementById('currentDue');
     const nextDueInput = document.getElementById('nextDue');
-    const amountInput = document.getElementById('amount');
+    const amountInput = document.getElementById('amount'); // The editable amount field
     const payButton = document.querySelector('.pay-button');
     const messageContainer = document.getElementById('message-container');
     const scheduleTableBody = document.querySelector('.loan-schedule-table tbody');
 
     let loanData = null; // Stores loan summary for payment validation
 
-    // Helper function for currency formatting
-    const formatCurrency = (amount) => parseFloat(amount).toFixed(2);
+    // 💰 UPDATED: Helper function for currency formatting with 2 decimals
+    const formatCurrency = (amount) => {
+        // Ensure it's a number and format to 2 decimal places with commas
+        const num = parseFloat(amount);
+        if (isNaN(num)) return '0.00';
+        return num.toFixed(2);
+    };
 
     /**
      * Fetches loan summary and the amortization schedule and populates the table.
@@ -95,7 +97,6 @@ document.addEventListener('DOMContentLoaded', function() {
 
         // --- Fetch Summary Details ---
         try {
-            // UPDATED: Use the combined queryString for the API call
             const summaryUrl = `PHP/accountsreceivableselect_handler.php?${queryString}`;
             const summaryRes = await fetch(summaryUrl);
             const summaryData = await summaryRes.json();
@@ -111,10 +112,15 @@ document.addEventListener('DOMContentLoaded', function() {
             clientIDInput.value = summaryData.client.client_ID;
             lastNameInput.value = summaryData.client.name;
             loanIdInput.value = loanData.id;
+            
+            // Use formatCurrency for all display amounts
             balanceInput.value = formatCurrency(loanData.balance);
             amountToPayInput.value = formatCurrency(loanData.amount_to_pay);
+            
             currentDueInput.value = loanData.current_due;
             nextDueInput.value = loanData.next_due;
+            
+            // 💰 UPDATE: Set initial amount input value to the 'amount_to_pay' formatted
             amountInput.value = formatCurrency(loanData.amount_to_pay); 
 
         } catch (e) {
@@ -125,7 +131,6 @@ document.addEventListener('DOMContentLoaded', function() {
 
         // --- Fetch Amortization Schedule ---
         try {
-            // UPDATED: Use the combined queryString for the API call
             const scheduleUrl = `PHP/accountsreceivableselectsched_handle.php?${queryString}`;
             const scheduleRes = await fetch(scheduleUrl);
             const scheduleData = await scheduleRes.json();
@@ -150,7 +155,6 @@ document.addEventListener('DOMContentLoaded', function() {
                 const isPartiallyPaid = installment.amount_paid > 0 && !isPaid;
                 const rowClass = isPaid ? 'paid' : (isPartiallyPaid ? 'partially-paid' : '');
 
-                // FIX: Only add the class if rowClass is not an empty string
                 if (rowClass) {
                     row.classList.add(rowClass);
                 }
@@ -185,17 +189,41 @@ document.addEventListener('DOMContentLoaded', function() {
         }
     }
 
+    // 💰 NEW: Add event listener to auto-format amount on blur
+    amountInput.addEventListener('blur', function() {
+        const value = this.value.trim();
+        if (value && !isNaN(value)) {
+            // Reformat the number when the user clicks away
+            this.value = formatCurrency(value);
+        } else if (!value) {
+            // If empty, reset to 0.00
+            this.value = '0.00';
+        }
+    });
+
+    // 💰 NEW: Add event listener to handle input (optional - for better typing experience)
+    amountInput.addEventListener('input', function() {
+        // Simple logic to clean input while typing, keeping only numbers and one decimal point
+        this.value = this.value.replace(/[^0-9.]/g, ''); 
+        const parts = this.value.split('.');
+        if (parts.length > 2) {
+            this.value = parts[0] + '.' + parts.slice(1).join('');
+        }
+    });
+
 
     // --- Payment Handler ---
     if (payButton) {
         payButton.addEventListener('click', () => {
-            const amountStr = amountInput.value.trim();
+            // IMPORTANT: Get the raw number for the payment, ignoring commas, but respecting the decimal point
+            const amountStr = amountInput.value.replace(/[^0-9.]/g, ''); 
+            
             if (!amountStr || isNaN(amountStr)) {
                 messageContainer.textContent = 'Enter a valid payment amount';
                 messageContainer.style.color = 'red';
                 return;
             }
-            const amount = parseFloat(amountStr);
+            const amount = parseFloat(amountStr); // The clean float value to send to the server
             
             // Validation checks
             if (amount <= 0) {
@@ -204,8 +232,10 @@ document.addEventListener('DOMContentLoaded', function() {
                 return;
             }
             
-            // Validation: Payment cannot exceed total balance
-            if (amount > parseFloat(balanceInput.value)) {
+            // Validation: Payment cannot exceed total balance. Remove formatting for comparison.
+            const balanceValue = parseFloat(balanceInput.value.replace(/[^0-9.]/g, ''));
+
+            if (amount > balanceValue) {
                 messageContainer.textContent = 'Payment exceeds total balance';
                 messageContainer.style.color = 'red';
                 return;
@@ -214,10 +244,9 @@ document.addEventListener('DOMContentLoaded', function() {
             const formData = new FormData();
             formData.append('client_id', clientId);
             formData.append('loan_id', loanId);
-            formData.append('amount', amount);
+            formData.append('amount', amount); // Use the clean float value
             formData.append('processby', 'system');
             
-            // ADDED: Pass the reconstructID to the payment handler if it exists
             if (reconstructId) {
                 formData.append('reconstructID', reconstructId);
             }
@@ -239,6 +268,8 @@ document.addEventListener('DOMContentLoaded', function() {
                         messageContainer.style.color = 'green';
                         // Refresh both summary fields and the table
                         fetchLoanDataAndSchedule(); 
+                        // Optional: Reset amount input after successful payment
+                        amountInput.value = '0.00';
                     }
                 })
                 .catch(e => {

@@ -1,10 +1,208 @@
+/**
+ * Global object to store client data for use by other functions.
+ * Initialized to null.
+ */
+window.CURRENT_CLIENT_DATA = null;
+
+// Function to extract client ID from the URL query string
+function getClientIdFromUrl() {
+    const params = new URLSearchParams(window.location.search);
+    return params.get('client_id');
+}
+
+/**
+ * Helper function to safely get client data or a default string.
+ * This is crucial for handling null, undefined, and empty strings gracefully from the database response.
+ * @param {object} client - The client data object (window.CURRENT_CLIENT_DATA).
+ * @param {string} key - The key to retrieve from the client object.
+ * @param {string} defaultValue - The value to return if the data is missing.
+ */
+const getClientValue = (client, key, defaultValue = 'N/A') => {
+    if (!client || client[key] === null || client[key] === undefined || String(client[key]).trim() === '') {
+        return defaultValue;
+    }
+    return client[key];
+};
+
+/**
+ * Populates the HTML 'report-viewer' section with data from the global CURRENT_CLIENT_DATA object.
+ */
+function populateSummaryView() {
+    const client = window.CURRENT_CLIENT_DATA;
+    const clientId = getClientIdFromUrl();
+
+    // Set Client ID and hidden input regardless of data success
+    document.getElementById('client-id-dd').textContent = clientId || 'Not Found';
+    document.getElementById('clientIdInput').value = clientId || '';
+
+    if (!client) {
+        // Handle no data scenario
+        const notLoadedMessage = 'Data Not Loaded';
+        document.getElementById('client-name-dd').textContent = notLoadedMessage;
+        document.getElementById('marital-status-dd').textContent = 'N/A';
+        document.getElementById('gender-dob-dd').textContent = 'N/A';
+        document.getElementById('address-dd').textContent = 'N/A';
+        document.getElementById('contact-email-dd').textContent = 'N/A';
+        document.getElementById('income-collateral-dd').textContent = 'N/A';
+        document.getElementById('income-collateral-dd-2').textContent = 'N/A';
+        return;
+    }
+
+    // --- POPULATE NAME (Full Name) ---
+    const firstName = getClientValue(client, 'first_name');
+    const middleName = getClientValue(client, 'middle_name', ''); 
+    const lastName = getClientValue(client, 'last_name');
+
+    const clientNameParts = [
+        firstName,
+        middleName,
+        lastName
+    ];
+    
+    // Filter out parts that are null/empty or the 'N/A' fallback and join with a single space.
+    const clientName = clientNameParts.filter(p => p && p !== 'N/A').join(' '); 
+    document.getElementById('client-name-dd').textContent = clientName;
+
+    // --- POPULATE OTHER FIELDS ---
+    document.getElementById('marital-status-dd').textContent = getClientValue(client, 'marital_status');
+
+    const dob = getClientValue(client, 'date_of_birth');
+    const gender = getClientValue(client, 'gender');
+    document.getElementById('gender-dob-dd').textContent = `${gender} / ${dob}`;
+
+    // Address 
+    const street = getClientValue(client, 'street_address', '');
+    // 💥 FIX: Added 'client' argument to getClientValue for 'barangay'
+    const barangay = getClientValue(client, 'barangay', ''); 
+    const city = getClientValue(client, 'city', '');
+    const postal = getClientValue(client, 'postal_code', '');
+    const addressParts = [street, barangay, city, postal].filter(p => p !== '');
+    document.getElementById('address-dd').textContent = addressParts.join(', ');
+
+    // Contact / Email
+    const email = getClientValue(client, 'email', 'No Email');
+    const phoneNumber = getClientValue(client, 'phone_number');
+    document.getElementById('contact-email-dd').textContent = `${phoneNumber} / ${email}`;
+
+    // Income / Employment Details
+    const occupation = getClientValue(client, 'occupation', 'N/A');
+    const yearsInJob = getClientValue(client, 'years_in_job', '0');
+    const income = getClientValue(client, 'income', 'Not Stated');
+    document.getElementById('income-collateral-dd').textContent = `Employment: ${occupation} (${yearsInJob} yrs) | Income: ${income}`;
+
+    // Collateral
+    const collateral = getClientValue(client, 'colateral', 'None Declared');
+    document.getElementById('income-collateral-dd-2').textContent = collateral;
+}
+
+
+function loadClientData() {
+    const client = window.CURRENT_CLIENT_DATA;
+    const clientId = getClientIdFromUrl();
+    
+    if (!clientId) {
+        const headerTitle = document.querySelector('.header-title');
+        if (headerTitle) {
+            headerTitle.textContent = 'Error: Client ID Not Specified';
+        }
+        populateSummaryView(); 
+        return;
+    }
+    
+    // Update the header
+    const headerTitle = document.querySelector('.header-title');
+    if (headerTitle) {
+        headerTitle.textContent = `Ledgers (Client ID: ${clientId})`;
+    }
+    
+    // Construct the PHP script URL
+    const phpScript = `PHP/ledgersview_handler.php?client_id=${clientId}`;
+
+    fetch(phpScript)
+        .then(response => {
+            if (!response.ok) {
+                throw new Error(`HTTP error! Status: ${response.status}`);
+            }
+            return response.json();
+        })
+        .then(data => {
+            if (data.success) {
+                const client = data.client;
+                // --- Store client data globally ---
+                window.CURRENT_CLIENT_DATA = client;
+                
+                // Helper to safely populate form inputs (if they exist)
+                const safeSet = (id, value) => {
+                    const el = document.getElementById(id);
+                    if (el) el.value = value || '';
+                };
+                
+                // --- Populate Hidden Form Inputs ---
+                safeSet('lastName', client.last_name);
+                safeSet('firstName', client.first_name);
+                safeSet('middleName', client.middle_name);
+                safeSet('maritalStatus', client.marital_status);
+                safeSet('gender', client.gender);
+                safeSet('dateOfBirth', client.date_of_birth);
+                safeSet('city', client.city);
+                safeSet('barangay', client.barangay);
+                safeSet('postalCode', client.postal_code);
+                safeSet('streetAddress', client.street_address);
+                safeSet('phoneNumber', client.phone_number);
+                safeSet('email', client.email);
+                safeSet('employmentStatus', client.employment_status);
+                safeSet('occupationPosition', client.occupation);
+                safeSet('yearsInJob', client.years_in_job);
+                safeSet('incomeSalary', client.income);
+                safeSet('cr', client.colateral);
+
+                // Checkbox logic for requirements
+                const barangayClearance = document.getElementById('barangayClearance');
+                if (barangayClearance) {
+                    barangayClearance.checked = client.has_barangay_clearance;
+                }
+                
+                const validIdName = client.has_valid_id;
+                const validIdCheckbox = document.getElementById('validId');
+                const validIdLabel = document.querySelector('label[for="validId"]');
+                
+                if (validIdCheckbox) {
+                    validIdCheckbox.checked = validIdName && validIdName !== '0';
+                }
+                
+                if (validIdLabel) {
+                    const displayId = validIdName && validIdName !== '0' ? validIdName : 'Not Provided';
+                    validIdLabel.textContent = `Valid ID: (${displayId})`;
+                }
+
+                // --- Call function to populate the summary report view ---
+                populateSummaryView(); 
+
+            } else {
+                console.error('Failed to load client data:', data.message);
+                window.CURRENT_CLIENT_DATA = null;
+                populateSummaryView(); // Display 'N/A'
+            }
+        })
+        .catch(error => {
+            console.error('Error fetching data:', error);
+            window.CURRENT_CLIENT_DATA = null;
+            populateSummaryView(); // Display 'N/A'
+        });
+}
+
+/*===============================================================================================================*/
+/* Sidebar Navigation and Initialization */
+/*===============================================================================================================*/
+
 document.addEventListener('DOMContentLoaded', function() {
-    // Call the session check function as soon as the page loads.
-    checkSessionAndRedirect(); 
+    // Assuming checkSessionAndRedirect() is available from JS/enforce_login.js
+    // checkSessionAndRedirect(); 
 
     const navLinks = document.querySelectorAll('.nav-link');
     const logoutButton = document.querySelector('.logout-button');
 
+    // Navigation Logic
     navLinks.forEach(link => {
         link.addEventListener('click', function(event) {
             event.preventDefault(); 
@@ -27,11 +225,9 @@ document.addEventListener('DOMContentLoaded', function() {
 
             const targetPage = urlMapping[linkText];
             if (targetPage) {
-                // 1. Define the action for the audit log
                 const actionDescription = `Maps to ${this.textContent} (${targetPage})`;
 
-                // 2. ASYNCHRONOUS AUDIT LOG: Call PHP to log the action. 
-                //    This will not block the page from redirecting.
+                // ASYNCHRONOUS AUDIT LOG: Call PHP to log the action.
                 fetch('PHP/log_action.php', {
                     method: 'POST',
                     headers: {
@@ -47,7 +243,8 @@ document.addEventListener('DOMContentLoaded', function() {
                 .catch(error => {
                     console.error('Audit log fetch error:', error);
                 })
-                // 3. Perform the page redirect immediately
+                
+                // Perform the page redirect immediately
                 window.location.href = targetPage;
             } else {
                 console.error('No page defined for this link:', linkText);
@@ -55,100 +252,15 @@ document.addEventListener('DOMContentLoaded', function() {
         });
     });
 
-    // Handle the logout button securely
-    // NOTE: The PHP script 'PHP/check_logout.php' will now handle the log *before* session destruction.
+    // Logout Logic
     logoutButton.addEventListener('click', function() {
+        // Redirects to PHP script that handles logging out and session destruction
         window.location.href = 'PHP/check_logout.php'; 
     });
+
+    // CRITICAL: Call the data loading function after DOM is fully ready
+    loadClientData();
 });
-
-/*===============================================================================================================*/
-/**
- * Global object to store client data for use by other functions (like the modal builder).
- * Initialized to null. Will hold { last_name, first_name, middle_name, etc. }
- */
-window.CURRENT_CLIENT_DATA = null;
-
-
-function loadClientData() {
-    const clientId = getClientIdFromUrl();
-    // 1. Check if the client ID is available in the URL
-    if (!clientId) {
-        console.error('Error: client_id parameter is missing from the URL.');
-        // Update the header to reflect the error
-        const headerTitle = document.querySelector('.header-title');
-        if (headerTitle) {
-            headerTitle.textContent = 'Error: Client ID Not Specified';
-        }
-        return; // Stop execution if ID is missing
-    }
-    // Update the header with the dynamic ID
-    const headerTitle = document.querySelector('.header-title');
-    if (headerTitle) {
-        headerTitle.textContent = `Ledgers (Client ID: ${clientId})`;
-    }
-    // 2. Construct the PHP script URL with the dynamic client ID
-    const phpScript = `PHP/ledgersview_handler.php?client_id=${clientId}`;
-
-    fetch(phpScript)
-        .then(response => {
-            if (!response.ok) {
-                throw new Error(`HTTP error! Status: ${response.status}`);
-            }
-            return response.json();
-        })
-        .then(data => {
-            if (data.success) {
-                const client = data.client;
-                // --- CRITICAL FIX: Store client data globally ---
-                window.CURRENT_CLIENT_DATA = client;
-                
-                // --- Populate Personal Information ---
-                document.getElementById('lastName').value = client.last_name || '';
-                document.getElementById('firstName').value = client.first_name || '';
-                document.getElementById('middleName').value = client.middle_name || '';
-                document.getElementById('maritalStatus').value = client.marital_status || '';
-                document.getElementById('gender').value = client.gender || '';
-                document.getElementById('dateOfBirth').value = client.date_of_birth || '';
-                document.getElementById('city').value = client.city || '';
-                document.getElementById('barangay').value = client.barangay || '';
-                document.getElementById('postalCode').value = client.postal_code || '';
-                document.getElementById('streetAddress').value = client.street_address || '';
-                document.getElementById('phoneNumber').value = client.phone_number || '';
-                document.getElementById('email').value = client.email || '';
-
-                // --- Populate Employment & Income Information ---
-                document.getElementById('employmentStatus').value = client.employment_status || '';
-                document.getElementById('occupationPosition').value = client.occupation || '';
-                document.getElementById('yearsInJob').value = client.years_in_job || '';
-                document.getElementById('incomeSalary').value = client.income || '';
-
-                // --- Populate Loan & Requirements Information ---
-                document.getElementById('cr').value = client.colateral || '';
-                // Checkbox for Barangay Clearance (Uses boolean value from PHP)
-                document.getElementById('barangayClearance').checked = client.has_barangay_clearance;
-                // Valid ID details
-                const validIdName = client.has_valid_id;
-                const validIdCheckbox = document.getElementById('validId');
-                validIdCheckbox.checked = validIdName && validIdName !== '0';
-                // Update the label to include the specific ID name for clarity
-                const validIdLabel = document.querySelector('label[for="validId"]');
-                if (validIdLabel) {
-                    const displayId = validIdName && validIdName !== '0' ? validIdName : 'Not Provided';
-                    validIdLabel.textContent = `Valid ID: (${displayId})`;
-                }
-            } else {
-                console.error('Failed to load client data:', data.message);
-                alert(`Client data not found: ${data.message}`);
-            }
-        })
-        .catch(error => {
-            console.error('Error fetching data:', error);
-            alert('An error occurred while fetching data. Check server connection.');
-        });
-}
-window.onload = loadClientData;
-
 /*===============================================================================================================*/
 
 
