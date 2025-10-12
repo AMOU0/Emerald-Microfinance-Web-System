@@ -7,7 +7,7 @@ document.addEventListener('DOMContentLoaded', function() {
 
         const username = document.getElementById('username').value;
         const password = document.getElementById('password').value;
-
+ 
         // Send the data to the server using the Fetch API
         fetch('PHP/login_handler.php', {
             method: 'POST',

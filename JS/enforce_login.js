@@ -1,6 +1,6 @@
 
 function checkSessionAndRedirect() {
-    // We use a fetch request to query a small PHP script on the server.
+    // We use a fetch request to query a small PHP script on the s erver.
     fetch('PHP/check_session.php')
         .then(response => response.json())
         .then(data => {

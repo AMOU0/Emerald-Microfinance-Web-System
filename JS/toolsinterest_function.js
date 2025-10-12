@@ -1,100 +1,135 @@
 document.addEventListener('DOMContentLoaded', function() {
-    // Call the session check function as soon as the page loads.
-    checkSessionAndRedirect(); 
+  // Call the session check function as soon as the page loads.
+  checkSessionAndRedirect(); 
 
-    const navLinks = document.querySelectorAll('.nav-link');
-    // Select the new buttons
-    const menuButtons = document.querySelectorAll('.menu-button'); 
-    const logoutButton = document.querySelector('.logout-button');
+  // --- Global Logging Function (Updated to accept two parameters) ---
+  function logUserAction(actionType, description) {
+    // Note: The PHP script (PHP/log_action.php) must be updated 
+    // to handle both 'action' (the type) and 'description' (the detail).
+    
+    // Use URLSearchParams to easily format the POST body
+    const bodyData = new URLSearchParams();
+    bodyData.append('action', actionType); 
+    bodyData.append('description', description); 
 
-    // --- LOGIC FOR PRIMARY NAVIGATION LINKS (.nav-link) ---
-    navLinks.forEach(link => {
-        link.addEventListener('click', function(event) {
-            event.preventDefault(); 
-            navLinks.forEach(nav => nav.classList.remove('active'));
-            this.classList.add('active');
-
-            const linkText = this.textContent.toLowerCase().replace(/\s/g, ''); 
-            
-            const urlMapping = {
-                'dashboard': 'DashBoard.html',
-                'clientcreation': 'ClientCreationForm.html',
-                'loanapplication': 'LoanApplication.html',
-                'pendingaccounts': 'PendingAccount.html',
-                'paymentcollection': 'AccountsReceivable.html',
-                'ledger': 'Ledgers.html',
-                'reports': 'Reports.html',
-                'usermanagement': 'UserManagement.html',
-                'tools': 'Tools.html'
-            };
-
-            const targetPage = urlMapping[linkText];
-            handleNavigation(this.textContent, targetPage);
-        });
+    fetch('PHP/log_action.php', {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/x-www-form-urlencoded',
+      },
+      body: bodyData.toString()
+    })
+    .then(response => {
+      if (!response.ok) {
+        console.warn('Audit log failed to record:', actionType, description);
+      }
+    })
+    .catch(error => {
+      console.error('Audit log fetch error:', error);
     });
+  }
+  // --------------------------------------------------------
 
-    // --- LOGIC FOR NEW TOOL BUTTONS (.menu-button) ---
-    menuButtons.forEach(button => {
-        button.addEventListener('click', function(event) {
-            event.preventDefault(); 
-            
-            // Get the button text (e.g., 'Backup And Restore')
-            const buttonText = this.textContent;
-            
-            // Assuming the target URL is stored in a data attribute or hardcoded (as you provided the mapping)
-            // The mapping must be determined based on the button text.
-            const urlMapping = {
-                'Backup And Restore': 'ToolsBR.html',
-                'Interest Ammount': 'ToolsInterest.html',
-                'File Maintenance': 'ToolsFM.html',
-                'City/ Barangays': 'ToolsPlace.html'
-            };
+  const navLinks = document.querySelectorAll('.nav-link');
+  const logoutButton = document.querySelector('.logout-button');
+  // NEW: Select the buttons in the Tools menu
+  const toolsMenuButtons = document.querySelectorAll('.menu-button'); //
 
-            const targetPage = urlMapping[buttonText];
-            
-            // Since these are new buttons, we don't necessarily need to add the 'active' class 
-            // unless your UI requires it, so we skip that part for now.
-            handleNavigation(buttonText, targetPage);
-        });
+  // EXISTING: Mapping for the main sidebar navigation links
+  const urlMapping = {
+    'dashboard': 'DashBoard.html',
+    'clientcreation': 'ClientCreationForm.html',
+    'loanapplication': 'LoanApplication.html',
+    'pendingaccounts': 'PendingAccount.html',
+    'paymentcollection': 'AccountsReceivable.html',
+    'ledger': 'Ledgers.html',
+    'reports': 'Reports.html',
+    'usermanagement': 'UserManagement.html',
+    'tools': 'Tools.html'
+  };
+
+  // NEW: Mapping for the sub-menu buttons inside Tools.html
+  const toolsUrlMapping = {
+    'backupandrestore': 'ToolsBR.html', //
+    'interestamount': 'ToolsInterest.html', // 
+    'city/barangays': 'ToolsPlaces.html', //
+    // The 'Terms/ Frequently Payment' button is currently unmapped
+  };
+
+  // --- Main Sidebar Navigation Handler (Existing Logic) ---
+  navLinks.forEach(link => {
+    link.addEventListener('click', function(event) {
+      event.preventDefault(); 
+      navLinks.forEach(nav => nav.classList.remove('active'));
+      this.classList.add('active');
+
+      // Normalize the link text for mapping lookup
+      const linkText = this.textContent.toLowerCase().replace(/\s/g, ''); 
+      const targetPage = urlMapping[linkText];
+        
+      if (targetPage) {
+        const actionType = 'NAVIGATION';
+        const description = `Clicked "${this.textContent}" link, redirecting to ${targetPage}`;
+
+        logUserAction(actionType, description);
+        window.location.href = targetPage;
+      } else {
+        console.error('No page defined for this link:', linkText);
+        
+        const actionType = 'NAVIGATION';
+        const description = `FAILED: Clicked link "${this.textContent}" with no mapped page.`;
+        logUserAction(actionType, description);
+      }
     });
+  });
 
-    // --- SHARED NAVIGATION AND AUDIT LOGIC FUNCTION ---
-    function handleNavigation(linkName, targetPage) {
+  // --- Tools Menu Button Handler (NEW Logic) ---
+  toolsMenuButtons.forEach(button => {
+    button.addEventListener('click', function(event) {
+        event.preventDefault();
+
+        // Normalize the button text for mapping lookup
+        // Note: For 'City/ Barangays', the map key uses a '/' which is retained
+        // The normalization must match the key in toolsUrlMapping
+        let buttonText = this.textContent.toLowerCase().replace(/\s/g, '');
+
+        // Special handling for the 'City/ Barangays' key if it doesn't match the normalized string
+        if (buttonText === 'city/barangays') {
+            buttonText = 'city/barangays';
+        } else {
+             // For the other buttons, remove the '/' or any other non-standard chars if present
+             buttonText = buttonText.replace(/[^a-z0-9]/g, '');
+        }
+
+        const targetPage = toolsUrlMapping[buttonText];
+
         if (targetPage) {
-            // 1. Define the action for the audit log
-            const actionDescription = `Maps to ${linkName} (${targetPage})`;
+            const actionType = 'NAVIGATION'; // New action type for tool usage
+            const description = `Accessed tool "${this.textContent}", loading page ${targetPage}`;
 
-            // 2. ASYNCHRONOUS AUDIT LOG: Call PHP to log the action. 
-            //    This will not block the page from redirecting.
-            fetch('PHP/log_action.php', {
-                method: 'POST',
-                headers: {
-                    'Content-Type': 'application/x-www-form-urlencoded',
-                },
-                body: `action=${encodeURIComponent(actionDescription)}`
-            })
-            .then(response => {
-                if (!response.ok) {
-                    console.warn('Audit log failed to record for navigation:', actionDescription);
-                }
-            })
-            .catch(error => {
-                console.error('Audit log fetch error:', error);
-            })
-            
-            // 3. Perform the page redirect immediately
+            // Log the action before redirect
+            logUserAction(actionType, description);
+
+            // Perform the page redirect
             window.location.href = targetPage;
         } else {
-            console.error('No page defined for this link:', linkName);
+            console.error('No page defined for this tool button:', this.textContent);
+            
+            // Log the failed attempt
+            const actionType = 'NAVIGATION';
+            const description = `FAILED: Clicked tool "${this.textContent}" with no mapped page.`;
+            logUserAction(actionType, description);
         }
-    }
-
-
-    // Handle the logout button securely
-    // NOTE: The PHP script 'PHP/check_logout.php' will now handle the log *before* session destruction.
-    logoutButton.addEventListener('click', function() {
-        window.location.href = 'PHP/check_logout.php'; 
     });
+  });
+  // ---------------------------------------------
+
+  // Handle the logout button securely (Existing Logic)
+  if (logoutButton) {
+    logoutButton.addEventListener('click', function() {
+      window.location.href = 'PHP/check_logout.php'; 
+    });
+  }
 });
 /*=======================================================================================================================================*/
 // JS/toolsinterest_function.js

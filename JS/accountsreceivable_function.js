@@ -1,68 +1,99 @@
-// Main event listener to run on page load
 document.addEventListener('DOMContentLoaded', function() {
-    // Call the session check function as soon as the page loads.
-    checkSessionAndRedirect(); 
+  // Call the session check function as soon as the page loads.
+  checkSessionAndRedirect(); 
 
-    const navLinks = document.querySelectorAll('.nav-link');
-    const logoutButton = document.querySelector('.logout-button');
+  // --- Global Logging Function (UPDATED to accept four parameters) ---
+  function logUserAction(actionType, description, targetTable = null, targetId = null) {
+    // Note: The PHP script (PHP/log_action.php) MUST be updated 
+    // to handle 'target_table' and 'target_id' fields.
+    
+    // Use URLSearchParams to easily format the POST body
+    const bodyData = new URLSearchParams();
+    bodyData.append('action', actionType); 
+    bodyData.append('description', description); 
+    
+    // Append the new, separate fields
+    if (targetTable) bodyData.append('target_table', targetTable);
+    if (targetId) bodyData.append('target_id', targetId);
 
-    navLinks.forEach(link => {
-        link.addEventListener('click', function(event) {
-            event.preventDefault(); 
-            navLinks.forEach(nav => nav.classList.remove('active'));
-            this.classList.add('active');
+    // Note: 'before_state' is not implemented in this client-side code, 
+    // but the PHP script can be updated to handle a 'before_state' parameter.
 
-            const linkText = this.textContent.toLowerCase().replace(/\s/g, ''); 
-            
-            const urlMapping = {
-                'dashboard': 'DashBoard.html',
-                'clientcreation': 'ClientCreationForm.html',
-                'loanapplication': 'LoanApplication.html',
-                'pendingaccounts': 'PendingAccount.html',
-                'paymentcollection': 'AccountsReceivable.html',
-                'ledger': 'Ledgers.html',
-                'reports': 'Reports.html',
-                'usermanagement': 'UserManagement.html',
-                'tools': 'Tools.html'
-            };
-
-            const targetPage = urlMapping[linkText];
-            if (targetPage) {
-                // 1. Define the action for the audit log
-                const actionDescription = `Maps to ${this.textContent} (${targetPage})`;
-
-                // 2. ASYNCHRONOUS AUDIT LOG: Call PHP to log the action. 
-                //    This will not block the page from redirecting.
-                fetch('PHP/log_action.php', {
-                    method: 'POST',
-                    headers: {
-                        'Content-Type': 'application/x-www-form-urlencoded',
-                    },
-                    body: `action=${encodeURIComponent(actionDescription)}`
-                })
-                .then(response => {
-                    if (!response.ok) {
-                        console.warn('Audit log failed to record for navigation:', actionDescription);
-                    }
-                })
-                .catch(error => {
-                    console.error('Audit log fetch error:', error);
-                })
-                // 3. Perform the page redirect immediately
-                window.location.href = targetPage;
-            } else {
-                console.error('No page defined for this link:', linkText);
-            }
-        });
+    fetch('PHP/log_action.php', {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/x-www-form-urlencoded',
+      },
+      body: bodyData.toString()
+    })
+    .then(response => {
+      if (!response.ok) {
+        console.warn('Audit log failed to record:', actionType, description, targetTable, targetId);
+      }
+    })
+    .catch(error => {
+      console.error('Audit log fetch error:', error);
     });
+  }
+  // --------------------------------------------------------
 
-    // Handle the logout button securely
-    // NOTE: The PHP script 'PHP/check_logout.php' will now handle the log *before* session destruction.
+  const navLinks = document.querySelectorAll('.nav-link');
+  const logoutButton = document.querySelector('.logout-button');
+
+  const urlMapping = {
+    'dashboard': 'DashBoard.html',
+    'clientcreation': 'ClientCreationForm.html',
+    'loanapplication': 'LoanApplication.html',
+    'pendingaccounts': 'PendingAccount.html',
+    'paymentcollection': 'AccountsReceivable.html',
+    'ledger': 'Ledgers.html',
+    'reports': 'Reports.html',
+    'usermanagement': 'UserManagement.html',
+    'tools': 'Tools.html'
+  };
+
+  navLinks.forEach(link => {
+    link.addEventListener('click', function(event) {
+      event.preventDefault(); 
+      navLinks.forEach(nav => nav.classList.remove('active'));
+      this.classList.add('active');
+
+      // Normalize the link text for mapping lookup
+      const linkText = this.textContent.toLowerCase().replace(/\s/g, ''); 
+      const targetPage = urlMapping[linkText];
+        
+      if (targetPage) {
+        // 1. Define clear action type and description for the log
+        const actionType = 'NAVIGATION'; // Use the fixed type for filtering
+        const description = `Clicked "${this.textContent}" link, redirecting to ${targetPage}`;
+        // Target Table and ID are null for general navigation
+
+        // 2. ASYNCHRONOUS AUDIT LOG: Log the action.
+        logUserAction(actionType, description);
+
+        // 3. Perform the page redirect immediately after initiating the log.
+        window.location.href = targetPage;
+      } else {
+        console.error('No page defined for this link:', linkText);
+        
+        // OPTIONAL: Log the failed navigation attempt
+        const actionType = 'NAVIGATION';
+        const description = `FAILED: Clicked link "${this.textContent}" with no mapped page.`;
+        logUserAction(actionType, description);
+      }
+    });
+  });
+
+  // Handle the logout button securely
+  // The PHP script 'PHP/check_logout.php' should handle the log *before* session destruction.
+  if (logoutButton) {
     logoutButton.addEventListener('click', function() {
-        window.location.href = 'PHP/check_logout.php'; 
+      window.location.href = 'PHP/check_logout.php'; 
     });
-});
-/*================================= */
+  }
+
+/*==================================================================================================================================================================== */
+// --- ACCOUNTS RECEIVABLE LOGIC START ---
 let allAccounts = []; // Stores the full list of accounts
 // Global state for sorting
 let currentSortColumn = 'created_at'; 
@@ -279,20 +310,19 @@ const filterAndDisplayAccounts = () => {
     }
 };
 
-// Add the event listener for the search input and start the data fetch
-document.addEventListener('DOMContentLoaded', () => {
-    const searchInput = document.getElementById('searchInput');
-    if (searchInput) {
-        searchInput.addEventListener('input', filterAndDisplayAccounts);
-    }
-    // Start fetching data immediately after DOM load
-    fetchApprovedAccounts();
-});
+const searchInput = document.getElementById('searchInput');
+if (searchInput) {
+    searchInput.addEventListener('input', filterAndDisplayAccounts);
+}
+// Initial fetch of approved accounts
+fetchApprovedAccounts();
+
+
 /*=============================================================================================================================================================================*/
 
-// Add an event listener to the "SELECT" button
-document.addEventListener('DOMContentLoaded', () => {
-    const selectButton = document.querySelector('.select-button');
+// Add an event listener to the "SELECT" button 
+const selectButton = document.querySelector('.select-button');
+if (selectButton) {
     selectButton.addEventListener('click', () => {
         const selectedRadio = document.querySelector('input[name="selected"]:checked');
 
@@ -300,6 +330,17 @@ document.addEventListener('DOMContentLoaded', () => {
             const clientID = selectedRadio.getAttribute('data-client-id');
             const loanID = selectedRadio.value;
             const reconstructID = selectedRadio.getAttribute('data-reconstruct-id'); // Get the reconstruct ID
+
+            // --- LOGGING LOGIC (UPDATED to separate fields) ---
+            const actionType = 'NAVIGATION'; 
+            const targetTable = reconstructID ? 'loan_reconstruct' : 'loan_applications';
+            const targetId = reconstructID || loanID;
+            // The description is simplified to just the action and target type
+            const description = `SELECT button clicked for Loan ID ${loanID}. Redirecting to payment page.`;
+
+            // Call logUserAction with the four separated parameters
+            logUserAction(actionType, description, targetTable, targetId);
+            // -------------------------------------------------
 
             let url = `AccountsReceivableSelect.html?clientID=${clientID}&loanID=${loanID}`;
             if (reconstructID) {
@@ -311,20 +352,11 @@ document.addEventListener('DOMContentLoaded', () => {
             alert('Please select an account first.');
         }
     });
-
-    // Add an event listener to the search input for real-time filtering
-    const searchInput = document.getElementById('searchInput');
-    if (searchInput) {
-        searchInput.addEventListener('input', filterAndDisplayAccounts);
-    }
-
-    // Initial fetch of approved accounts
-    fetchApprovedAccounts();
-});
+}
 /*================================= */
-// Add an event listener to the "reconstruct" button
-document.addEventListener('DOMContentLoaded', () => {
-    const reconstructButton = document.querySelector('.reconstruct-button');
+// Add an event listener to the "reconstruct" button 
+const reconstructButton = document.querySelector('.reconstruct-button');
+if (reconstructButton) {
     reconstructButton.addEventListener('click', () => {
         const selectedRadio = document.querySelector('input[name="selected"]:checked');
 
@@ -332,6 +364,17 @@ document.addEventListener('DOMContentLoaded', () => {
             const clientID = selectedRadio.getAttribute('data-client-id');
             const loanID = selectedRadio.value;
             const reconstructID = selectedRadio.getAttribute('data-reconstruct-id');
+
+            // --- LOGGING LOGIC (UPDATED to separate fields) ---
+            const actionType = 'NAVIGATION'; 
+            const targetTable = reconstructID ? 'loan_reconstruct' : 'loan_applications';
+            const targetId = reconstructID || loanID;
+            // The description is simplified to just the action and target type
+            const description = `RESTRUCTURE button clicked for Loan ID ${loanID}. Redirecting to reconstruct page.`;
+
+            // Call logUserAction with the four separated parameters
+            logUserAction(actionType, description, targetTable, targetId);
+            // -------------------------------------------------
 
             let url = `AccountsReceivableReconstruct.html?clientID=${clientID}&loanID=${loanID}`;
             if (reconstructID) {
@@ -343,4 +386,6 @@ document.addEventListener('DOMContentLoaded', () => {
             alert('Please select an account first.');
         }
     });
+}
+// --- ACCOUNTS RECEIVABLE LOGIC END ---
 });

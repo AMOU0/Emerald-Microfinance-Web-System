@@ -1,66 +1,97 @@
-/* This block contains the original navigation logic and logout handler, kept for completeness. */
+// --- Global Logging Function (Updated to accept an options object) ---
+// MOVED TO GLOBAL SCOPE TO BE ACCESSIBLE BY ALL EVENT LISTENERS
+function logUserAction(actionType, description, options = {}) {
+    // Use URLSearchParams to easily format the POST body
+    const bodyData = new URLSearchParams();
+    bodyData.append('action', actionType); 
+    bodyData.append('description', description); 
+
+    // Append optional parameters if they exist in the options object
+    if (options.targetTable) bodyData.append('target_table', options.targetTable);
+    if (options.targetId) bodyData.append('target_id', options.targetId);
+    if (options.beforeState) bodyData.append('before_state', options.beforeState);
+    if (options.afterState) bodyData.append('after_state', options.afterState);
+
+    fetch('PHP/log_action.php', {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/x-www-form-urlencoded',
+      },
+      body: bodyData.toString()
+    })
+    .then(response => {
+      if (!response.ok) {
+        console.warn('Audit log failed to record:', actionType, description);
+      }
+    })
+    .catch(error => {
+      console.error('Audit log fetch error:', error);
+    });
+}
+// --------------------------------------------------------
+
 document.addEventListener('DOMContentLoaded', function() {
-    // Call the session check function as soon as the page loads.
-    checkSessionAndRedirect(); 
- 
-    const navLinks = document.querySelectorAll('.nav-link');
-    const logoutButton = document.querySelector('.logout-button');
+  // Call the session check function as soon as the page loads.
+  checkSessionAndRedirect(); 
 
-    navLinks.forEach(link => {
-        link.addEventListener('click', function(event) {
-            event.preventDefault(); 
-            navLinks.forEach(nav => nav.classList.remove('active'));
-            this.classList.add('active');
+  const navLinks = document.querySelectorAll('.nav-link');
+  const logoutButton = document.querySelector('.logout-button');
 
-            const linkText = this.textContent.toLowerCase().replace(/\s/g, ''); 
-            
-            const urlMapping = {
-                'dashboard': 'DashBoard.html',
-                'clientcreation': 'ClientCreationForm.html',
-                'loanapplication': 'LoanApplication.html',
-                'pendingaccounts': 'PendingAccount.html',
-                'paymentcollection': 'AccountsReceivable.html',
-                'ledger': 'Ledgers.html',
-                'reports': 'Reports.html',
-                'usermanagement': 'UserManagement.html',
-                'tools': 'Tools.html'
-            };
+  const urlMapping = {
+    'dashboard': 'DashBoard.html',
+    'clientcreation': 'ClientCreationForm.html',
+    'loanapplication': 'LoanApplication.html',
+    'pendingaccounts': 'PendingAccount.html',
+    'paymentcollection': 'AccountsReceivable.html',
+    'ledger': 'Ledgers.html',
+    'reports': 'Reports.html',
+    'usermanagement': 'UserManagement.html',
+    'tools': 'Tools.html'
+  };
 
-            const targetPage = urlMapping[linkText];
-            if (targetPage) {
-                // 1. Define the action for the audit log
-                const actionDescription = `Maps to ${this.textContent} (${targetPage})`;
+  navLinks.forEach(link => {
+    link.addEventListener('click', function(event) {
+      event.preventDefault(); 
+      navLinks.forEach(nav => nav.classList.remove('active'));
+      this.classList.add('active');
 
-                // 2. ASYNCHRONOUS AUDIT LOG: Call PHP to log the action. 
-                //    This will not block the page from redirecting.
-                fetch('PHP/log_action.php', {
-                    method: 'POST',
-                    headers: {
-                        'Content-Type': 'application/x-www-form-urlencoded',
-                    },
-                    body: `action=${encodeURIComponent(actionDescription)}`
-                })
-                .then(response => {
-                    if (!response.ok) {
-                        console.warn('Audit log failed to record for navigation:', actionDescription);
-                    }
-                })
-                .catch(error => {
-                    console.error('Audit log fetch error:', error);
-                })
-                // 3. Perform the page redirect immediately
-                window.location.href = targetPage;
-            } else {
-                console.error('No page defined for this link:', linkText);
-            }
-        });
+      // Normalize the link text for mapping lookup
+      const linkText = this.textContent.toLowerCase().replace(/\s/g, ''); 
+      const targetPage = urlMapping[linkText];
+        
+      if (targetPage) {
+        // 1. Define action, description, and the new log options
+        const actionType = 'NAVIGATION';
+        const description = `Clicked "${this.textContent}" link, redirecting to ${targetPage}`;
+        
+        // Define the 'before' and 'after' states for the audit log
+        const logOptions = {
+            beforeState: `From URL: ${window.location.pathname}`, // The page the user was on
+            afterState: `To URL: ${targetPage}`                 // The page the user is going to
+        };
+
+        // 2. ASYNCHRONOUS AUDIT LOG: Log the action with the new options.
+        logUserAction(actionType, description, logOptions);
+
+        // 3. Perform the page redirect immediately after initiating the log.
+        window.location.href = targetPage;
+      } else {
+        console.error('No page defined for this link:', linkText);
+        
+        // Log the failed navigation attempt
+        const actionType = 'NAVIGATION';
+        const description = `FAILED: Clicked link "${this.textContent}" with no mapped page.`;
+        logUserAction(actionType, description);
+      }
     });
+  });
 
-    // Handle the logout button securely
-    // NOTE: The PHP script 'PHP/check_logout.php' will now handle the log *before* session destruction.
+  // Handle the logout button securely
+  if (logoutButton) {
     logoutButton.addEventListener('click', function() {
-        window.location.href = 'PHP/check_logout.php'; 
+      window.location.href = 'PHP/check_logout.php'; 
     });
+  }
 });
 
 /*=============================================================================================================================================================================*/
@@ -235,7 +266,23 @@ document.addEventListener('DOMContentLoaded', () => {
             if (item.client_ID) {
                 row.addEventListener('click', function() {
                     const clientId = this.dataset.clientId;
-                    window.location.href = `LedgersView.html?client_id=${clientId}`;
+                    const clientName = fullName; // Use the client name from the outer scope
+                    const targetPage = `LedgersView.html?client_id=${clientId}`;
+
+                    // Log the client selection
+                    const actionType = 'VIEW';
+                    const description = `Selected client "${clientName}" (ID: ${clientId}) to view ledger.`;
+                    const logOptions = {
+                        targetTable: 'clients',
+                        targetId: clientId,
+                        beforeState: `From URL: ${window.location.pathname}`, 
+                        afterState: `To URL: ${targetPage}` 
+                    };
+                    
+                    // This call now works because logUserAction is in the global scope.
+                    logUserAction(actionType, description, logOptions);
+
+                    window.location.href = targetPage;
                 });
             }
             

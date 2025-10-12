@@ -1,9 +1,69 @@
 document.addEventListener('DOMContentLoaded', function() {
     // Call the session check function as soon as the page loads.
-    checkSessionAndRedirect(); 
+    checkSessionAndRedirect();
+
+    // --- Global Logging Function (UPDATED to accept a single log object) ---
+    // This new function structure makes it easier to pass detailed DML logs.
+    function logUserAction(logDetails) {
+        // logDetails is expected to be an object: 
+        // { 
+        //   actionType: 'NAVIGATION' | 'UPDATE' | 'OTHER', 
+        //   description: '...' 
+        //   targetTable: '...' (Optional)
+        //   targetId: '...' (Optional)
+        //   beforeState: '...' (Optional)
+        //   afterState: '...' (Optional)
+        // }
+
+        // Use URLSearchParams to easily format the POST body
+        const bodyData = new URLSearchParams();
+        bodyData.append('action', logDetails.actionType || 'UNKNOWN'); 
+        bodyData.append('description', logDetails.description || 'No description provided'); 
+
+        // Append optional DML details if available, otherwise append an empty string
+        bodyData.append('target_table', logDetails.targetTable || '');
+        bodyData.append('target_id', logDetails.targetId || '');
+        bodyData.append('before_state', logDetails.beforeState || '');
+        bodyData.append('after_state', logDetails.afterState || '');
+        
+        // Note: The PHP script (PHP/log_action.php) must be updated 
+        // to handle all these new parameters: action, description, target_table, 
+        // target_id, before_state, after_state.
+
+        fetch('PHP/log_action.php', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/x-www-form-urlencoded',
+            },
+            body: bodyData.toString()
+        })
+        .then(response => {
+            if (!response.ok) {
+                console.warn('Audit log failed to record:', logDetails.actionType, logDetails.description);
+            }
+        })
+        .catch(error => {
+            console.error('Audit log fetch error:', error);
+        });
+    }
+    // --------------------------------------------------------
+
+    // ... (rest of the code remains here: navLinks, urlMapping, navLinks.forEach, logoutButton) ...
 
     const navLinks = document.querySelectorAll('.nav-link');
     const logoutButton = document.querySelector('.logout-button');
+
+    const urlMapping = {
+        'dashboard': 'DashBoard.html',
+        'clientcreation': 'ClientCreationForm.html',
+        'loanapplication': 'LoanApplication.html',
+        'pendingaccounts': 'PendingAccount.html',
+        'paymentcollection': 'AccountsReceivable.html',
+        'ledger': 'Ledgers.html',
+        'reports': 'Reports.html',
+        'usermanagement': 'UserManagement.html',
+        'tools': 'Tools.html'
+    };
 
     navLinks.forEach(link => {
         link.addEventListener('click', function(event) {
@@ -12,55 +72,31 @@ document.addEventListener('DOMContentLoaded', function() {
             this.classList.add('active');
 
             const linkText = this.textContent.toLowerCase().replace(/\s/g, ''); 
-            
-            const urlMapping = {
-                'dashboard': 'DashBoard.html',
-                'clientcreation': 'ClientCreationForm.html',
-                'loanapplication': 'LoanApplication.html',
-                'pendingaccounts': 'PendingAccount.html',
-                'paymentcollection': 'AccountsReceivable.html',
-                'ledger': 'Ledgers.html',
-                'reports': 'Reports.html',
-                'usermanagement': 'UserManagement.html',
-                'tools': 'Tools.html'
-            };
-
             const targetPage = urlMapping[linkText];
-            if (targetPage) {
-                // 1. Define the action for the audit log
-                const actionDescription = `Maps to ${this.textContent} (${targetPage})`;
 
-                // 2. ASYNCHRONOUS AUDIT LOG: Call PHP to log the action. 
-                //    This will not block the page from redirecting.
-                fetch('PHP/log_action.php', {
-                    method: 'POST',
-                    headers: {
-                        'Content-Type': 'application/x-www-form-urlencoded',
-                    },
-                    body: `action=${encodeURIComponent(actionDescription)}`
-                })
-                .then(response => {
-                    if (!response.ok) {
-                        console.warn('Audit log failed to record for navigation:', actionDescription);
-                    }
-                })
-                .catch(error => {
-                    console.error('Audit log fetch error:', error);
-                })
-                // 3. Perform the page redirect immediately
+            if (targetPage) {
+                const actionType = 'NAVIGATION';
+                const description = `Clicked "${this.textContent}" link, redirecting to ${targetPage}`;
+                
+                // Use the new logUserAction format for navigation
+                logUserAction({ actionType, description }); 
+
                 window.location.href = targetPage;
             } else {
                 console.error('No page defined for this link:', linkText);
+                const actionType = 'NAVIGATION_FAILED'; // Changed type for clarity
+                const description = `FAILED: Clicked link "${this.textContent}" with no mapped page.`;
+                logUserAction({ actionType, description });
             }
         });
     });
 
-    // Handle the logout button securely
-    // NOTE: The PHP script 'PHP/check_logout.php' will now handle the log *before* session destruction.
-    logoutButton.addEventListener('click', function() {
-        window.location.href = 'PHP/check_logout.php'; 
-    });
-});
+    if (logoutButton) {
+        logoutButton.addEventListener('click', function() {
+            window.location.href = 'PHP/check_logout.php'; 
+        });
+    }
+
 /*=============================================================================================================================================================================*/
 // Corrected fetchPendingAccounts function
 const fetchPendingAccounts = () => {
@@ -73,7 +109,7 @@ const fetchPendingAccounts = () => {
         })
         .then(data => {
             const tableBody = document.querySelector('.pending-account-table-body');
-            tableBody.innerHTML = ''; 
+            tableBody.innerHTML = '';
 
             if (data.length > 0) {
                 data.forEach(client => {
@@ -81,11 +117,11 @@ const fetchPendingAccounts = () => {
                     row.classList.add('table-row');
                     row.innerHTML = `
                         <div class="table-cell small-column">
-                            <input type="radio" 
-                                   id="select-${client.loan_application_id}" 
-                                   name="selected" 
-                                   value="${client.loan_application_id}"
-                                   data-client-id="${client.client_ID}">
+                            <input type="radio"
+                                        id="select-${client.loan_application_id}"
+                                        name="selected"
+                                        value="${client.loan_application_id}"
+                                        data-client-id="${client.client_ID}">
                         </div>
                         <div class="table-cell">${client.client_ID}</div>
                         <div class="table-cell">${client.last_name}, ${client.first_name}</div>
@@ -106,9 +142,18 @@ const fetchPendingAccounts = () => {
             alert('Failed to load pending accounts. Please try again later.');
         });
 };
-   fetchPendingAccounts();
-    // Function to update loan status on the server
+    fetchPendingAccounts();
+
+    // Function to update loan status on the server (MODIFIED FOR DETAILED DML LOGGING)
     const updateLoanStatus = (loanApplicationId, status) => {
+        // Prepare log details before the fetch, assuming the current state is 'pending'
+        const actionType = 'UPDATE';
+        const description = `Loan Application Status changed to '${status.toUpperCase()}'`;
+        const targetTable = 'loan_applications';
+        const targetId = loanApplicationId;
+        const beforeState = 'status: pending'; // Assumption based on context
+        const afterState = `status: ${status}`;
+
         fetch('PHP/updateloanstatus_handler.php', {
             method: 'POST',
             headers: {
@@ -120,14 +165,46 @@ const fetchPendingAccounts = () => {
         .then(data => {
             if (data.success) {
                 alert(data.message);
+
+                // --- AUDIT LOGGING FOR DML ACTION (Using the new single-object parameter) ---
+                logUserAction({
+                    actionType: actionType,
+                    description: description,
+                    targetTable: targetTable,
+                    targetId: targetId,
+                    beforeState: beforeState,
+                    afterState: afterState
+                });
+                // ------------------------------------
+
                 fetchPendingAccounts();
             } else {
                 alert(data.message);
+                
+                // OPTIONAL: Log the failed attempt
+                logUserAction({
+                    actionType: 'UPDATE_FAILED',
+                    description: `FAILED: ${description}`,
+                    targetTable: targetTable,
+                    targetId: targetId,
+                    beforeState: beforeState,
+                    afterState: afterState // Still log the intended after state
+                });
             }
         })
         .catch(error => {
             console.error('Error:', error);
             alert('Failed to update loan status.');
+
+            // OPTIONAL: Log the fetch error
+            logUserAction({
+                actionType: 'UPDATE_ERROR',
+                description: `FETCH ERROR: ${description} - ${error.message}`,
+                targetTable: targetTable,
+                targetId: targetId,
+                beforeState: beforeState,
+                afterState: afterState
+            });
         });
     };
 
@@ -152,16 +229,25 @@ const fetchPendingAccounts = () => {
             alert('Please select a loan application to deny.');
         }
     });
-    
-// Corrected event listener for the "View" button
-document.querySelector('.view-button-pending').addEventListener('click', () => {
-    const selectedRadio = document.querySelector('input[name="selected"]:checked');
-    if (selectedRadio) {
-        // Get the client ID from the new data attribute
-        const clientId = selectedRadio.getAttribute('data-client-id');
-        window.location.href = `PendingAccountView.html?id=${clientId}`;
-    } else {
-        alert('Please select a client first.');
-    }
 
+    // Corrected event listener for the "View" button
+    document.querySelector('.view-button-pending').addEventListener('click', () => {
+        const selectedRadio = document.querySelector('input[name="selected"]:checked');
+        if (selectedRadio) {
+            const clientId = selectedRadio.getAttribute('data-client-id');
+
+            // Log the view action using the simplified log structure for non-DML
+            logUserAction({
+                actionType: 'VIEW',
+                description: `Viewed Client Profile for Client ID: ${clientId}`,
+                targetTable: 'clients', 
+                targetId: clientId 
+                // No before/after state needed for a VIEW
+            });
+
+            window.location.href = `PendingAccountView.html?id=${clientId}`;
+        } else {
+            alert('Please select a client first.');
+        }
+    });
 });

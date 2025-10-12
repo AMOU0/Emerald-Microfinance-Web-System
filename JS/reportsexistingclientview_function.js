@@ -1,650 +1,594 @@
+/* ========================================================= */
+/* --- GLOBAL LOGGING FUNCTIONS (Moved to Global Scope) --- */
+/* ========================================================= */
+
+// Global Logging Function
+function logUserAction(actionType, description) {
+  // Use URLSearchParams to easily format the POST body
+  const bodyData = new URLSearchParams();
+  bodyData.append('action', actionType); 
+  bodyData.append('description', description); 
+
+  fetch('PHP/log_action.php', {
+    method: 'POST',
+    headers: {
+      'Content-Type': 'application/x-www-form-urlencoded',
+    },
+    body: bodyData.toString()
+  })
+  .then(response => {
+    if (!response.ok) {
+      console.warn('Audit log failed to record:', actionType, description);
+    }
+  })
+  .catch(error => {
+    console.error('Audit log fetch error:', error);
+  });
+}
+
+// Global DETAILED Logging Function for actions involving target data
+function logDetailedUserAction(actionType, description, targetTable, targetId, beforeState = null, afterState = null) {
+    const bodyData = new URLSearchParams();
+    bodyData.append('action', actionType); 
+    bodyData.append('description', description); 
+    bodyData.append('target_table', targetTable); 
+    bodyData.append('target_id', targetId);
+    
+    // Append optional states if provided
+    if (beforeState !== null) bodyData.append('before_state', beforeState);
+    if (afterState !== null) bodyData.append('after_state', afterState);
+
+    fetch('PHP/log_action.php', {
+        method: 'POST',
+        headers: {
+            'Content-Type': 'application/x-www-form-urlencoded',
+        },
+        body: bodyData.toString()
+    })
+    .then(response => {
+        if (!response.ok) {
+            console.warn('Detailed Audit log failed to record:', actionType, description);
+        }
+    })
+    .catch(error => {
+        console.error('Detailed Audit log fetch error:', error);
+    });
+}
+
+/* ========================================================= */
+/* --- FIRST DOMContentLoaded BLOCK (Navigation Handlers) --- */
+/* ========================================================= */
+
 document.addEventListener('DOMContentLoaded', function() {
     // Call the session check function as soon as the page loads.
     checkSessionAndRedirect(); 
 
+    // NOTE: Logging functions are now globally defined above.
+    
     const navLinks = document.querySelectorAll('.nav-link');
     const logoutButton = document.querySelector('.logout-button');
+    const reportButtons = document.querySelectorAll('.report-button'); 
 
+    const urlMapping = {
+      'dashboard': 'DashBoard.html',
+      'clientcreation': 'ClientCreationForm.html',
+      'loanapplication': 'LoanApplication.html',
+      'pendingaccounts': 'PendingAccount.html',
+      'paymentcollection': 'AccountsReceivable.html',
+      'ledger': 'Ledgers.html',
+      'reports': 'Reports.html',
+      'usermanagement': 'UserManagement.html',
+      'tools': 'Tools.html'
+    };
+
+    const reportUrlMapping = {
+        'existingclients': 'ReportsExistingClient.html',
+        'duepayments': 'ReportsDuePayments.html',
+        'overduepayments': 'ReportsOverduePayments.html', 
+        'delinquentaccounts': 'ReportsOverduePayments.html', 
+        'audittrail': 'ReportsAuditTrail.html'
+    };
+
+    // --- Primary Navigation Handler (e.g., Dashboard, Reports) ---
     navLinks.forEach(link => {
-        link.addEventListener('click', function(event) {
-            event.preventDefault(); 
-            navLinks.forEach(nav => nav.classList.remove('active'));
-            this.classList.add('active');
+      link.addEventListener('click', function(event) {
+        event.preventDefault(); 
+        navLinks.forEach(nav => nav.classList.remove('active'));
+        this.classList.add('active');
 
-            const linkText = this.textContent.toLowerCase().replace(/\s/g, ''); 
+        // Normalize the link text for mapping lookup
+        const linkText = this.textContent.toLowerCase().replace(/\s/g, ''); 
+        const targetPage = urlMapping[linkText];
+          
+        if (targetPage) {
+          // 1. Define clear action type and description for the log
+          const actionType = 'NAVIGATION'; 
+          const description = `Clicked "${this.textContent}" link, redirecting to ${targetPage}`;
+
+          // 2. ASYNCHRONOUS AUDIT LOG: Log the action.
+          logUserAction(actionType, description);
+
+          // 3. Perform the page redirect immediately after initiating the log.
+          window.location.href = targetPage;
+        } else {
+          console.error('No page defined for this link:', linkText);
+          
+          // Log the failed navigation attempt
+          const actionType = 'NAVIGATION'; // Used a specific failed type
+          const description = `FAILED: Clicked link "${this.textContent}" with no mapped page.`;
+          logUserAction(actionType, description);
+        }
+      });
+    });
+
+    // --- Reports Sidebar Navigation Handler (Modified to use logUserAction) ---
+    reportButtons.forEach(button => {
+        button.addEventListener('click', function(event) {
+            event.preventDefault();
             
-            const urlMapping = {
-                'dashboard': 'DashBoard.html',
-                'clientcreation': 'ClientCreationForm.html',
-                'loanapplication': 'LoanApplication.html',
-                'pendingaccounts': 'PendingAccount.html',
-                'paymentcollection': 'AccountsReceivable.html',
-                'ledger': 'Ledgers.html',
-                'reports': 'Reports.html',
-                'usermanagement': 'UserManagement.html',
-                'tools': 'Tools.html'
-            };
+            const buttonText = this.textContent.toLowerCase().replace(/\s/g, '');
+            const targetPage = reportUrlMapping[buttonText];
 
-            const targetPage = urlMapping[linkText];
             if (targetPage) {
-                // 1. Define the action for the audit log
-                const actionDescription = `Maps to ${this.textContent} (${targetPage})`;
+                // 1. Define clear action type and description for the log
+                const actionType = 'VIEW'; // Use a specific type for reports
+                const description = `Viewed Report: ${this.textContent} (${targetPage})`;
 
-                // 2. ASYNCHRONOUS AUDIT LOG: Call PHP to log the action. 
-                //    This will not block the page from redirecting.
-                fetch('PHP/log_action.php', {
-                    method: 'POST',
-                    headers: {
-                        'Content-Type': 'application/x-www-form-urlencoded',
-                    },
-                    body: `action=${encodeURIComponent(actionDescription)}`
-                })
-                .then(response => {
-                    if (!response.ok) {
-                        console.warn('Audit log failed to record for navigation:', actionDescription);
-                    }
-                })
-                .catch(error => {
-                    console.error('Audit log fetch error:', error);
-                })
-                // 3. Perform the page redirect immediately
+                // 2. ASYNCHRONOUS AUDIT LOG: Log the action using the reusable function.
+                logUserAction(actionType, description);
+                
+                // 3. Perform the page redirect immediately after initiating the log.
                 window.location.href = targetPage;
             } else {
-                console.error('No page defined for this link:', linkText);
+                console.error('No page defined for this report button:', buttonText);
+
+                // Log the failed navigation attempt
+                const actionType = 'VIEW'; 
+                const description = `FAILED: Clicked report button "${this.textContent}" with no mapped page.`;
+                logUserAction(actionType, description);
             }
         });
     });
 
     // Handle the logout button securely
-    // NOTE: The PHP script 'PHP/check_logout.php' will now handle the log *before* session destruction.
-    logoutButton.addEventListener('click', function() {
+    if (logoutButton) {
+      logoutButton.addEventListener('click', function() {
         window.location.href = 'PHP/check_logout.php'; 
-    });
+      });
+    }
 });
 /*=============================================================================================================================================================================*/
-document.addEventListener('DOMContentLoaded', function() {
-    const reportButtons = document.querySelectorAll('.report-button');
-
-    // Logic for the reports sidebar buttons
-    reportButtons.forEach(button => {
-        button.addEventListener('click', function(event) {
-            // Prevent default button behavior
-            event.preventDefault();
-            // Get the text from the button
-            const buttonText = this.textContent.toLowerCase().replace(/\s/g, '');
-            // Define the URL mapping for report buttons
-            const reportUrlMapping = {
-                'existingclients': 'ReportsExistingClient.html',
-                'duepayments': 'ReportsDuePayments.html',
-                'overduepayments': 'ReportsOverduePayments.html'
-            };
-            // Navigate to the correct report page
-            if (reportUrlMapping[buttonText]) {
-                window.location.href = reportUrlMapping[buttonText];
-            } else {
-                console.error('No page defined for this report button:', buttonText);
-            }
-        });
-    });
-});
-/*=============================================================================================================================================================================*/
-function fillClientData(clientData) {
-    // Personal and Employment Information (Original logic retained)
-    document.getElementById('lastName').value = clientData.last_name || '';
-    document.getElementById('firstName').value = clientData.first_name || '';
-    document.getElementById('middleName').value = clientData.middle_name || '';
-    document.getElementById('maritalStatus').value = clientData.marital_status || '';
-    document.getElementById('gender').value = clientData.gender || '';
-    document.getElementById('dateOfBirth').value = clientData.date_of_birth || '';
-    document.getElementById('city').value = clientData.city || '';
-    document.getElementById('barangay').value = clientData.barangay || '';
-    document.getElementById('postalCode').value = clientData.postal_code || '';
-    document.getElementById('streetAddress').value = clientData.street_address || '';
-    document.getElementById('phoneNumber').value = clientData.phone_number || '';
-    document.getElementById('email').value = clientData.email || '';
-    document.getElementById('employmentStatus').value = clientData.employment_status || '';
-    document.getElementById('occupationPosition').value = clientData.occupation || '';
-    document.getElementById('yearsInJob').value = clientData.years_in_job || '';
-
-    // FIX 1: Display Income/Salary (which is a string range) in the input field.
-    // Ensure the input field handles the string if it's currently set as type="number".
-    // If the HTML input is type="number", it might show an error icon or blank.
-    // If possible, change the HTML <input type="number" to <input type="text">.
-    document.getElementById('incomeSalary').value = clientData.income || '';
-
-    // FIX 2: Display Collateral (using the 'cr' alias from the PHP handler)
-    document.getElementById('cr').value = clientData.cr || 'N/A'; // N/A if no loan/collateral found
-
-    // FIX 3: Correctly handling client requirements based on the HTML IDs (barangayClearance, validId)
-    // 1. Barangay Clearance Checkbox: 
-    const barangayClearanceCheck = document.getElementById('barangayClearance');
-    if (barangayClearanceCheck) {
-        // Check if DB value (1 or '1') indicates clearance is present
-        barangayClearanceCheck.checked = clientData.has_barangay_clearance == 1; 
-    }
-    
-    // Determine if a Valid ID was submitted (value is ID name, or '0' if none)
-    const validIdValue = clientData.has_valid_id || '0';
-    // A valid ID is considered submitted if the value is not '0' and not an empty string
-    const hasValidIdSubmitted = validIdValue !== '0' && validIdValue !== '';
-
-    // 2. Valid ID Checkbox: Check it if a valid ID type was submitted.
-    const hasValidIdCheck = document.getElementById('validId');
-    if (hasValidIdCheck) {
-        hasValidIdCheck.checked = hasValidIdSubmitted;
-    }
-
-    // 3. Valid ID Type Input: (Skipping as 'validIdType' does not exist in the provided HTML)
-    // If the field were visible, it would display the ID type string from clientData.has_valid_id.
-}
-
-function showMessageBox(message, type) {
-    // ... (rest of showMessageBox function remains unchanged)
-    const existingBox = document.querySelector('.message-box');
-    if (existingBox) existingBox.remove();
-    const box = document.createElement('div');
-    box.className = `message-box fixed top-4 right-4 p-4 rounded-lg text-white shadow-lg transition-transform duration-300 transform translate-y-0`;
-    if (type === 'error') {
-        box.classList.add('bg-red-500');
-    } else if (type === 'info') {
-        box.classList.add('bg-blue-500');
-    } else {
-        box.classList.add('bg-green-500');
-    }
-    box.textContent = message;
-    document.body.appendChild(box);
-    setTimeout(() => {
-        box.classList.add('translate-y-full');
-        setTimeout(() => box.remove(), 300);
-    }, 3000);
-}
-
-document.addEventListener('DOMContentLoaded', async () => {
-    // ... (rest of DOMContentLoaded remains unchanged)
-    const clientIdInput = document.getElementById('clientIdInput');
-    const clientNameDisplay = document.getElementById('clientNameDisplay');
+// Function to get the client ID from the URL query parameters
+function getClientIdFromUrl() {
     const urlParams = new URLSearchParams(window.location.search);
-    const clientIdFromUrl = urlParams.get('clientId');
-
-    async function fetchClientData(clientId) {
-        try {
-            // This handler must join 'clients' and 'client_requirements' tables to return all required fields
-            const clientResponse = await fetch(`PHP/reportsexistingclientview_handler.php?client_id=${clientId}`);
-            const clientResult = await clientResponse.json();
-            if (clientResponse.ok && clientResult.status === 'success') {
-                fillClientData(clientResult.data);
-                if (clientNameDisplay) clientNameDisplay.value = `${clientResult.data.first_name} ${clientResult.data.last_name}`;
-            } else {
-                showMessageBox(clientResult.message || 'Client data could not be loaded.', 'error');
-            }
-        } catch (error) {
-            console.error('Error fetching client data:', error);
-            showMessageBox('Could not load client details. Please check the network connection and server logs.', 'error');
-        }
-    }
-
-    if (clientIdFromUrl) {
-        clientIdInput.value = clientIdFromUrl;
-        fetchClientData(clientIdFromUrl);
-    } else {
-        showMessageBox('No client ID found in URL.', 'info');
-    }
-});
-/*=============================================================================================================================================================================*/
-// Function to show a message box (redefined for console logging in this block)
-function showMessageBox(message, type) {
-    console.log(message, type);
-    // You'd typically implement a UI element here to display the message
+    // CHANGE THIS LINE: from 'client_id' to 'clientId'
+    return urlParams.get('clientId'); // Corrected to use 'clientId'
 }
 
-document.addEventListener('DOMContentLoaded', () => {
-    // Get the client ID from the URL query parameter
-    const urlParams = new URLSearchParams(window.location.search);
-    const clientId = urlParams.get('clientId');
-
-    if (clientId) {
-        document.getElementById('clientIdInput').value = clientId;
-        fetchLoanApplications(clientId);
-    } else {
-        showMessageBox('No client ID provided in the URL.', 'error');
-        document.getElementById('loanTableContainer').innerHTML = '<p>No client selected. Please go back and select a client from the list.</p>';
-    }
-});
-
-async function fetchLoanApplications(clientId) {
-    try {
-        const response = await fetch(`PHP/reports_loan_handler.php?client_id=${clientId}`);
-        if (!response.ok) {
-            throw new Error(`HTTP error! Status: ${response.status}`);
-        }
-        const result = await response.json();
-
-        if (result.status === 'error') {
-            showMessageBox(result.message, 'error');
-            document.getElementById('loanTableContainer').innerHTML = `<p>${result.message}</p>`;
-            return;
-        }
-        renderLoanTable(result.data, result.clientName || 'Client Name N/A', clientId);
-    } catch (error) {
-        console.error('Error fetching loan applications:', error);
-        showMessageBox('Could not load loan applications. Please try again later.', 'error');
-        document.getElementById('loanTableContainer').innerHTML = '<p>Error loading loan applications. Please try again later.</p>';
+// Function to populate a single data description element
+function populateDataElement(id, value) {
+    const element = document.getElementById(id);
+    if (element) {
+        element.textContent = value || 'N/A'; // Use 'N/A' if value is null/undefined/empty
     }
 }
 
-/**
- * Generates an amortization schedule for a loan.
- * @param {number} amount - The loan amount.
- * @param {string} frequency - The payment frequency ('monthly', 'weekly', etc.).
- * @param {string} startDateStr - The loan start date in 'YYYY-MM-DD' format.
- * @param {string} endDateStr - The loan end date in 'YYYY-MM-DD' format.
- * @param {number} interestRate - The annual interest rate in percent (e.g., 20 for 20%).
- * @returns {Array<Object>} An array of objects, each representing a payment period.
- */
-function generateLoanSchedule(amount, frequency, startDateStr, endDateStr, interestRate) {
-    const schedule = [];
-    let currentDate = new Date(startDateStr + 'T00:00:00'); // Ensure date is treated correctly
-    const endDate = new Date(endDateStr + 'T00:00:00');
+// Main function to fetch and display client details
+async function fetchAndDisplayClientDetails() {
+    const clientId = getClientIdFromUrl();
 
-    // Calculate the total amount to be paid, including interest
-    const totalInterest = amount * (interestRate / 100);
-    const totalRepaymentAmount = amount + totalInterest;
-
-    let remainingBalance = totalRepaymentAmount;
-
-    let totalPayments = 0;
-
-    // Calculate total number of payments based on frequency
-    const oneDay = 24 * 60 * 60 * 1000;
-    const totalDays = Math.round((endDate - currentDate) / oneDay);
-
-    switch (frequency) {
-        case 'daily':
-            totalPayments = totalDays + 1;
-            break;
-        case 'weekly':
-            totalPayments = Math.floor(totalDays / 7) + 1;
-            break;
-        case 'monthly':
-            let months = (endDate.getFullYear() - currentDate.getFullYear()) * 12;
-            months -= currentDate.getMonth();
-            months += endDate.getMonth();
-            // Handle edge case where months count is zero but start/end date are the same
-            if (months === 0 && currentDate.getTime() <= endDate.getTime()) {
-                months = 1;
-            }
-            totalPayments = months; 
-            break;
-        default:
-            totalPayments = 1; // Handle single payment case
-    }
-    
-    // Safety check for payment calculation
-    if (totalPayments <= 0) totalPayments = 1;
-
-    const paymentAmount = totalRepaymentAmount / totalPayments;
-    const interestPerPayment = totalInterest / totalPayments;
-
-    let tempDate = new Date(currentDate);
-
-    for (let i = 0; i < totalPayments; i++) {
-        if (remainingBalance <= 0) break;
-
-        // Calculate the date for this installment
-        let installmentDate = new Date(tempDate);
-        
-        // Calculate remaining balance for this theoretical payment
-        let currentRemainingBalance = remainingBalance - paymentAmount;
-        if (i === totalPayments - 1) {
-            // Last payment ensures remaining balance hits exactly 0
-            currentRemainingBalance = 0;
-        }
-        if (currentRemainingBalance < 0) currentRemainingBalance = 0; // Prevent negative
-
-        schedule.push({
-            'date-of-payment': installmentDate.toISOString().split('T')[0],
-            'amount-to-pay': paymentAmount, // This is the total installment (Principal + Interest)
-            'interest-amount': interestPerPayment,
-            'remaining-balance': currentRemainingBalance
-        });
-        
-        remainingBalance = currentRemainingBalance;
-
-        // Advance the date based on frequency
-        switch (frequency) {
-            case 'daily':
-                tempDate.setDate(tempDate.getDate() + 1);
-                break;
-            case 'weekly':
-                tempDate.setDate(tempDate.getDate() + 7);
-                break;
-            case 'monthly':
-                tempDate.setMonth(tempDate.getMonth() + 1);
-                break;
-        }
-    }
-
-    return schedule;
-}
-
-/**
- * Merges the calculated loan schedule with the actual payments made.
- * Handles overpayments by applying them to the next scheduled payment.
- * @param {Array<Object>} schedule - The generated loan schedule.
- * @param {Array<Object>} payments - The actual payments made for the loan.
- * @returns {Array<Object>} The updated schedule with payment details.
- */
-function mergeScheduleWithPayments(schedule, payments) {
-    let paymentIndex = 0;
-    let currentPaymentAmount = payments.length > 0 ? payments[0]['amount_paid'] : 0;
-    let currentPaymentDate = payments.length > 0 ? payments[0]['date_paid'] : '';
-    
-    // Use a deep copy of the schedule to modify it and initialize payment columns
-    const updatedSchedule = schedule.map(row => ({
-        ...row,
-        'amount-paid': 0,
-        'date-of-amount-paid': ''
-    }));
-
-    for (let i = 0; i < updatedSchedule.length; i++) {
-        let row = updatedSchedule[i];
-        const requiredPayment = row['amount-to-pay'];
-        let paymentAppliedToRow = 0;
-        let firstPaymentDate = '';
-        
-        while (paymentAppliedToRow < requiredPayment - 0.01 && paymentIndex < payments.length) {
-            
-            // If the current payment chunk is exhausted, load the next payment transaction
-            if (currentPaymentAmount < 0.01) {
-                paymentIndex++;
-                if (paymentIndex < payments.length) {
-                    currentPaymentAmount = payments[paymentIndex]['amount_paid'];
-                    currentPaymentDate = payments[paymentIndex]['date_paid'];
-                } else {
-                    currentPaymentAmount = 0;
-                    break; // No more payments left
-                }
-            }
-            
-            // Calculate how much is needed to complete the required payment for this row
-            const amountNeeded = requiredPayment - paymentAppliedToRow;
-            
-            // Determine how much to apply from the current payment chunk
-            const amountToApply = Math.min(currentPaymentAmount, amountNeeded);
-            
-            // Apply the amount
-            paymentAppliedToRow += amountToApply;
-            currentPaymentAmount -= amountToApply;
-            
-            // Set the date of the FIRST payment transaction used for this row
-            if (firstPaymentDate === '') {
-                firstPaymentDate = currentPaymentDate;
-            }
-        }
-        
-        row['amount-paid'] = paymentAppliedToRow;
-        row['date-of-amount-paid'] = firstPaymentDate;
-    }
-    
-    // If there are still payments left, create extra rows for outstanding balance/remaining payments
-    // NOTE: This part is for visual completeness if the payments exceed the schedule rows
-    if (paymentIndex < payments.length || currentPaymentAmount > 0.01) {
-        
-        // Ensure the remaining current payment is added to the total
-        if (currentPaymentAmount > 0.01) {
-            updatedSchedule.push({
-                'date-of-payment': 'N/A (Overpayment)',
-                'amount-to-pay': 0,
-                'interest-amount': 0,
-                'remaining-balance': 0,
-                'amount-paid': currentPaymentAmount,
-                'date-of-amount-paid': currentPaymentDate
-            });
-        }
-        
-        // Add any remaining unused payments
-        for (let j = paymentIndex + 1; j < payments.length; j++) {
-            updatedSchedule.push({
-                'date-of-payment': 'N/A (Overpayment)',
-                'amount-to-pay': 0,
-                'interest-amount': 0,
-                'remaining-balance': 0,
-                'amount-paid': payments[j]['amount_paid'],
-                'date-of-amount-paid': payments[j]['date_paid']
-            });
-        }
-    }
-
-    return updatedSchedule;
-}
-
-
-/**
- * Dynamically creates and displays the loan details and schedule modal.
- * @param {Object} data - The loan application data from the PHP response, including guarantor info and payments.
- */
-function createLoanDetailsModal(data) {
-    const modal = document.createElement('div');
-    modal.className = 'modal-overlay';
-
-    const modalContent = document.createElement('div');
-    modalContent.className = 'modal-content modal-content-transition';
-
-    // Parse necessary data for calculation
-    const loanAmount = parseFloat(data['loan-amount']);
-    const interestRate = parseFloat(data['interest-rate']);
-
-    // Generate the baseline payment schedule (Principal + Interest)
-    const baselineSchedule = generateLoanSchedule(
-        loanAmount,
-        data['payment-frequency'],
-        data['date-start'],
-        data['date-end'],
-        interestRate
-    );
-    
-    // --- NEW CALCULATIONS ---
-    const totalPayments = baselineSchedule.length;
-    
-    // The base payment amount is the total repayment amount divided by the number of payments
-    const installmentAmount = totalPayments > 0 ? baselineSchedule[0]['amount-to-pay'] : 0;
-    
-    // Total Interest is the base amount * rate / 100
-    const totalInterestAmount = loanAmount * (interestRate / 100);
-    
-    // Total Repayment Amount is Principal + Total Interest
-    const totalRepaymentAmount = loanAmount + totalInterestAmount;
-    // ------------------------
-
-    
-    // Merge the schedule with actual payments
-    const scheduleWithPayments = mergeScheduleWithPayments(baselineSchedule, data.payments || []);
-
-    // Helper function for currency formatting
-    const formatCurrency = (amount) => {
-        return `PHP ${amount.toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}`;
-    };
-
-    let scheduleTableHTML = `
-        <h3>Amortization Schedule</h3>
-        <table>
-            <thead>
-                <tr>
-                    <th>Date of Payment</th>
-                    <th>Installment Amount</th>
-                    <th>Interest Component</th>
-                    <th>Amount Paid</th>
-                    <th>Date of Amount Paid</th>
-                    <th>Remaining Balance</th>
-                </tr>
-            </thead>
-            <tbody>
-    `;
-    
-    scheduleWithPayments.forEach(row => {
-        // Display 'Amount Paid' and 'Date of Amount Paid'
-        const amountPaid = row['amount-paid'] > 0 
-            ? formatCurrency(row['amount-paid'])
-            : '';
-        const dateOfAmountPaid = row['date-of-amount-paid'] || '';
-
-        scheduleTableHTML += `
-            <tr>
-                <td>${row['date-of-payment']}</td>
-                <td>${formatCurrency(row['amount-to-pay'])}</td>
-                <td>${formatCurrency(row['interest-amount'])}</td>
-                <td>${amountPaid}</td>
-                <td>${dateOfAmountPaid}</td>
-                <td>${formatCurrency(row['remaining-balance'])}</td>
-            </tr>
-        `;
-    });
-    
-    scheduleTableHTML += `
-            </tbody>
-        </table>
-    `;
-
-    modalContent.innerHTML = `
-        <div class="modal-header">
-            <h2>Loan Details</h2>
-            <button class="close-modal-btn">&times;</button>
-        </div>
-        <div class="modal-body">
-            <div class="loan-info">
-                <h3>Client Information</h3>
-                <p><strong>Client ID:</strong> ${data.clientID}</p>
-                <p><strong>Client Name:</strong> ${data.clientName}</p>
-                
-                <h3>Loan Information</h3>
-                <p><strong>Loan ID:</strong> ${data.loanID}</p>
-                <p><strong>Loan Amount (Principal):</strong> ${formatCurrency(loanAmount)}</p>
-                <p><strong>Interest Rate:</strong> ${data['interest-rate']}%</p>
-                <p><strong>Total Interest:</strong> ${formatCurrency(totalInterestAmount)}</p>
-                <p><strong>Total Repayment Amount (Principal + Interest):</strong> ${formatCurrency(totalRepaymentAmount)}</p>
-                <p><strong>Installment Amount:</strong> ${formatCurrency(installmentAmount)} (${data['payment-frequency']})</p>
-                <p><strong>Total Payments:</strong> ${totalPayments}</p>
-                <p><strong>Start Date:</strong> ${data['date-start']}</p>
-                <p><strong>End Date:</strong> ${data['date-end']}</p>
-                <p><strong>Payment Frequency:</strong> ${data['payment-frequency']}</p>
-                
-                <h3>Guarantor Information</h3>
-                <p><strong>Guarantor Name:</strong> ${data.guarantorFirstName} ${data.guarantorMiddleName} ${data.guarantorLastName}</p>
-                <p><strong>Address:</strong> ${data.guarantorStreetAddress}</p>
-                <p><strong>Phone Number:</strong> ${data.guarantorPhoneNumber}</p>
-
-            </div>
-            <div class="loan-schedule">
-                ${scheduleTableHTML}
-            </div>
-        </div>
-        <div class="modal-footer">
-            <button class="print-btn">Print</button>
-        </div>
-    `;
-
-    modal.appendChild(modalContent);
-    document.body.appendChild(modal);
-
-    // This is the added line to fix the issue
-    modal.classList.add('is-active');
-
-    setTimeout(() => {
-        modalContent.classList.add('is-active');
-    }, 10);
-
-    const closeBtn = modalContent.querySelector('.close-modal-btn');
-    const printBtn = modalContent.querySelector('.print-btn');
-
-    if (closeBtn) {
-        closeBtn.addEventListener('click', () => {
-            modalContent.classList.remove('is-active');
-            setTimeout(() => modal.remove(), 300);
-        });
-    }
-
-    if (printBtn) {
-        printBtn.addEventListener('click', () => {
-            window.print();
-        });
-    }
-}
-
-// Updated function to make rows clickable
-function renderLoanTable(loans, clientName, clientId) {
-    const tableContainer = document.getElementById('loanTableContainer');
-
-    if (loans.length === 0) {
-        tableContainer.innerHTML = '<p>No loan applications found for this client.</p>';
+    if (!clientId) {
+        console.error("No Client ID found in URL.");
+        populateDataElement('client-id-dd', 'Error: ID missing');
         return;
     }
 
-    let tableHTML = `
-        <table class="loan-table">
-            <thead>
-                <tr>
-                    <th>Loan ID</th>
-                    <th>Amount</th>
-                    <th>Start Date</th>
-                    <th>End Date</th>
-                    <th>Status</th>
-                    <th>Paid</th>
-                </tr>
-            </thead>
-            <tbody>
-    `;
+    // Set the hidden input field for potential form submission
+    document.getElementById('clientIdInput').value = clientId;
+    populateDataElement('client-id-dd', clientId); // Display the ID  while loading
 
-    loans.forEach(loan => {
-        const isPaid = loan.paid == 1 ? 'Yes' : 'No';
-        // Add client data as a data attribute to the row
-        loan.clientName = clientName;
-        loan.clientID = clientId;
-        tableHTML += `
-            <tr class="loan-row" data-loan='${JSON.stringify(loan)}'>
-                <td>${loan.loan_application_id}</td>
-                <td>₱${parseFloat(loan.loan_amount).toFixed(2)}</td>
-                <td>${loan.date_start}</td>
-                <td>${loan.date_end}</td>
-                <td>${loan.status}</td>
-                <td>${isPaid}</td>
+    // The URL for your server-side script
+    const apiUrl = `PHP/reportsexistingclientview_handler.php?client_id=${clientId}`;
+
+    try {
+        const response = await fetch(apiUrl);
+
+        if (!response.ok) {
+            throw new Error(`HTTP error! status: ${response.status}`);
+        }
+
+        const data = await response.json();
+
+        if (data.error) {
+            console.error("Server Error:", data.error);
+            populateDataElement('client-name-dd', data.error);
+            return;
+        }
+
+        // Populate the client details section using the data received
+        populateDataElement('client-name-dd', data.client_name);
+        populateDataElement('marital-status-dd', data.marital_status);
+        populateDataElement('gender-dob-dd', data.gender_dob);
+        populateDataElement('address-dd', data.address);
+        populateDataElement('contact-email-dd', data.contact_email);
+
+        populateDataElement('income-collateral-dd', data.employment_income); 
+        populateDataElement('income-collateral-dd-2', data.collateral); 
+        
+
+    } catch (error) {
+        console.error("Could not fetch client details:", error);
+        // Display a general error message to the user
+        populateDataElement('client-name-dd', 'Failed to load details.');
+    }
+}
+
+// Execute the function when the page loads
+document.addEventListener('DOMContentLoaded', fetchAndDisplayClientDetails);
+
+/*=============================================================================================================================================================================*/
+
+
+function loadLoanDetailsFromDatabase(clientId) {
+    const container = document.getElementById('dynamicLoanContent');
+    container.innerHTML = '<p>Fetching loan details...</p>'; // Show loading state
+
+    // Fetch data, passing the client ID as a query parameter (clientId)
+    fetch(`PHP/reportsexistingviewclientstable_handler.php?clientId=${clientId}`)
+        .then(response => {
+            if (!response.ok) {
+                throw new Error(`HTTP error! Status: ${response.status}`);
+            }
+            return response.json();
+        })
+        .then(data => {
+            if (data && data.error) {
+                 container.innerHTML = `<p>Error from server: ${data.error}</p>`;
+                 return;
+            }
+
+            if (!data || !Array.isArray(data) || data.length === 0) {
+                container.innerHTML = `<p>No loan details found for Client ID: <strong>${clientId}</strong>.</p>`;
+                return;
+            }
+
+            container.innerHTML = ''; // Clear loading text
+
+            // --- 1. Display Client Info (Only Once) ---
+            const clientInfo = data[0]; // All objects in the array should have the same client info
+            
+            // Assuming the client info has 'Client Name' and 'Client ID' keys.
+            // Add a dedicated section for client details above the table
+            const clientDetailsDiv = document.createElement('div');
+            clientDetailsDiv.innerHTML = `
+                <h2>Loan History for ${clientInfo['Client Name'] || 'Unknown Client'}</h2>
+                <hr>
+            `;
+            container.appendChild(clientDetailsDiv);
+
+            // --- 2. Define headers for the LOAN TABLE ---
+            // Remove the redundant Client ID and Client Name from the table columns
+            const headers = [
+                'Loan ID', 
+                'Amount (w/ Interest)', 
+                'Total Paid', 
+                'Remaining Balance', 
+                'Term (Duration / Freq.)', 
+                'Start Date', 
+                'End Date'
+            ];
+            
+            // --- 3. Create Table Elements ---
+            const table = document.createElement('table');
+            table.classList.add('loan-details-table');
+            const thead = document.createElement('thead');
+            const tbody = document.createElement('tbody');
+            
+            // Create Header Row
+            const headerRow = document.createElement('tr');
+            headers.forEach(headerText => {
+                const th = document.createElement('th');
+                th.textContent = headerText;
+                headerRow.appendChild(th);
+            });
+            thead.appendChild(headerRow);
+            table.appendChild(thead);
+
+            // --- 4. Create Data Rows (Loop through ALL loans) ---
+            data.forEach(loan => {
+                const dataRow = document.createElement('tr');
+                // IMPORTANT: Add a class and set a data attribute for the Loan ID
+                dataRow.classList.add('clickable-loan-row');
+                dataRow.setAttribute('data-loan-id', loan['Loan ID']); // Store Loan ID
+
+                headers.forEach(headerKey => {
+                    const td = document.createElement('td');
+                    let value = loan[headerKey]; 
+                    
+                    // Format currency fields (PHP)
+                    if (['Amount (w/ Interest)', 'Total Paid', 'Remaining Balance'].includes(headerKey) && value !== undefined) {
+                        const numValue = parseFloat(value);
+                        if (!isNaN(numValue)) {
+                            value = `PHP ${numValue.toLocaleString('en-US', {minimumFractionDigits: 2, maximumFractionDigits: 2})}`;
+                        } else {
+                            value = 'N/A';
+                        }
+                    } else if (value === undefined || value === null) {
+                        value = 'N/A';
+                    }
+                    
+                    td.textContent = value;
+                    dataRow.appendChild(td);
+                });
+                
+                tbody.appendChild(dataRow);
+            });
+            
+            table.appendChild(tbody);
+
+            // --- 5. Append Table and Add Click Handlers ---
+            container.appendChild(table);
+
+            // New logic to make rows clickable for the MODAL!
+            document.querySelectorAll('.clickable-loan-row').forEach(row => {
+                row.style.cursor = 'pointer'; // Make it visually clickable
+                row.addEventListener('click', function() {
+                    const loanId = this.getAttribute('data-loan-id');
+                    if (loanId) {
+                        // This event is redundant if document.body listener works, 
+                        // but is kept here based on original structure.
+                        showLoanDetailsModal(loanId);
+                        console.log(`Attempting to show modal for Loan ID: ${loanId}`);
+                    }
+                });
+            });
+
+
+        })
+        .catch(error => {
+            console.error('Error fetching loan data:', error);
+            container.innerHTML = `<p>Error loading loan details: ${error.message}</p>`;
+        });
+}
+
+// Execute the function with the specific client ID extracted from the URL
+document.addEventListener('DOMContentLoaded', () => {
+    const container = document.getElementById('dynamicLoanContent');
+    const urlParams = new URLSearchParams(window.location.search);
+    
+    // Check for the 'clientId' parameter
+    const targetClientId = urlParams.get('clientId'); 
+
+    if (targetClientId) {
+        // Use the ID from the URL to load all related loans
+        loadLoanDetailsFromDatabase(targetClientId);
+    } else {
+        // If no ID is found in the URL, display an error message
+        container.innerHTML = '<p>🛑 **Error**: No client ID found in the URL. Please ensure the URL contains <code>?clientId=CLIENT_ID</code>.</p>';
+        console.error('No clientId parameter found in the URL.');
+    }
+});
+
+/*=============================================================================================================================================================================*/
+
+
+
+/**
+ * ## Modal Box Logic 
+ * This function will fetch the specific loan details and populate a modal.
+ * @param {string} loanId - The ID of the loan to display in the modal.
+ */
+function showLoanDetailsModal(loanId) {
+    const modal = document.getElementById('loanDetailModal');
+    const modalContent = document.getElementById('modalBodyContent');
+
+    // 1. Show a loading state in the modal
+    modalContent.innerHTML = `<p class="loading-message">Loading details for Loan ID: ${loanId}...</p>`;
+    
+    if (modal) {
+        modal.style.display = 'block';
+        document.body.classList.add('modal-open'); 
+    }
+
+    // 2. Fetch the detailed loan data
+    fetch(`PHP/reportsexistingclientviewloandetail_handler.php?loanId=${loanId}`)
+        .then(response => {
+            if (!response.ok) {
+                throw new Error(`HTTP error! Status: ${response.status}`);
+            }
+            return response.json();
+        })
+        .then(details => {
+            if (details && details.error) {
+                modalContent.innerHTML = `<p class="error-message">Server Error: ${details.error}</p>`;
+                return;
+            }
+
+            // 3. Render the details into the modal
+            if (details) {
+                
+                const paymentsTableHTML = createPaymentsTable(details['Payments']);
+
+                // Updated modalContent.innerHTML to use CSS classes
+                modalContent.innerHTML = `
+                    <h3 class="loan-detail-header">Loan ID: ${details['Loan ID'] || loanId}</h3>
+                    
+                    <div class="info-box">
+                        <h4 class="info-header">Loan and Client Information</h4>
+                        
+                        <div class="info-columns">
+                            <div class="info-item">
+                                <span class="info-label">Client Name:</span>
+                                <strong class="info-value">${details['ClientName'] || 'N/A'}</strong>
+                            </div>
+                            <div class="info-item">
+                                <span class="info-label">Principal Amount:</span>
+                                <strong class="info-value">PHP ${details['Principal'] || 'N/A'}</strong>
+                            </div>
+                        </div>
+
+                        <div class="info-columns">
+                            <div class="info-item">
+                                <span class="info-label">Date Issued:</span>
+                                <strong class="info-value">${details['IssueDate'] || 'N/A'}</strong>
+                            </div>
+                            <div class="info-item">
+                                <span class="info-label">Interest Rate:</span>
+                                <strong class="info-value">${details['InterestRate'] || 'N/A'}</strong>
+                            </div>
+                        </div>
+
+                        <div class="info-columns">
+                            <div class="info-item">
+                                <span class="info-label">Status:</span>
+                                <strong class="info-value">${details['Status'] || 'N/A'}</strong>
+                            </div>
+                            <div class="info-item">
+                                <span class="info-label">Terms:</span>
+                                <strong class="info-value">${details['Duration'] || 'N/A'} (${details['Frequency'] || 'N/A'})</strong>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="info-box">
+                        <h4 class="info-header">Guarantor Information</h4>
+                        
+                        <div class="info-columns">
+                            <div class="info-item">
+                                <span class="info-label">Guarantor Name:</span>
+                                <strong class="info-value">${details['GuarantorName'] || 'N/A'}</strong>
+                            </div>
+                            <div class="info-item">
+                                <span class="info-label">Phone Number:</span>
+                                <strong class="info-value">${details['GuarantorPhone'] || 'N/A'}</strong>
+                            </div>
+                        </div>
+                        
+                        <div class="info-item" style="width: 100%; padding: 5px 0;">
+                            <span class="info-label">Address:</span>
+                            <strong class="info-value">${details['GuarantorAddress'] || 'N/A'}</strong>
+                        </div>
+                    </div>
+                    
+                    ${paymentsTableHTML} 
+                `;
+            } else {
+                modalContent.innerHTML = `<p class="info-message">No detailed data returned for Loan ID: ${loanId}.</p>`;
+            }
+
+        })
+        .catch(error => {
+            console.error('Error fetching single loan data:', error);
+            modalContent.innerHTML = `<p class="error-message">Failed to load loan details: ${error.message}</p>`;
+        });
+}
+
+// ------------------------------------------------------------------
+// createPaymentsTable (Updated to use CSS classes)
+// ------------------------------------------------------------------
+
+/**
+ * Generates the HTML table for loan payments, showing Date, Amount Paid, and Balance After Payment.
+ * Uses CSS classes for styling.
+ * @param {Array<Object>} payments - An array of payment objects.
+ * @returns {string} The HTML string for the payments table or a 'No payments' message.
+ */
+function createPaymentsTable(payments) {
+    if (!payments || payments.length === 0) {
+        return '<h4>Payment History</h4><p class="info-message">No payments recorded for this loan.</p>';
+    }
+
+    let tableRows = '';
+    // Generate a row for each payment
+    payments.forEach((payment) => {
+        const formattedAmount = payment['Amount'] || 'N/A';
+        const formattedBalance = payment['RemainingBalance'] || 'N/A';
+        
+        // Rows are styled using CSS classes (e.g., .payment-table tbody tr:nth-child(even))
+        tableRows += `
+            <tr>
+                <td>${payment['PaymentDate'] || 'N/A'}</td>
+                <td class="amount-column">${formattedAmount}</td>
+                <td class="amount-column">${formattedBalance}</td>
             </tr>
         `;
     });
 
-    tableHTML += `
+    return `
+        <h4>Payment History</h4>
+        <div class="table-responsive">
+            <table class="payment-table">
+                <thead>
+                    <tr>
+                        <th>Date</th>
+                        <th class="amount-column">Amount Paid</th>
+                        <th class="amount-column">Balance After Payment</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    ${tableRows}
                 </tbody>
             </table>
-        `;
-    tableContainer.innerHTML = tableHTML;
-
-    // Add event listeners after the table is rendered
-    addLoanRowClickListeners();
+        </div>
+    `;
 }
+
+// ------------------------------------------------------------------
+// CLOSURE AND EVENT LISTENERS (Updated Loan Selection Handler)
+// ------------------------------------------------------------------
 
 /**
- * Adds click event listeners to each loan table row to display the modal.
- * This function should be called inside renderLoanTable().
+ * Function to close the modal.
  */
-function addLoanRowClickListeners() {
-    const loanRows = document.querySelectorAll('.loan-row');
-    loanRows.forEach(row => {
-        row.addEventListener('click', async () => {
-            const loanData = JSON.parse(row.dataset.loan);
-            
-            try {
-                // Fetch full loan details including client info, interest rate, guarantor, and PAYMENTS
-                const response = await fetch(`PHP/reports_get_full_loan_details.php?loan_id=${loanData.loan_application_id}`);
-                const fullLoanData = await response.json();
-                
-                if (fullLoanData && fullLoanData.loanID) { // Check if data is valid
-                    createLoanDetailsModal(fullLoanData);
-                } else {
-                    showMessageBox('Could not retrieve full loan details.', 'error');
-                }
-            } catch (error) {
-                console.error('Error fetching full loan details:', error);
-                showMessageBox('Error loading loan details. Please try again.', 'error');
+function closeModal() {
+    const modal = document.getElementById('loanDetailModal');
+    if (modal) {
+        modal.style.display = 'none';
+        document.body.classList.remove('modal-open');
+        document.getElementById('modalBodyContent').innerHTML = ''; 
+    }
+}
+
+// Attach event listeners after the DOM is fully loaded
+document.addEventListener('DOMContentLoaded', () => {
+    const closeButton = document.getElementById('closeModalButton');
+    if (closeButton) {
+        closeButton.addEventListener('click', closeModal);
+    }
+    
+    const modal = document.getElementById('loanDetailModal');
+    if (modal) {
+        window.addEventListener('click', (event) => {
+            if (event.target === modal) {
+                closeModal();
             }
         });
+    }
+
+    // *** UPDATED: Log action when a loan is selected (Delegated to document.body) ***
+    document.body.addEventListener('click', (e) => {
+        const targetElement = e.target.closest('[data-loan-id]');
+        
+        if (targetElement) {
+            const loanId = targetElement.dataset.loanId;
+            
+            // --- AUDIT LOGGING ---
+            const actionType = 'VIEW';
+            const description = `Accessed detailed view modal for Loan ID: ${loanId}`;
+            const targetTable = 'loans'; 
+            const targetId = loanId;     
+            
+            logDetailedUserAction(
+                actionType, 
+                description, 
+                targetTable, 
+                targetId,
+                null, // beforeState
+                null  // afterState
+            );
+            // --- END AUDIT LOGGING ---
+            
+            showLoanDetailsModal(loanId);
+        }
     });
-}
+});

@@ -1,37 +1,171 @@
+/* ========================================================= */
+/* --- GLOBAL LOGGING FUNCTIONS (Moved to Global Scope) --- */
+/* ========================================================= */
+
+// Global Logging Function
+function logUserAction(actionType, description) {
+  // Use URLSearchParams to easily format the POST body
+  const bodyData = new URLSearchParams();
+  bodyData.append('action', actionType); 
+  bodyData.append('description', description); 
+
+  fetch('PHP/log_action.php', {
+    method: 'POST',
+    headers: {
+      'Content-Type': 'application/x-www-form-urlencoded',
+    },
+    body: bodyData.toString()
+  })
+  .then(response => {
+    if (!response.ok) {
+      console.warn('Audit log failed to record:', actionType, description);
+    }
+  })
+  .catch(error => {
+    console.error('Audit log fetch error:', error);
+  });
+}
+
+// Global DETAILED Logging Function for actions involving target data (e.g., VIEW, UPDATE)
+function logDetailedUserAction(actionType, description, targetTable, targetId, beforeState = null, afterState = null) {
+    const bodyData = new URLSearchParams();
+    bodyData.append('action', actionType); 
+    bodyData.append('description', description); 
+    bodyData.append('target_table', targetTable); 
+    bodyData.append('target_id', targetId);
+    
+    // Append optional states if provided
+    if (beforeState !== null) bodyData.append('before_state', beforeState);
+    if (afterState !== null) bodyData.append('after_state', afterState);
+
+    fetch('PHP/log_action.php', {
+        method: 'POST',
+        headers: {
+            'Content-Type': 'application/x-www-form-urlencoded',
+        },
+        body: bodyData.toString()
+    })
+    .then(response => {
+        if (!response.ok) {
+            console.warn('Detailed Audit log failed to record:', actionType, description);
+        }
+    })
+    .catch(error => {
+        console.error('Detailed Audit log fetch error:', error);
+    });
+}
+
+/* ========================================================= */
+/* --- FIRST DOMContentLoaded BLOCK (Navigation Handlers) --- */
+/* ========================================================= */
+
 document.addEventListener('DOMContentLoaded', function() {
     // Call the session check function as soon as the page loads.
     checkSessionAndRedirect(); 
 
+    // --- Variables ---
     const navLinks = document.querySelectorAll('.nav-link');
     const logoutButton = document.querySelector('.logout-button');
+    const reportButtons = document.querySelectorAll('.report-button'); 
 
+    const urlMapping = {
+      'dashboard': 'DashBoard.html',
+      'clientcreation': 'ClientCreationForm.html',
+      'loanapplication': 'LoanApplication.html',
+      'pendingaccounts': 'PendingAccount.html',
+      'paymentcollection': 'AccountsReceivable.html',
+      'ledger': 'Ledgers.html',
+      'reports': 'Reports.html',
+      'usermanagement': 'UserManagement.html',
+      'tools': 'Tools.html'
+    };
+
+    const reportUrlMapping = {
+        'existingclients': 'ReportsExistingClient.html',
+        'duepayments': 'ReportsDuePayments.html',
+        'overduepayments': 'ReportsOverduePayments.html', 
+        'delinquentaccounts': 'ReportsOverduePayments.html', 
+        'audittrail': 'ReportsAuditTrail.html'
+    };
+
+    // --- Primary Navigation Handler (e.g., Dashboard, Reports) ---
     navLinks.forEach(link => {
-        link.addEventListener('click', function(event) {
-            event.preventDefault(); 
-            navLinks.forEach(nav => nav.classList.remove('active'));
-            this.classList.add('active');
+      link.addEventListener('click', function(event) {
+        event.preventDefault(); 
+        navLinks.forEach(nav => nav.classList.remove('active'));
+        this.classList.add('active');
 
-            const linkText = this.textContent.toLowerCase().replace(/\s/g, ''); 
+        const linkText = this.textContent.toLowerCase().replace(/\s/g, ''); 
+        const targetPage = urlMapping[linkText];
+          
+        if (targetPage) {
+          const actionType = 'NAVIGATION'; 
+          const description = `Clicked "${this.textContent}" link, redirecting to ${targetPage}`;
+          logUserAction(actionType, description); // Uses global logUserAction
+          window.location.href = targetPage;
+        } else {
+          console.error('No page defined for this link:', linkText);
+          const actionType = 'NAVIGATION'; 
+          const description = `FAILED: Clicked link "${this.textContent}" with no mapped page.`;
+          logUserAction(actionType, description); // Uses global logUserAction
+        }
+      });
+    });
+
+    // --- Reports Sidebar Navigation Handler ---
+    reportButtons.forEach(button => {
+        button.addEventListener('click', function(event) {
+            event.preventDefault();
             
-            const urlMapping = {
-                'dashboard': 'DashBoard.html',
-                'clientcreation': 'ClientCreationForm.html',
-                'loanapplication': 'LoanApplication.html',
-                'pendingaccounts': 'PendingAccount.html',
-                'paymentcollection': 'AccountsReceivable.html',
-                'ledger': 'Ledgers.html',
-                'reports': 'Reports.html',
-                'usermanagement': 'UserManagement.html',
-                'tools': 'Tools.html'
-            };
+            const buttonText = this.textContent.toLowerCase().replace(/\s/g, '');
+            const targetPage = reportUrlMapping[buttonText];
 
-            const targetPage = urlMapping[linkText];
             if (targetPage) {
-                // 1. Define the action for the audit log
-                const actionDescription = `Maps to ${this.textContent} (${targetPage})`;
+                const actionType = 'VIEW';
+                const description = `Viewed Report: ${this.textContent} (${targetPage})`;
+                logUserAction(actionType, description); // Uses global logUserAction
+                window.location.href = targetPage;
+            } else {
+                console.error('No page defined for this report button:', buttonText);
+                const actionType = 'VIEW'; 
+                const description = `FAILED: Clicked report button "${this.textContent}" with no mapped page.`;
+                logUserAction(actionType, description); // Uses global logUserAction
+            }
+        });
+    });
 
-                // 2. ASYNCHRONOUS AUDIT LOG: Call PHP to log the action. 
-                //    This will not block the page from redirecting.
+    // Handle the logout button securely
+    if (logoutButton) {
+      logoutButton.addEventListener('click', function() {
+        window.location.href = 'PHP/check_logout.php'; 
+      });
+    }
+});
+/*=============================================================================================================================================================================*/
+document.addEventListener('DOMContentLoaded', function() {
+    // --- Duplicate/Older Report Navigation Handler (Kept for completeness but should be removed) ---
+    const reportButtons = document.querySelectorAll('.report-button');
+
+    reportButtons.forEach(button => {
+        button.addEventListener('click', function(event) {
+            event.preventDefault();
+            
+            const buttonText = this.textContent.toLowerCase().replace(/\s/g, '');
+            
+            const reportUrlMapping = {
+                'existingclients': 'ReportsExistingClient.html',
+                'duepayments': 'ReportsDuePayments.html',
+                'overduepayments': 'ReportsOverduePayments.html', 
+                'delinquentaccounts': 'ReportsOverduePayments.html', 
+                'audittrail': 'ReportsAuditTrail.html' 
+            };
+            
+            const targetPage = reportUrlMapping[buttonText];
+
+            if (targetPage) {
+                const actionDescription = `Viewed Report: ${this.textContent} (${targetPage})`;
+                
+                // This fetches directly, duplicating the earlier logUserAction logic
                 fetch('PHP/log_action.php', {
                     method: 'POST',
                     headers: {
@@ -41,46 +175,14 @@ document.addEventListener('DOMContentLoaded', function() {
                 })
                 .then(response => {
                     if (!response.ok) {
-                        console.warn('Audit log failed to record for navigation:', actionDescription);
+                        console.warn('Audit log failed to record for report navigation:', actionDescription);
                     }
                 })
                 .catch(error => {
                     console.error('Audit log fetch error:', error);
                 })
-                // 3. Perform the page redirect immediately
+                
                 window.location.href = targetPage;
-            } else {
-                console.error('No page defined for this link:', linkText);
-            }
-        });
-    });
-
-    // Handle the logout button securely
-    // NOTE: The PHP script 'PHP/check_logout.php' will now handle the log *before* session destruction.
-    logoutButton.addEventListener('click', function() {
-        window.location.href = 'PHP/check_logout.php'; 
-    });
-});
-/*=============================================================================================================================================================================*/
-document.addEventListener('DOMContentLoaded', function() {
-    const reportButtons = document.querySelectorAll('.report-button');
-
-    // Logic for the reports sidebar buttons
-    reportButtons.forEach(button => {
-        button.addEventListener('click', function(event) {
-            // Prevent default button behavior
-            event.preventDefault();
-            // Get the text from the button
-            const buttonText = this.textContent.toLowerCase().replace(/\s/g, '');
-            // Define the URL mapping for report buttons
-            const reportUrlMapping = {
-                'existingclients': 'ReportsExistingClient.html',
-                'duepayments': 'ReportsDuePayments.html',
-                'overduepayments': 'ReportsOverduePayments.html'
-            };
-            // Navigate to the correct report page
-            if (reportUrlMapping[buttonText]) {
-                window.location.href = reportUrlMapping[buttonText];
             } else {
                 console.error('No page defined for this report button:', buttonText);
             }
@@ -163,13 +265,33 @@ document.getElementById('clientSearchInput').addEventListener('input', (event) =
     renderClientList(filteredClients);
 });
 
-// Event listener to handle client selection
+// Event listener to handle client selection (Now calls the global function)
 document.querySelector('.client-list').addEventListener('click', (event) => {
     const selectedItem = event.target.closest('tr');
     if (selectedItem) {
         const clientID = selectedItem.getAttribute('data-client-id');
-        // Redirect to the new page with the client ID in the URL
-        window.location.href = `ReportsExistingClientView.html?clientId=${clientID}`;
+        
+        if (clientID) {
+            // --- AUDIT LOGGING ---
+            const actionType = 'VIEW';
+            const description = `Accessed detailed view for Client ID: ${clientID}`;
+            const targetTable = 'clients'; 
+            const targetId = clientID;     
+            
+            // This now successfully calls the global function
+            logDetailedUserAction(
+                actionType, 
+                description, 
+                targetTable, 
+                targetId,
+                null, // beforeState
+                null  // afterState
+            );
+            // --- END AUDIT LOGGING ---
+
+            // Redirect to the new page with the client ID in the URL
+            window.location.href = `ReportsExistingClientView.html?clientId=${clientID}`;
+        }
     }
 });
 

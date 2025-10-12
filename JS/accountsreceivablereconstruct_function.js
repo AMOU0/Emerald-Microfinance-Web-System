@@ -1,236 +1,343 @@
 document.addEventListener('DOMContentLoaded', function() {
-    // NOTE: The function 'checkSessionAndRedirect' is assumed to be defined elsewhere.
-    checkSessionAndRedirect(); 
+  // Call the session check function as soon as the page loads.
+  checkSessionAndRedirect(); 
 
-    // ==========================================================
-    // 1. Initial Checks and Navigation Setup
-    // ==========================================================
+  // --- Global Logging Function (Updated to accept two parameters) ---
+  function logUserAction(actionType, description) {
+    // Note: The PHP script (PHP/log_action.php) must be updated 
+    // to handle both 'action' (the type) and 'description' (the detail).
     
-    // Select all necessary elements
-    const navLinks = document.querySelectorAll('.nav-link');
-    const logoutButton = document.querySelector('.logout-button');
-    const returnButton = document.querySelector('.return-button'); // FIX: Define returnButton here
-    
-    // Select dynamic calculation elements
-    const startDateInput = document.getElementById('reconstruct-date-start');
-    const durationInput = document.getElementById('reconstruct-duration-of-loan');
-    const endDateInput = document.getElementById('reconstruct-date-end');
+    // Use URLSearchParams to easily format the POST body
+    const bodyData = new URLSearchParams();
+    bodyData.append('action', actionType); 
+    bodyData.append('description', description); 
 
-    // Select the form for submission
-    const loanReconstructionForm = document.getElementById('loanReconstructionForm');
-
-    // --- Navigation Link Handler ---
-    navLinks.forEach(link => {
-        link.addEventListener('click', function(event) {
-            event.preventDefault(); 
-            navLinks.forEach(nav => nav.classList.remove('active'));
-            this.classList.add('active');
-
-            const linkText = this.textContent.toLowerCase().replace(/\s/g, ''); 
-            
-            const urlMapping = {
-                'dashboard': 'DashBoard.html',
-                'clientcreation': 'ClientCreationForm.html',
-                'loanapplication': 'LoanApplication.html',
-                'pendingaccounts': 'PendingAccount.html',
-                'paymentcollection': 'AccountsReceivable.html',
-                'ledger': 'Ledgers.html',
-                'reports': 'Reports.html',
-                'usermanagement': 'UserManagement.html',
-                'tools': 'Tools.html'
-            };
-
-            const targetPage = urlMapping[linkText];
-            if (targetPage) {
-                // ASYNCHRONOUS AUDIT LOG
-                const actionDescription = `Mapped to ${this.textContent} (${targetPage})`;
-                fetch('PHP/log_action.php', {
-                    method: 'POST',
-                    headers: {
-                        'Content-Type': 'application/x-www-form-urlencoded',
-                    },
-                    body: `action=${encodeURIComponent(actionDescription)}`
-                })
-                .catch(error => {
-                    console.error('Audit log fetch error:', error);
-                });
-                
-                // Perform the page redirect immediately
-                window.location.href = targetPage;
-            } else {
-                console.error('No page defined for this link:', linkText);
-            }
-        });
+    fetch('PHP/log_action.php', {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/x-www-form-urlencoded',
+      },
+      body: bodyData.toString()
+    })
+    .then(response => {
+      if (!response.ok) {
+        console.warn('Audit log failed to record:', actionType, description);
+      }
+    })
+    .catch(error => {
+      console.error('Audit log fetch error:', error);
     });
+  }
+  // --------------------------------------------------------
 
-    // --- Logout Button Handler ---
+  const navLinks = document.querySelectorAll('.nav-link');
+  const logoutButton = document.querySelector('.logout-button');
+
+  const urlMapping = {
+    'dashboard': 'DashBoard.html',
+    'clientcreation': 'ClientCreationForm.html',
+    'loanapplication': 'LoanApplication.html',
+    'pendingaccounts': 'PendingAccount.html',
+    'paymentcollection': 'AccountsReceivable.html',
+    'ledger': 'Ledgers.html',
+    'reports': 'Reports.html',
+    'usermanagement': 'UserManagement.html',
+    'tools': 'Tools.html'
+  };
+
+  navLinks.forEach(link => {
+    link.addEventListener('click', function(event) {
+      event.preventDefault(); 
+      navLinks.forEach(nav => nav.classList.remove('active'));
+      this.classList.add('active');
+
+      // Normalize the link text for mapping lookup
+      const linkText = this.textContent.toLowerCase().replace(/\s/g, ''); 
+      const targetPage = urlMapping[linkText];
+        
+      if (targetPage) {
+        // 1. Define clear action type and description for the log
+        const actionType = 'NAVIGATION'; // Use the fixed type for filtering
+        const description = `Clicked "${this.textContent}" link, redirecting to ${targetPage}`;
+
+        // 2. ASYNCHRONOUS AUDIT LOG: Log the action.
+        logUserAction(actionType, description);
+
+        // 3. Perform the page redirect immediately after initiating the log.
+        window.location.href = targetPage;
+      } else {
+        console.error('No page defined for this link:', linkText);
+        
+        // OPTIONAL: Log the failed navigation attempt
+        const actionType = 'NAVIGATION';
+        const description = `FAILED: Clicked link "${this.textContent}" with no mapped page.`;
+        logUserAction(actionType, description);
+      }
+    });
+  });
+
+  // Handle the logout button securely
+  // The PHP script 'PHP/check_logout.php' should handle the log *before* session destruction.
+  if (logoutButton) {
     logoutButton.addEventListener('click', function() {
-        // NOTE: 'PHP/check_logout.php' handles logging out and session destruction
-        window.location.href = 'PHP/check_logout.php'; 
+      window.location.href = 'PHP/check_logout.php'; 
     });
-
-    // ==========================================================
-    // 2. RETURN Button Handler (FIXED)
-    // ==========================================================
-    if (returnButton) {
-        returnButton.addEventListener('click', () => {
-            // Redirects to the main Accounts Receivable page
-            window.location.href = 'AccountsReceivable.html'; 
-        });
-    }
-
-    // ==========================================================
-    // 3. Fetch Loan Details from URL
-    // ==========================================================
+  }
+/*===========================================================================================================================================*/
+  // --- 2. Function to Extract Loan ID from URL and Fetch Data ---
+  function loadLoanData() {
     const urlParams = new URLSearchParams(window.location.search);
     const loanId = urlParams.get('loanID'); 
-
-    if (loanId) {
-        fetchAndDisplayLoanDetails(loanId);
-    } else {
-        console.error("No loanID found in the URL.");
-        // Optionally alert the user or hide the form
-    }
-
-    // ==========================================================
-    // 4. Dynamic End Date Calculation (Simplified)
-    // ==========================================================
     
-    if (startDateInput && durationInput && endDateInput) {
-        function calculateEndDate() {
-            const startDateValue = startDateInput.value;
-            // Ensure duration is treated as an integer
-            const durationValue = parseInt(durationInput.value, 10);
-
-            if (!startDateValue || isNaN(durationValue)) {
-                endDateInput.value = '';
-                return;
-            }
-
-            const startDate = new Date(startDateValue);
-            let endDate = new Date(startDate);
-            
-            // The duration is always in days, so we simply add the value.
-            endDate.setDate(startDate.getDate() + durationValue);
-
-            // Format date to YYYY-MM-DD for input[type=date]
-            const formattedEndDate = endDate.toISOString().split('T')[0];
-            endDateInput.value = formattedEndDate;
-        }
-
-        startDateInput.addEventListener('change', calculateEndDate);
-        durationInput.addEventListener('input', calculateEndDate);
+    if (!loanId) {
+        alert('Loan ID is missing in the URL. Please navigate from the Accounts Receivable list.');
+        return;
     }
-
-    // ==========================================================
-    // 5. Form Submission Handler
-    // ==========================================================
     
-    if (loanReconstructionForm) {
-        loanReconstructionForm.addEventListener('submit', function(event) {
-            event.preventDefault();
-
-            // Get the original loan ID from the URL
-            const urlParams = new URLSearchParams(window.location.search);
-            const loanId = urlParams.get('loanID');
-
-            if (!loanId) {
-                alert('Error: No loan ID found in URL.');
-                return;
-            }
-
-            // Get the data from the form inputs
-            const reconstructTerms = document.getElementById('reconstruct-terms').value;
-            const reconstructDateStart = document.getElementById('reconstruct-date-start').value;
-            const reconstructDuration = document.getElementById('reconstruct-duration-of-loan').value;
-            const reconstructDateEnd = document.getElementById('reconstruct-date-end').value;
-            // The balance amount is the new principal for the reconstruction
-            const balanceAmount = document.getElementById('balance-amount').value;
-            
-            // Simple validation
-            if (!reconstructTerms || !reconstructDateStart || !reconstructDuration || !reconstructDateEnd) {
-                alert('Please fill in all the reconstruction details.');
-                return;
-            }
-
-            // Prepare the data to be sent
-            const postData = new FormData();
-            postData.append('loan_application_id', loanId);
-            // Remove commas from balance amount before sending
-            postData.append('reconstruct_amount', balanceAmount.replace(/,/g, '')); 
-            postData.append('payment_frequency', reconstructTerms);
-            postData.append('interest_rate', 20); // Hardcoded value
-            postData.append('date_start', reconstructDateStart);
-            postData.append('duration', reconstructDuration + ' days');
-            postData.append('date_end', reconstructDateEnd);
-            postData.append('status', 'active'); 
-            
-            // Send the data to the PHP handler
-            fetch('PHP/save_reconstruction.php', {
-                method: 'POST',
-                body: postData
-            })
-            .then(response => response.json())
-            .then(data => {
-                if (data.success) {
-                    alert('Loan reconstruction saved successfully! 🎉');
-                    window.location.href = 'AccountsReceivable.html'; // Redirect
-                } else {
-                    alert('Error: ' + data.error);
-                }
-            })
-            .catch(error => {
-                console.error('Error:', error);
-                alert('An error occurred while saving the reconstruction.');
-            });
-        });
+    // *** FIX: Set the hidden input field for loan_id so it's submitted with the form. ***
+    const hiddenLoanIdInput = document.getElementById('loan-id-hidden');
+    if (hiddenLoanIdInput) {
+        hiddenLoanIdInput.value = loanId;
     }
-
-}); // End of DOMContentLoaded
-
-// ==========================================================
-// Global Function: Fetch and Display Loan Details
-// ==========================================================
-/**
- * Fetches loan details (including calculated balance) from the PHP backend 
- * and populates the "Original Loan Details" section of the form.
- * @param {number} loanId The ID of the loan to fetch.
- */
-function fetchAndDisplayLoanDetails(loanId) {
-    // This calls the PHP script that calculates the current balance
-    const url = `PHP/accountsrecivablereconstruct_handler.php?loan_id=${loanId}`;
-
-    fetch(url)
+    
+    // Fetch loan details from the PHP handler (accountsrecivablereconstruct_handler.php)
+    fetch(`PHP/accountsrecivablereconstruct_handler.php?loan_id=${loanId}`)
         .then(response => {
             if (!response.ok) {
-                throw new Error('Network response was not ok');
+                throw new Error(`HTTP error! status: ${response.status}`);
             }
             return response.json();
         })
         .then(data => {
             if (data.error) {
-                console.error("Error fetching loan details:", data.error);
-                // Clear form fields on error
-                document.getElementById('loan-amount').value = '';
-                document.getElementById('original-terms').value = '';
-                document.getElementById('original-date-start').value = '';
-                document.getElementById('balance-amount').value = '';
-                document.getElementById('original-duration-of-loan').value = '';
-                document.getElementById('original-date-end').value = '';
+                console.error("Server Error:", data.error);
                 alert(`Error: ${data.error}. Please check the loan ID.`);
+                
+                // Clear any fields that might be present
+                const elementsToClear = [
+                    'loan-amount', 'original-terms', 'original-date-start', 
+                    'balance-amount', 'original-duration-of-loan', 'original-date-end',
+                    'reconstruct-terms', 'reconstruct-interest-rate', 
+                    'reconstruct-date-start', 'reconstruct-duration-of-loan', 'reconstruct-date-end'
+                ];
+                elementsToClear.forEach(id => {
+                    const el = document.getElementById(id);
+                    if (el) el.value = '';
+                });
+                
             } else {
-                // Populate the form fields with the data from the PHP script
-                document.getElementById('loan-amount').value = data.loan_amount_with_interest;
-                document.getElementById('original-terms').value = data.payment_frequency;
-                document.getElementById('original-date-start').value = data.date_start;
-                // CRUCIAL: The balance is the new amount to be reconstructed
-                document.getElementById('balance-amount').value = data.balance; 
-                document.getElementById('original-duration-of-loan').value = data.duration_of_loan;
-                document.getElementById('original-date-end').value = data.date_end;
+                
+                // Fields to populate from the fetched data
+                const fieldsToPopulate = {
+                    'loan-amount': data.loan_amount_with_interest,
+                    'original-terms': data.payment_frequency,
+                    'original-date-start': data.date_start,
+                    'balance-amount': data.balance, // This is the Outstanding Balance / Reconstruct Amount
+                    'original-duration-of-loan': data.duration_of_loan,
+                    'original-date-end': data.date_end,
+                    // Pre-populate reconstruction terms as a suggestion
+                    'reconstruct-terms': data.payment_frequency 
+                };
+
+                for (const id in fieldsToPopulate) {
+                    const element = document.getElementById(id);
+                    if (element) { 
+                        element.value = fieldsToPopulate[id];
+                    } else {
+                        // This warning helps you fix your HTML, but doesn't crash the script
+                        console.warn(`Missing form element in HTML: #${id}. Cannot set value.`);
+                    }
+                }
             }
         })
         .catch(error => {
             console.error("There was a problem with the fetch operation:", error);
             alert("Could not load loan details. Check the server and loan ID.");
         });
+  }
+
+  // --- 3. Initial Data Load on Page Load (NOW AUTOMATIC) ---
+  loadLoanData();
+});
+/*===========================================================================================================================================*/
+document.addEventListener('DOMContentLoaded', function() {
+    const dateStartInput = document.getElementById('reconstruct-date-start');
+    const durationInput = document.getElementById('reconstruct-duration-of-loan');
+    const dateEndInput = document.getElementById('reconstruct-date-end');
+    const durationDays = 100; // Fixed duration for reconstruction calculation
+
+    // Function to calculate, set duration, and set the end date
+    function handleDateChange() {
+        const startDateValue = dateStartInput.value;
+        
+        // Check if a start date is selected
+        if (startDateValue) {
+            // 1. Set the duration input to 100 days
+            durationInput.value = `${durationDays} days`;
+
+            const startDate = new Date(startDateValue);
+            
+            // Get the time in milliseconds and add the equivalent of 100 days
+            // 1 day = 24 * 60 * 60 * 1000 milliseconds
+            const endDateTimestamp = startDate.getTime() + (durationDays * 24 * 60 * 60 * 1000);
+            const endDate = new Date(endDateTimestamp);
+
+            // Format the resulting date manually to YYYY-MM-DD for the date input field
+            const year = endDate.getFullYear();
+            // getMonth() is 0-indexed, so we add 1
+            const month = String(endDate.getMonth() + 1).padStart(2, '0'); 
+            const day = String(endDate.getDate()).padStart(2, '0');
+            
+            const formattedEndDate = `${year}-${month}-${day}`;
+            dateEndInput.value = formattedEndDate;
+            
+        } else {
+            // If start date is cleared, clear the duration and end date
+            durationInput.value = '';
+            dateEndInput.value = '';
+        }
+    }
+
+    // Attach the event listener to the start date input
+    dateStartInput.addEventListener('change', handleDateChange);
+
+    // Initial call in case the input already has a default value on load
+    handleDateChange();
+});
+/*===========================================================================================================================================*/
+
+
+
+
+// --- Function to send an audit log request to the PHP backend ---
+function logUserAction(actionType, description, targetTable = null, targetId = null, beforeState = null, afterState = null) {
+    const logHandlerUrl = 'PHP/log_action.php';
+
+    // Prepare data for POST request
+    const logData = new URLSearchParams();
+    logData.append('action', actionType);
+    logData.append('description', description);
+    
+    // Optional data (only include if provided)
+    if (targetTable) logData.append('target_table', targetTable);
+    if (targetId) logData.append('target_id', targetId);
+    if (beforeState) logData.append('before_state', beforeState);
+    if (afterState) logData.append('after_state', afterState);
+
+    // Send data to PHP
+    fetch(logHandlerUrl, {
+        method: 'POST',
+        headers: {
+            'Content-Type': 'application/x-www-form-urlencoded',
+        },
+        body: logData.toString()
+    })
+    .then(response => {
+        if (!response.ok) {
+            // Log HTTP error to console, but don't stop the main user workflow
+            console.error(`Audit Log HTTP error! status: ${response.status}`);
+            return response.text().then(text => {
+                console.error("Audit Log Response:", text);
+            });
+        }
+        // Audit log success (optional console log)
+        // console.log('Audit trail successfully logged.');
+    })
+    .catch(error => {
+        // Log network error for the audit trail to console
+        console.error('Audit Log Fetch Error:', error);
+    });
+}
+
+
+// --- Function to handle saving the reconstruction data ---
+function handleReconstructSave(event) {
+    event.preventDefault(); // Stop the default form submission
+
+    // The handler is in the PHP/ directory
+    const handlerUrl = 'PHP/loan_reconstruct_save_handler.php'; 
+
+    // 1. Get loanID from URL (e.g., from ...?clientID=...&loanID=10202500006)
+    const urlParams = new URLSearchParams(window.location.search);
+    const loanId = urlParams.get('loanID'); 
+
+    if (!loanId) {
+        alert('Error: Loan ID (loanID) is missing from the URL. Cannot save.');
+        return;
+    }
+
+    // 2. Collect Reconstruct Details from the HTML inputs
+    const paymentFrequency = document.getElementById('reconstruct-terms').value;
+    const dateStart = document.getElementById('reconstruct-date-start').value;
+    const duration = document.getElementById('reconstruct-duration-of-loan').value;
+    const dateEnd = document.getElementById('reconstruct-date-end').value;
+
+    // Basic validation
+    if (!paymentFrequency || !dateStart || !duration || !dateEnd) {
+        alert('Please fill out all reconstruction details before applying.');
+        return;
+    }
+
+    // 3. Prepare data for POST request using URLSearchParams
+    const formData = new URLSearchParams();
+    formData.append('loanID', loanId); 
+    formData.append('payment_frequency', paymentFrequency);
+    formData.append('date_start', dateStart);
+    formData.append('duration_of_loan', duration);
+    formData.append('date_end', dateEnd);
+
+    // 4. Send data to PHP
+    fetch(handlerUrl, {
+        method: 'POST',
+        headers: {
+            'Content-Type': 'application/x-www-form-urlencoded',
+        },
+        body: formData.toString()
+    })
+    .then(response => {
+        // Check for HTTP errors (e.g., 404, 500)
+        if (!response.ok) {
+            // For non-200 responses, try to read the error body as text for better debugging
+            return response.text().then(text => {
+                throw new Error(`HTTP error! status: ${response.status}. Response body: ${text}`);
+            });
+        }
+        return response.json(); // Attempt to parse the expected JSON response
+    })
+    .then(data => {
+        if (data.success) {
+            // Success logic
+            alert('Loan reconstruction successfully applied!');
+            
+            // Log the action upon successful save (This will now work!)
+            logUserAction(
+                'UPDATE', 
+                `Reconstructed Loan ID: ${loanId}. New terms: Freq:${paymentFrequency}, Duration:${duration}`,
+                'loans', // Target table
+                loanId,  // Target ID
+            );
+
+            // === REDIRECT AFTER SUCCESS ===
+            window.location.href = 'AccountsReceivable.html';
+            // ===============================
+
+        } else {
+            // Server reported an error
+            const errorMessage = data.error || 'An unknown server error occurred.';
+            alert('Reconstruction failed: ' + errorMessage);
+            console.error('Server Error:', data);
+        }
+    })
+    .catch(error => {
+        // Network or JSON parsing error
+        alert('A network error or unexpected response was received. Check console for details.');
+        console.error('Fetch Error:', error);
+        console.error("DEBUG HINT: This error often means your PHP file crashed and returned an HTML error page. Check your PHP server error logs or the response body printed above.");
+    });
+}
+
+// Attach the event listener to the form's submit event
+const reconstructForm = document.querySelector('form'); 
+if (reconstructForm) {
+    reconstructForm.addEventListener('submit', handleReconstructSave);
 }

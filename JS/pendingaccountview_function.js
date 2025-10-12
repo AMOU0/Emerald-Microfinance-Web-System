@@ -1,65 +1,79 @@
 document.addEventListener('DOMContentLoaded', function() {
-    // Call the session check function as soon as the page loads.
-    checkSessionAndRedirect(); 
+  // Call the session check function as soon as the page loads.
+  checkSessionAndRedirect(); 
 
-    const navLinks = document.querySelectorAll('.nav-link');
-    const logoutButton = document.querySelector('.logout-button');
+  // --- Global Logging Function (Now accepts full audit trail data) ---
+  function logUserAction(actionType, description, targetTable = null, targetId = null, beforeState = null, afterState = null) {
+    const bodyData = new URLSearchParams();
+    bodyData.append('action', actionType); 
+    bodyData.append('description', description); 
+    // Append optional audit trail data
+    if (targetTable) bodyData.append('target_table', targetTable);
+    if (targetId) bodyData.append('target_id', targetId);
+    if (beforeState) bodyData.append('before_state', beforeState);
+    if (afterState) bodyData.append('after_state', afterState);
 
-    navLinks.forEach(link => {
-        link.addEventListener('click', function(event) {
-            event.preventDefault(); 
-            navLinks.forEach(nav => nav.classList.remove('active'));
-            this.classList.add('active');
-
-            const linkText = this.textContent.toLowerCase().replace(/\s/g, ''); 
-            
-            const urlMapping = {
-                'dashboard': 'DashBoard.html',
-                'clientcreation': 'ClientCreationForm.html',
-                'loanapplication': 'LoanApplication.html',
-                'pendingaccounts': 'PendingAccount.html',
-                'paymentcollection': 'AccountsReceivable.html',
-                'ledger': 'Ledgers.html',
-                'reports': 'Reports.html',
-                'usermanagement': 'UserManagement.html',
-                'tools': 'Tools.html'
-            };
-
-            const targetPage = urlMapping[linkText];
-            if (targetPage) {
-                // 1. Define the action for the audit log
-                const actionDescription = `Maps to ${this.textContent} (${targetPage})`;
-
-                // 2. ASYNCHRONOUS AUDIT LOG: Call PHP to log the action. 
-                //    This will not block the page from redirecting.
-                fetch('PHP/log_action.php', {
-                    method: 'POST',
-                    headers: {
-                        'Content-Type': 'application/x-www-form-urlencoded',
-                    },
-                    body: `action=${encodeURIComponent(actionDescription)}`
-                })
-                .then(response => {
-                    if (!response.ok) {
-                        console.warn('Audit log failed to record for navigation:', actionDescription);
-                    }
-                })
-                .catch(error => {
-                    console.error('Audit log fetch error:', error);
-                })
-                // 3. Perform the page redirect immediately
-                window.location.href = targetPage;
-            } else {
-                console.error('No page defined for this link:', linkText);
-            }
-        });
+    fetch('PHP/log_action.php', {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/x-www-form-urlencoded',
+      },
+      body: bodyData.toString()
+    })
+    .then(response => {
+      if (!response.ok) {
+        console.warn('Audit log failed to record:', actionType, description);
+      }
+    })
+    .catch(error => {
+      console.error('Audit log fetch error:', error);
     });
+  }
+  // --------------------------------------------------------
 
-    // Handle the logout button securely
-    // NOTE: The PHP script 'PHP/check_logout.php' will now handle the log *before* session destruction.
+  const navLinks = document.querySelectorAll('.nav-link');
+  const logoutButton = document.querySelector('.logout-button');
+
+  const urlMapping = {
+    'dashboard': 'DashBoard.html',
+    'clientcreation': 'ClientCreationForm.html',
+    'loanapplication': 'LoanApplication.html',
+    'pendingaccounts': 'PendingAccount.html',
+    'paymentcollection': 'AccountsReceivable.html',
+    'ledger': 'Ledgers.html',
+    'reports': 'Reports.html',
+    'usermanagement': 'UserManagement.html',
+    'tools': 'Tools.html'
+  };
+
+  navLinks.forEach(link => {
+    link.addEventListener('click', function(event) {
+      event.preventDefault(); 
+      navLinks.forEach(nav => nav.classList.remove('active'));
+      this.classList.add('active');
+
+      const linkText = this.textContent.toLowerCase().replace(/\s/g, ''); 
+      const targetPage = urlMapping[linkText];
+
+      if (targetPage) {
+        const actionType = 'NAVIGATION';
+        const description = `Clicked "${this.textContent}" link, redirecting to ${targetPage}`;
+        logUserAction(actionType, description); 
+        window.location.href = targetPage;
+      } else {
+        console.error('No page defined for this link:', linkText);
+        const actionType = 'NAVIGATION_FAILED';
+        const description = `Clicked link "${this.textContent}" with no mapped page.`;
+        logUserAction(actionType, description);
+      }
+    });
+  });
+
+  if (logoutButton) {
     logoutButton.addEventListener('click', function() {
-        window.location.href = 'PHP/check_logout.php'; 
+      window.location.href = 'PHP/check_logout.php'; 
     });
+  }
 });
 /*=============================================================================================================================================================================*/
 
@@ -186,49 +200,45 @@ const fetchAndPopulateSelect = async (element, endpoint, params = {}, defaultVal
 
 // --- Loan Detail Calculation Logic ---
 const updateLoanDetails = () => {
-    const startDate = dateStartInput.value;
-    const frequency = paymentFrequencySelect.value;
-    let duration = '';
+    const startDateString = dateStartInput.value;
     let endDate = '';
+    const daysToAdd = 100; // Fixed duration of 100 days
 
-    if (startDate && frequency) {
-        const date = new Date(startDate);
-        date.setHours(0, 0, 0, 0); 
-        let daysToAdd = 0;
-
-        switch (frequency) {
-            case 'daily':
-                daysToAdd = 90; 
-                duration = `${daysToAdd} days`;
-                date.setDate(date.getDate() + daysToAdd);
-                break;
-            case 'weekly':
-                daysToAdd = 12 * 7; 
-                duration = `12 weeks`;
-                date.setDate(date.getDate() + daysToAdd);
-                break;
-            case 'monthly':
-                let monthsToAdd = 6; 
-                duration = `${monthsToAdd} months`;
-                date.setMonth(date.getMonth() + monthsToAdd); 
-                break;
-        }
+    if (startDateString) {
+        // Create a new Date object from the start date string
+        const startDate = new Date(startDateString);
         
-        const year = date.getFullYear();
-        const month = String(date.getMonth() + 1).padStart(2, '0');
-        const day = String(date.getDate()).padStart(2, '0');
+        // Normalize the time to ensure correct date arithmetic, especially across timezones
+        startDate.setHours(0, 0, 0, 0); 
+
+        // Add 100 days to the start date
+        startDate.setDate(startDate.getDate() + daysToAdd);
+        
+        // The date variable now holds the end date
+        const endDateObj = startDate; 
+
+        // Format the new date as YYYY-MM-DD for the input field
+        const year = endDateObj.getFullYear();
+        // getMonth() is 0-indexed, so add 1, and use padStart for '01' instead of '1'
+        const month = String(endDateObj.getMonth() + 1).padStart(2, '0');
+        const day = String(endDateObj.getDate()).padStart(2, '0');
+        
         endDate = `${year}-${month}-${day}`;
     }
 
-    durationOfLoanInput.value = duration;
+    // Set the loan duration display to a fixed value
+    durationOfLoanInput.value = `${daysToAdd} days`;
+    // Update the end date input field
     dateEndInput.value = endDate;
 };
 
 // --- Event Listeners for dynamic fields ---
-if (dateStartInput && paymentFrequencySelect) {
+// Only listen for changes on the start date input.
+if (dateStartInput) {
     dateStartInput.addEventListener('change', updateLoanDetails);
-    paymentFrequencySelect.addEventListener('change', updateLoanDetails);
-}
+} 
+
+// Removed the listener for paymentFrequencySelect as it's no longer needed for this logic.
 
 if (citySelect && barangaySelect) {
     citySelect.addEventListener('change', () => {
@@ -353,6 +363,27 @@ const fetchPendingAccountData = async (clientId) => {
 const handleFormSubmission = () => {
     if (!form || !saveButton) return;
     
+    // Helper to call the logUserAction from the outer scope
+    const logUserAction = (actionType, description, targetTable = null, targetId = null, beforeState = null, afterState = null) => {
+        // Since logUserAction is defined in the outer scope (DOMContentLoaded), we assume it's callable.
+        // We redefine it here locally to ensure it is always available inside the event listener.
+        const bodyData = new URLSearchParams();
+        bodyData.append('action', actionType); 
+        bodyData.append('description', description); 
+        if (targetTable) bodyData.append('target_table', targetTable);
+        if (targetId) bodyData.append('target_id', targetId);
+        if (beforeState) bodyData.append('before_state', beforeState);
+        if (afterState) bodyData.append('after_state', afterState);
+
+        fetch('PHP/log_action.php', {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/x-www-form-urlencoded',
+          },
+          body: bodyData.toString()
+        }).catch(e => console.error('Local logUserAction error:', e));
+    };
+    
     form.addEventListener('submit', async (e) => {
         e.preventDefault(); 
 
@@ -365,7 +396,18 @@ const handleFormSubmission = () => {
         showMessage('Saving changes...', 'info');
 
         const formData = new FormData(form);
+        const clientId = clientIdInput.value; // Get the Client ID from the input field
         
+        // Ensure client_id is in the POST data
+        if (clientId) {
+             formData.append('client_id', clientId); 
+        } else {
+             showMessage('Error: Client ID is missing from form. Cannot save.', 'error');
+             saveButton.textContent = originalButtonText;
+             saveButton.disabled = false;
+             return;
+        }
+
         // Explicitly include unchecked checkboxes for PHP logic
         if (!barangayClearanceCheck.checked) {
              formData.append('barangayClearanceCheck', 'off');
@@ -375,6 +417,7 @@ const handleFormSubmission = () => {
         }
 
         try {
+            // STEP A: Perform the database update
             const response = await fetch('PHP/pendingaccountupdate_handler.php', {
                 method: 'POST',
                 body: formData
@@ -383,12 +426,52 @@ const handleFormSubmission = () => {
             const result = await response.json();
 
             if (result.success) {
+                // STEP B: Database update succeeded. Now perform the audit log.
                 showMessage(result.message, 'success');
+                
+                // --- AUDIT TRAIL: Log Success ---
+                const auditData = result.audit_data;
+                const actionType = 'UPDATED';
+                const description = `Successfully saved pending account details for Client ID: ${clientId}.`;
+                
+                logUserAction(
+                    actionType, 
+                    description, 
+                    auditData.target_table, 
+                    auditData.client_id, 
+                    auditData.before_state, 
+                    auditData.after_state
+                ); 
+                // ------------------------------------
+                
             } else {
+                // STEP B: Database update failed. Log the failure.
                 showMessage(result.error || 'Failed to save changes. Please try again.', 'error');
+                
+                // --- AUDIT TRAIL: Log Failure ---
+                const actionType = 'UPDATE_FAILED';
+                const description = `Failed to save pending account details for Client ID: ${clientId}. Server error: ${result.error || 'Unknown'}.`;
+                // Pass before state and set after state to the error message for debugging
+                logUserAction(
+                    actionType, 
+                    description, 
+                    'clients, etc.', 
+                    clientId, 
+                    'N/A', 
+                    result.error || 'Unknown Server Error'
+                );
+                // ------------------------------------
                 console.error('Submission Error:', result.error);
             }
         } catch (error) {
+            // STEP B: Network failure during the update call. Log the error.
+            
+            // --- AUDIT TRAIL: Log Network Failure (Client-side responsibility) ---
+            const actionType = 'NETWORK_ERROR';
+            const description = `Network error during save attempt for Client ID: ${clientId}.`;
+            logUserAction(actionType, description, 'clients, etc.', clientId, 'N/A', `Network connection failed: ${error.message}`);
+            // -------------------------------------------------------------------
+            
             console.error('Network Error:', error);
             showMessage('Network error: Could not connect to the server.', 'error');
         } finally {

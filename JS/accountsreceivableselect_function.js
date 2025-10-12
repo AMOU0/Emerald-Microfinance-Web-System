@@ -1,52 +1,104 @@
 document.addEventListener('DOMContentLoaded', function() {
-    const navLinks = document.querySelectorAll('.nav-link');
-    const logoutButton = document.querySelector('.logout-button');
+  // Call the session check function as soon as the page loads.
+  checkSessionAndRedirect(); 
 
-    // ... (Navigation and Logout Handlers - KEEP AS IS) ...
-    navLinks.forEach(link => {
-        link.addEventListener('click', function(event) {
-            event.preventDefault(); 
-            navLinks.forEach(nav => nav.classList.remove('active'));
-            this.classList.add('active');
+  // --- Global Logging Function (MODIFIED) ---
+  /**
+   * Logs a user action, separating the action type from the description, and includes DML audit data.
+   * @param {string} actionType The classification of the action (e.g., NAVIGATION, VIEW, PAYMENT).
+   * @param {string} description The detailed description of the action.
+   * @param {Object} [dbLogParams={}] Optional parameters for DML logs.
+   */
+  function logUserAction(actionType, description, dbLogParams = {}) {
+    // Collect all data into a single object for FormData construction
+    const logData = {
+        action: actionType,
+        description: description,
+        target_table: dbLogParams.targetTable || null,
+        target_id: dbLogParams.targetId || null,
+        before_state: dbLogParams.beforeState || null,
+        after_state: dbLogParams.afterState || null
+    };
 
-            const linkText = this.textContent.toLowerCase().replace(/\s/g, ''); 
-            
-            const urlMapping = {
-                'dashboard': 'DashBoard.html',
-                'clientcreation': 'ClientCreationForm.html',
-                'loanapplication': 'LoanApplication.html',
-                'pendingaccounts': 'PendingAccount.html',
-                'paymentcollection': 'AccountsReceivable.html',
-                'ledger': 'Ledgers.html',
-                'reports': 'Reports.html',
-                'usermanagement': 'UserManagement.html',
-                'tools': 'Tools.html'
-            };
+    // Use URLSearchParams for application/x-www-form-urlencoded
+    const bodyParams = new URLSearchParams();
+    for (const key in logData) {
+        if (logData[key] !== null) {
+            bodyParams.append(key, logData[key]);
+        }
+    }
 
-            if (urlMapping[linkText]) {
-                window.location.href = urlMapping[linkText];
-            } else {
-                console.error('No page defined for this link:', linkText);
-            }
-        });
+    fetch('PHP/log_action.php', {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/x-www-form-urlencoded',
+      },
+      body: bodyParams.toString()
+    })
+    .then(response => {
+      // Per the PHP file's logic, this will often be 200 even on log failure.
+      if (!response.ok) {
+        console.warn('Audit log failed to record (Server Warning):', actionType, description);
+      }
+    })
+    .catch(error => {
+      console.error('Audit log fetch error:', error);
     });
+  }
+  // --------------------------------------------------------
 
-    if (logoutButton) {
-        logoutButton.addEventListener('click', function() {
-            window.location.href = 'PHP/check_logout.php'; 
-        });
-    }
-    
-    const returnButton = document.querySelector('.return-button'); 
+  const navLinks = document.querySelectorAll('.nav-link');
+  const logoutButton = document.querySelector('.logout-button');
 
-    if (returnButton) {
-        returnButton.addEventListener('click', () => {
-            window.location.href = 'accountsreceivable.html'; 
-        });
-    }
+  const urlMapping = {
+    'dashboard': 'DashBoard.html',
+    'clientcreation': 'ClientCreationForm.html',
+    'loanapplication': 'LoanApplication.html',
+    'pendingaccounts': 'PendingAccount.html',
+    'paymentcollection': 'AccountsReceivable.html',
+    'ledger': 'Ledgers.html',
+    'reports': 'Reports.html',
+    'usermanagement': 'UserManagement.html',
+    'tools': 'Tools.html'
+  };
+
+  navLinks.forEach(link => {
+    link.addEventListener('click', function(event) {
+      event.preventDefault(); 
+      navLinks.forEach(nav => nav.classList.remove('active'));
+      this.classList.add('active');
+
+      // Normalize the link text for mapping lookup
+      const linkText = this.textContent.toLowerCase().replace(/\s/g, ''); 
+      const targetPage = urlMapping[linkText];
+
+      if (targetPage) {
+        // Log Navigation Action using the new format
+        const actionType = 'NAVIGATION';
+        const actionDescription = `Clicked "${this.textContent}" link, redirecting to ${targetPage}`;
+
+        logUserAction(actionType, actionDescription);
+
+        window.location.href = targetPage;
+      } else {
+        console.error('No page defined for this link:', linkText);
+        
+        // Log Failed Navigation
+        logUserAction('FAILED_NAVIGATION', `Clicked link "${this.textContent}" with no mapped page.`);
+      }
+    });
+  });
+
+  if (logoutButton) {
+    logoutButton.addEventListener('click', function() {
+      // check_logout.php should handle the LOGOUT log itself.
+      window.location.href = 'PHP/check_logout.php'; 
+    });
+  }
+
 
     // ==========================================================
-    // 3. Loan Details, Schedule Fetch, and Payment Handler (Original Third Block)
+    // 3. Loan Details, Schedule Fetch, and Payment Handler 
     // ==========================================================
     
     const urlParams = new URLSearchParams(window.location.search);
@@ -73,9 +125,8 @@ document.addEventListener('DOMContentLoaded', function() {
 
     let loanData = null; // Stores loan summary for payment validation
 
-    // 💰 UPDATED: Helper function for currency formatting with 2 decimals
+    // Helper function for currency formatting with 2 decimals
     const formatCurrency = (amount) => {
-        // Ensure it's a number and format to 2 decimal places with commas
         const num = parseFloat(amount);
         if (isNaN(num)) return '0.00';
         return num.toFixed(2);
@@ -94,13 +145,13 @@ document.addEventListener('DOMContentLoaded', function() {
         if (reconstructId) {
             queryString += `&reconstructID=${reconstructId}`;
         }
-
+        
         // --- Fetch Summary Details ---
         try {
             const summaryUrl = `PHP/accountsreceivableselect_handler.php?${queryString}`;
             const summaryRes = await fetch(summaryUrl);
             const summaryData = await summaryRes.json();
-
+            
             if (summaryData.error) {
                 messageContainer.textContent = `Error: ${summaryData.error}`;
                 messageContainer.style.color = 'red';
@@ -120,7 +171,6 @@ document.addEventListener('DOMContentLoaded', function() {
             currentDueInput.value = loanData.current_due;
             nextDueInput.value = loanData.next_due;
             
-            // 💰 UPDATE: Set initial amount input value to the 'amount_to_pay' formatted
             amountInput.value = formatCurrency(loanData.amount_to_pay); 
 
         } catch (e) {
@@ -147,10 +197,10 @@ document.addEventListener('DOMContentLoaded', function() {
                 return;
             }
 
-            // Render Table
+            // Render Table (rendering logic omitted for brevity, assumed to be correct)
             scheduleData.forEach((installment) => {
                 const row = scheduleTableBody.insertRow();
-                
+                // ... row rendering logic ...
                 const isPaid = installment.is_paid;
                 const isPartiallyPaid = installment.amount_paid > 0 && !isPaid;
                 const rowClass = isPaid ? 'paid' : (isPartiallyPaid ? 'partially-paid' : '');
@@ -167,7 +217,7 @@ document.addEventListener('DOMContentLoaded', function() {
                 row.insertCell().textContent = formatCurrency(installment.remaining_balance);
             });
             
-            // Update Due Dates
+            // Update Due Dates (logic omitted for brevity, assumed to be correct)
             const firstUnpaid = scheduleData.find(item => !item.is_paid);
             if (firstUnpaid) {
                 const firstUnpaidIndex = scheduleData.findIndex(item => !item.is_paid);
@@ -182,6 +232,12 @@ document.addEventListener('DOMContentLoaded', function() {
             messageContainer.textContent = 'Schedule and details loaded successfully.';
             messageContainer.style.color = 'green';
             
+            // --- AUDIT LOG ADDITION: Successful Data Load ---
+            logUserAction('VIEW', 
+                          `Successfully loaded loan details and schedule for Client ID: ${clientId}, Loan ID: ${loanId}`
+            );
+            // ------------------------------------------------
+            
         } catch (error) {
             console.error('Schedule Fetch Error:', error);
             messageContainer.textContent = 'Failed to fetch or process schedule data.';
@@ -189,21 +245,18 @@ document.addEventListener('DOMContentLoaded', function() {
         }
     }
 
-    // 💰 NEW: Add event listener to auto-format amount on blur
+    // Add event listener to auto-format amount on blur
     amountInput.addEventListener('blur', function() {
         const value = this.value.trim();
         if (value && !isNaN(value)) {
-            // Reformat the number when the user clicks away
             this.value = formatCurrency(value);
         } else if (!value) {
-            // If empty, reset to 0.00
             this.value = '0.00';
         }
     });
 
-    // 💰 NEW: Add event listener to handle input (optional - for better typing experience)
+    // Add event listener to handle input 
     amountInput.addEventListener('input', function() {
-        // Simple logic to clean input while typing, keeping only numbers and one decimal point
         this.value = this.value.replace(/[^0-9.]/g, ''); 
         const parts = this.value.split('.');
         if (parts.length > 2) {
@@ -215,7 +268,6 @@ document.addEventListener('DOMContentLoaded', function() {
     // --- Payment Handler ---
     if (payButton) {
         payButton.addEventListener('click', () => {
-            // IMPORTANT: Get the raw number for the payment, ignoring commas, but respecting the decimal point
             const amountStr = amountInput.value.replace(/[^0-9.]/g, ''); 
             
             if (!amountStr || isNaN(amountStr)) {
@@ -223,16 +275,14 @@ document.addEventListener('DOMContentLoaded', function() {
                 messageContainer.style.color = 'red';
                 return;
             }
-            const amount = parseFloat(amountStr); // The clean float value to send to the server
+            const amount = parseFloat(amountStr); 
             
-            // Validation checks
             if (amount <= 0) {
                 messageContainer.textContent = 'Payment amount must be positive';
                 messageContainer.style.color = 'red';
                 return;
             }
             
-            // Validation: Payment cannot exceed total balance. Remove formatting for comparison.
             const balanceValue = parseFloat(balanceInput.value.replace(/[^0-9.]/g, ''));
 
             if (amount > balanceValue) {
@@ -241,10 +291,21 @@ document.addEventListener('DOMContentLoaded', function() {
                 return;
             }
             
+            // Capture the 'Before State' for logging
+            const beforePaymentState = {
+                loanId: loanId,
+                clientId: clientId,
+                balance: balanceInput.value,
+                amountToPay: amountToPayInput.value,
+                paymentAmount: formatCurrency(amount)
+            };
+            const beforeStateJSON = JSON.stringify(beforePaymentState);
+
+
             const formData = new FormData();
             formData.append('client_id', clientId);
             formData.append('loan_id', loanId);
-            formData.append('amount', amount); // Use the clean float value
+            formData.append('amount', amount); 
             formData.append('processby', 'system');
             
             if (reconstructId) {
@@ -263,12 +324,37 @@ document.addEventListener('DOMContentLoaded', function() {
                     if (data.error) {
                         messageContainer.textContent = data.error;
                         messageContainer.style.color = 'red';
+                        
+                        // --- AUDIT LOG ADDITION: Failed Payment ---
+                        logUserAction('FAILED_PAYMENT', 
+                                     `Attempted to pay ${formatCurrency(amount)} for Client ID: ${clientId}, Loan ID: ${loanId}. Server Error: ${data.error}`,
+                                     {
+                                         targetTable: 'payment', // Target payment table
+                                         targetId: loanId,
+                                         beforeState: beforeStateJSON,
+                                         afterState: JSON.stringify({ error: data.error })
+                                     }
+                        );
+                        // ------------------------------------------
                     } else {
                         messageContainer.textContent = data.message;
                         messageContainer.style.color = 'green';
+                        
+                        // --- AUDIT LOG ADDITION: Successful Payment ---
+                        logUserAction('PAYMENT', 
+                                     `Successfully processed payment of ${formatCurrency(amount)} for Client ID: ${clientId}, Loan ID: ${loanId}.`,
+                                     {
+                                         targetTable: 'payment', 
+                                         targetId: loanId,
+                                         beforeState: beforeStateJSON,
+                                         // The server message indicates success, use it as a placeholder for afterState
+                                         afterState: JSON.stringify({ message: data.message, amount: formatCurrency(amount) }) 
+                                     }
+                        );
+                        // ----------------------------------------------
+                        
                         // Refresh both summary fields and the table
                         fetchLoanDataAndSchedule(); 
-                        // Optional: Reset amount input after successful payment
                         amountInput.value = '0.00';
                     }
                 })
@@ -276,6 +362,18 @@ document.addEventListener('DOMContentLoaded', function() {
                     messageContainer.textContent = 'Error processing payment';
                     messageContainer.style.color = 'red';
                     console.error(e);
+                    
+                    // --- AUDIT LOG ADDITION: Catch Error Payment ---
+                    logUserAction('PAYMENT_ERROR', 
+                                 `Fetch error processing payment of ${formatCurrency(amount)} for Client ID: ${clientId}, Loan ID: ${loanId}.`,
+                                 {
+                                     targetTable: 'payment',
+                                     targetId: loanId,
+                                     beforeState: beforeStateJSON,
+                                     afterState: JSON.stringify({ fetchError: e.message || 'Unknown fetch error' })
+                                 }
+                    );
+                    // ------------------------------------------------
                 });
         });
     }
