@@ -3,7 +3,7 @@
 -- https://www.phpmyadmin.net/
 --
 -- Host: 127.0.0.1
--- Generation Time: Oct 06, 2025 at 12:00 PM
+-- Generation Time: Oct 12, 2025 at 06:15 PM
 -- Server version: 10.4.32-MariaDB
 -- PHP Version: 8.2.12
 
@@ -31,8 +31,260 @@ CREATE TABLE `audit_logs` (
   `log_id` int(11) NOT NULL,
   `user_id` int(11) NOT NULL,
   `action` varchar(255) NOT NULL,
+  `description` text NOT NULL,
+  `target_table` varchar(100) DEFAULT NULL,
+  `target_id` varchar(50) DEFAULT NULL,
+  `ip_address` varchar(45) DEFAULT NULL,
+  `before_state` text DEFAULT NULL,
+  `after_state` text DEFAULT NULL,
   `created_at` timestamp NOT NULL DEFAULT current_timestamp()
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
+
+--
+-- Dumping data for table `audit_logs`
+--
+
+INSERT INTO `audit_logs` (`log_id`, `user_id`, `action`, `description`, `target_table`, `target_id`, `ip_address`, `before_state`, `after_state`, `created_at`) VALUES
+(1, 1, 'VIEW', 'Viewed Report: Audit Trail (ReportsAuditTrail.html)', NULL, NULL, '::1', NULL, NULL, '2025-10-11 04:26:11'),
+(2, 1, 'VIEW', 'Viewed Report: Due Payments (ReportsDuePayments.html)', NULL, NULL, '::1', NULL, NULL, '2025-10-11 04:26:15'),
+(3, 1, 'NAVIGATION', 'Clicked \"Ledger\" link, redirecting to Ledgers.html', NULL, NULL, '::1', NULL, NULL, '2025-10-11 04:26:19'),
+(4, 1, 'VIEW', 'Selected client \"Angel Laurence Paras Mallari\" (ID: 202500001) to view ledger.', 'clients', '202500001', '::1', 'From URL: /Emerald-Microfinance/Ledgers.html', 'To URL: LedgersView.html?client_id=202500001', '2025-10-11 04:26:20'),
+(5, 1, 'VIEW', 'Opened Loan Detail Modal for Loan ID: 10202500001.', 'loan_applications', '10202500001', '::1', NULL, NULL, '2025-10-11 04:26:21'),
+(6, 1, 'VIEW', 'Closed Loan Detail Modal via outside click.', 'UI_ACTION', 'loanDetailModal', '::1', NULL, NULL, '2025-10-11 04:26:22'),
+(7, 1, 'NAVIGATION', 'Executed \'returnToLedgers\' function, redirecting to Ledgers.html', 'NAVIGATION', 'Ledgers.html', '::1', NULL, NULL, '2025-10-11 04:26:23'),
+(8, 1, 'NAVIGATION', 'Clicked \"Payment Collection\" link, redirecting to AccountsReceivable.html', NULL, NULL, '::1', 'From URL: /Emerald-Microfinance/Ledgers.html', 'To URL: AccountsReceivable.html', '2025-10-11 04:26:24'),
+(9, 1, 'NAVIGATION', 'RESTRUCTURE button clicked for Loan ID 10202500001. Redirecting to reconstruct page.', 'loan_applications', '10202500001', '::1', NULL, NULL, '2025-10-11 04:26:26'),
+(10, 1, 'NAVIGATION', 'SELECT button clicked for Loan ID 10202500001. Redirecting to payment page.', 'loan_applications', '10202500001', '::1', NULL, NULL, '2025-10-11 04:26:30'),
+(11, 1, 'VIEW', 'Successfully loaded loan details and schedule for Client ID: 202500001, Loan ID: 10202500001', NULL, NULL, '::1', NULL, NULL, '2025-10-11 04:26:31'),
+(12, 1, 'NAVIGATION', 'Clicked \"Pending Accounts\" link, redirecting to PendingAccount.html', NULL, NULL, '::1', NULL, NULL, '2025-10-11 04:26:33'),
+(13, 1, 'NAVIGATION', 'Clicked \"Loan Application\" link, redirecting to LoanApplication.html', '', '', '::1', '', '', '2025-10-11 04:26:36'),
+(14, 1, 'VIEWED', 'Opened Client Search Modal.', 'clients', NULL, '::1', NULL, NULL, '2025-10-11 04:26:38'),
+(15, 1, 'VIEWED', 'Fetched Interest Rate: 20%', 'interest_pecent', NULL, '::1', NULL, NULL, '2025-10-11 04:26:38'),
+(16, 1, 'VIEWED', 'Closed Client Selection Modal.', NULL, NULL, '::1', NULL, NULL, '2025-10-11 04:26:40'),
+(17, 1, 'NAVIGATION', 'Clicked \"Reports\" link, redirecting to Reports.html', NULL, NULL, '::1', NULL, NULL, '2025-10-11 04:26:42'),
+(18, 1, 'VIEW', 'Viewed Report: Audit Trail (ReportsAuditTrail.html)', NULL, NULL, '::1', NULL, NULL, '2025-10-11 04:26:44'),
+(19, 1, 'VIEW', 'FAILED: Clicked report button \"Due Payments\" with no mapped page.', NULL, NULL, '::1', NULL, NULL, '2025-10-11 05:01:45'),
+(20, 1, 'NAVIGATION', 'Clicked \"Payment Collection\" link, redirecting to AccountsReceivable.html', NULL, NULL, '::1', NULL, NULL, '2025-10-11 06:01:32'),
+(21, 1, 'NAVIGATION', 'SELECT button clicked for Loan ID 10202500001. Redirecting to payment page.', 'loan_applications', '10202500001', '::1', NULL, NULL, '2025-10-11 06:01:35'),
+(22, 1, 'VIEW', 'Successfully loaded loan details and schedule for Client ID: 202500001, Loan ID: 10202500001', NULL, NULL, '::1', NULL, NULL, '2025-10-11 06:01:35'),
+(23, 1, 'NAVIGATION', 'Clicked \"Payment Collection\" link, redirecting to AccountsReceivable.html', NULL, NULL, '::1', NULL, NULL, '2025-10-11 06:17:11'),
+(24, 1, 'NAVIGATION', 'SELECT button clicked for Loan ID 10202500001. Redirecting to payment page.', 'loan_applications', '10202500001', '::1', NULL, NULL, '2025-10-11 06:17:14'),
+(25, 1, 'VIEW', 'Successfully loaded loan details and schedule for Client ID: 202500001, Loan ID: 10202500001', NULL, NULL, '::1', NULL, NULL, '2025-10-11 06:17:14'),
+(26, 1, 'NAVIGATION', 'Clicked \"Loan Application\" link, redirecting to LoanApplication.html', NULL, NULL, '::1', NULL, NULL, '2025-10-11 06:17:45'),
+(27, 1, 'VIEWED', 'Opened Client Search Modal.', 'clients', NULL, '::1', NULL, NULL, '2025-10-11 06:17:47'),
+(28, 1, 'VIEWED', 'Fetched Interest Rate: 20%', 'interest_pecent', NULL, '::1', NULL, NULL, '2025-10-11 06:17:47'),
+(29, 1, 'UPDATED', 'Selected Client ID 202500001 (Angel Laurence Paras Mallari) for loan application.', 'clients', '202500001', '::1', '{\"clientID\":\"\",\"clientName\":\"\"}', '{\"clientID\":\"202500001\",\"clientName\":\"Angel Laurence Paras Mallari\"}', '2025-10-11 06:17:48'),
+(30, 1, 'CREATED', 'Attempting submission for Client ID: 202500001. Target: loan_applications (202500001)', 'loan_applications', '202500001', '::1', NULL, NULL, '2025-10-11 06:18:02'),
+(31, 1, 'CREATED', 'Loan application successfully created. Loan ID: 10202500002. Client ID: 202500001.', 'loan_applications', '10202500002', '::1', NULL, '{\"clientID\":\"202500001\",\"clientName\":\"Angel Laurence Paras Mallari\",\"colateral\":\"Single Motor(Rusi 125)\",\"guarantorLastName\":\"Mallari\",\"guarantorFirstName\":\"Angel Laurence\",\"guarantorMiddleName\":\"Paras\",\"guarantorStreetAddress\":\"#205 Alvindia Segundo Tarlac City\",\"guarantorPhoneNumber\":\"09212271315\",\"loan-amount\":30000,\"payment-frequency\":\"daily\",\"date-start\":\"2025-10-01\",\"duration-of-loan\":\"100 days\",\"date-end\":\"2026-01-09\",\"interest-rate\":20,\"loanID\":\"10202500002\"}', '2025-10-11 06:18:02'),
+(32, 1, 'VIEWED', 'Opened Loan Details Modal for Loan ID: 10202500002. Target: loan_applications (10202500002)', NULL, NULL, '::1', NULL, NULL, '2025-10-11 06:18:02'),
+(33, 1, 'VIEWED', 'Closed Loan Details Modal for Loan ID: 10202500002', NULL, NULL, '::1', NULL, NULL, '2025-10-11 06:18:04'),
+(34, 1, 'NAVIGATION', 'Clicked \"Pending Accounts\" link, redirecting to PendingAccount.html', NULL, NULL, '::1', NULL, NULL, '2025-10-11 06:18:05'),
+(35, 1, 'UPDATE', 'Loan Application Status changed to \'APPROVED\'', 'loan_applications', '10202500002', '::1', 'status: pending', 'status: approved', '2025-10-11 06:18:09'),
+(36, 1, 'NAVIGATION', 'Clicked \"Payment Collection\" link, redirecting to AccountsReceivable.html', '', '', '::1', '', '', '2025-10-11 06:18:10'),
+(37, 1, 'NAVIGATION', 'Clicked \"Ledger\" link, redirecting to Ledgers.html', NULL, NULL, '::1', NULL, NULL, '2025-10-11 06:18:11'),
+(38, 1, 'NAVIGATION', 'Clicked \"Reports\" link, redirecting to Reports.html', NULL, NULL, '::1', 'From URL: /Emerald-Microfinance/Ledgers.html', 'To URL: Reports.html', '2025-10-11 06:18:12'),
+(39, 1, 'VIEW', 'Viewed Report: Existing Clients (ReportsExistingClient.html)', NULL, NULL, '::1', NULL, NULL, '2025-10-11 06:18:14'),
+(40, 1, 'VIEW', 'Viewed Report: Delinquent Accounts (ReportsOverduePayments.html)', NULL, NULL, '::1', NULL, NULL, '2025-10-11 06:18:15'),
+(41, 1, 'VIEW', 'Viewed Report: Due Payments (ReportsDuePayments.html)', NULL, NULL, '::1', NULL, NULL, '2025-10-11 06:18:16'),
+(42, 1, 'NAVIGATION', 'Clicked \"Pending Accounts\" link, redirecting to PendingAccount.html', NULL, NULL, '::1', NULL, NULL, '2025-10-11 06:22:49'),
+(43, 1, 'NAVIGATION', 'Clicked \"Payment Collection\" link, redirecting to AccountsReceivable.html', '', '', '::1', '', '', '2025-10-11 06:22:50'),
+(44, 1, 'NAVIGATION', 'Clicked \"Loan Application\" link, redirecting to LoanApplication.html', NULL, NULL, '::1', NULL, NULL, '2025-10-11 06:22:50'),
+(45, 1, 'VIEWED', 'Opened Client Search Modal.', 'clients', NULL, '::1', NULL, NULL, '2025-10-11 06:22:52'),
+(46, 1, 'VIEWED', 'Fetched Interest Rate: 20%', 'interest_pecent', NULL, '::1', NULL, NULL, '2025-10-11 06:22:52'),
+(47, 1, 'UPDATED', 'Selected Client ID 202500001 (Angel Laurence Paras Mallari) for loan application.', 'clients', '202500001', '::1', '{\"clientID\":\"\",\"clientName\":\"\"}', '{\"clientID\":\"202500001\",\"clientName\":\"Angel Laurence Paras Mallari\"}', '2025-10-11 06:22:53'),
+(48, 1, 'CREATED', 'Attempting submission for Client ID: 202500001. Target: loan_applications (202500001)', 'loan_applications', '202500001', '::1', NULL, NULL, '2025-10-11 06:23:03'),
+(49, 1, 'VIEWED', 'Opened Loan Details Modal for Loan ID: 10202500003. Target: loan_applications (10202500003)', NULL, NULL, '::1', NULL, NULL, '2025-10-11 06:23:03'),
+(50, 1, 'CREATED', 'Loan application successfully created. Loan ID: 10202500003. Client ID: 202500001.', 'loan_applications', '10202500003', '::1', NULL, '{\"clientID\":\"202500001\",\"clientName\":\"Angel Laurence Paras Mallari\",\"colateral\":\"motor\",\"guarantorLastName\":\"Jake\",\"guarantorFirstName\":\"Syrus\",\"guarantorMiddleName\":\"Pars\",\"guarantorStreetAddress\":\"balibago block 2\",\"guarantorPhoneNumber\":\"12312312312\",\"loan-amount\":30000,\"payment-frequency\":\"weekly\",\"date-start\":\"2025-10-23\",\"duration-of-loan\":\"100 days\",\"date-end\":\"2026-01-31\",\"interest-rate\":20,\"loanID\":\"10202500003\"}', '2025-10-11 06:23:03'),
+(51, 1, 'VIEWED', 'Closed Loan Details Modal for Loan ID: 10202500003', NULL, NULL, '::1', NULL, NULL, '2025-10-11 06:23:04'),
+(52, 1, 'NAVIGATION', 'Clicked \"Pending Accounts\" link, redirecting to PendingAccount.html', NULL, NULL, '::1', NULL, NULL, '2025-10-11 06:23:06'),
+(53, 1, 'UPDATE', 'Loan Application Status changed to \'APPROVED\'', 'loan_applications', '10202500003', '::1', 'status: pending', 'status: approved', '2025-10-11 06:23:11'),
+(54, 1, 'NAVIGATION', 'Clicked \"Payment Collection\" link, redirecting to AccountsReceivable.html', '', '', '::1', '', '', '2025-10-11 06:23:12'),
+(55, 1, 'NAVIGATION', 'Clicked \"Reports\" link, redirecting to Reports.html', NULL, NULL, '::1', NULL, NULL, '2025-10-11 06:23:23'),
+(56, 1, 'VIEW', 'Viewed Report: Existing Clients (ReportsExistingClient.html)', NULL, NULL, '::1', NULL, NULL, '2025-10-11 06:23:24'),
+(57, 1, 'VIEW', 'Accessed detailed view for Client ID: 202500001', 'clients', '202500001', '::1', NULL, NULL, '2025-10-11 06:23:25'),
+(58, 1, 'VIEW', 'Viewed Report: Delinquent Accounts (ReportsOverduePayments.html)', NULL, NULL, '::1', NULL, NULL, '2025-10-11 06:23:27'),
+(59, 1, 'VIEW', 'Viewed Report: Due Payments (ReportsDuePayments.html)', NULL, NULL, '::1', NULL, NULL, '2025-10-11 06:23:28'),
+(60, 1, 'VIEW', 'Successfully loaded loan details and schedule for Client ID: 202500001, Loan ID: 10202500001', NULL, NULL, '::1', NULL, NULL, '2025-10-11 06:42:45'),
+(61, 1, 'NAVIGATION', 'Clicked \"Payment Collection\" link, redirecting to AccountsReceivable.html', NULL, NULL, '::1', NULL, NULL, '2025-10-11 06:42:56'),
+(62, 1, 'NAVIGATION', 'SELECT button clicked for Loan ID 10202500003. Redirecting to payment page.', 'loan_applications', '10202500003', '::1', NULL, NULL, '2025-10-11 06:43:01'),
+(63, 1, 'VIEW', 'Successfully loaded loan details and schedule for Client ID: 202500001, Loan ID: 10202500003', NULL, NULL, '::1', NULL, NULL, '2025-10-11 06:43:01'),
+(64, 1, 'REPORT_DATA', 'Successfully loaded Due Payments Report with 3 records.', NULL, NULL, '::1', NULL, NULL, '2025-10-11 06:47:11'),
+(65, 1, 'FILTER', 'Applied due date filter: 2025-10-24', NULL, NULL, '::1', NULL, NULL, '2025-10-11 06:47:16'),
+(66, 1, 'REPORT_DATA', 'Successfully loaded Due Payments Report with 3 records.', NULL, NULL, '::1', NULL, NULL, '2025-10-11 06:47:16'),
+(67, 1, 'FILTER', 'Applied due date filter: 2025-10-29', NULL, NULL, '::1', NULL, NULL, '2025-10-11 06:47:22'),
+(68, 1, 'REPORT_DATA', 'Successfully loaded Due Payments Report with 3 records.', NULL, NULL, '::1', NULL, NULL, '2025-10-11 06:47:22'),
+(69, 1, 'FILTER', 'Applied due date filter: 2025-11-01', NULL, NULL, '::1', NULL, NULL, '2025-10-11 06:47:36'),
+(70, 1, 'REPORT_DATA', 'Successfully loaded Due Payments Report with 3 records.', NULL, NULL, '::1', NULL, NULL, '2025-10-11 06:47:36'),
+(71, 1, 'REPORT_DATA', 'Successfully loaded Due Payments Report with 3 records.', NULL, NULL, '::1', NULL, NULL, '2025-10-11 06:49:34'),
+(72, 1, 'REPORT_DATA', 'Successfully loaded Due Payments Report with 3 records.', NULL, NULL, '::1', NULL, NULL, '2025-10-11 06:50:22'),
+(73, 1, 'REPORT_DATA', 'Successfully loaded Due Payments Report with 3 records.', NULL, NULL, '::1', NULL, NULL, '2025-10-11 06:50:35'),
+(74, 1, 'FILTER', 'Applied filters: Date=2025-10-16, Status=All', NULL, NULL, '::1', NULL, NULL, '2025-10-11 06:50:38'),
+(75, 1, 'REPORT_DATA', 'Successfully loaded Due Payments Report with 3 records.', NULL, NULL, '::1', NULL, NULL, '2025-10-11 06:50:38'),
+(76, 1, 'FILTER', 'Applied filters: Date=2025-10-16, Status=Upcoming', NULL, NULL, '::1', NULL, NULL, '2025-10-11 06:50:41'),
+(77, 1, 'REPORT_DATA', 'Successfully loaded Due Payments Report with 2 records.', NULL, NULL, '::1', NULL, NULL, '2025-10-11 06:50:41'),
+(78, 1, 'FILTER', 'Applied filters: Date=2025-10-16, Status=Due Today', NULL, NULL, '::1', NULL, NULL, '2025-10-11 06:50:44'),
+(79, 1, 'REPORT_DATA', 'Successfully loaded Due Payments Report with 1 records.', NULL, NULL, '::1', NULL, NULL, '2025-10-11 06:50:44'),
+(80, 1, 'FILTER', 'Applied filters: Date=2025-10-16, Status=Overdue', NULL, NULL, '::1', NULL, NULL, '2025-10-11 06:50:47'),
+(81, 1, 'REPORT_DATA', 'Loaded Due Payments Report with 0 records.', NULL, NULL, '::1', NULL, NULL, '2025-10-11 06:50:47'),
+(82, 1, 'FILTER', 'Applied filters: Date=2025-11-06, Status=Overdue', NULL, NULL, '::1', NULL, NULL, '2025-10-11 06:50:51'),
+(83, 1, 'REPORT_DATA', 'Loaded Due Payments Report with 0 records.', NULL, NULL, '::1', NULL, NULL, '2025-10-11 06:50:51'),
+(84, 1, 'FILTER', 'Applied filters: Date=2025-11-06, Status=Due Today', NULL, NULL, '::1', NULL, NULL, '2025-10-11 06:50:54'),
+(85, 1, 'REPORT_DATA', 'Successfully loaded Due Payments Report with 1 records.', NULL, NULL, '::1', NULL, NULL, '2025-10-11 06:50:54'),
+(86, 1, 'FILTER', 'Applied filters: Date=2025-11-06, Status=All', NULL, NULL, '::1', NULL, NULL, '2025-10-11 06:51:12'),
+(87, 1, 'REPORT_DATA', 'Successfully loaded Due Payments Report with 3 records.', NULL, NULL, '::1', NULL, NULL, '2025-10-11 06:51:12'),
+(88, 1, 'REPORT_DATA', 'Successfully loaded Due Payments Report with 3 records.', NULL, NULL, '::1', NULL, NULL, '2025-10-11 06:52:47'),
+(89, 1, 'VIEW', 'Viewed Report: Audit Trail (ReportsAuditTrail.html)', NULL, NULL, '::1', NULL, NULL, '2025-10-11 06:53:01'),
+(90, 1, 'User logged in successfully: admin', '', NULL, NULL, '::1', NULL, NULL, '2025-10-12 10:54:45'),
+(91, 1, 'NAVIGATION', 'Clicked \"Reports\" link, redirecting to Reports.html', NULL, NULL, '::1', NULL, NULL, '2025-10-12 10:54:46'),
+(92, 1, 'VIEW', 'Viewed Report: Audit Trail (ReportsAuditTrail.html)', NULL, NULL, '::1', NULL, NULL, '2025-10-12 10:54:49'),
+(93, 1, 'VIEW', 'FAILED: Clicked report button \"Due Payments\" with no mapped page.', NULL, NULL, '::1', NULL, NULL, '2025-10-12 10:54:52'),
+(94, 1, 'REPORT_DATA', 'Successfully loaded Due Payments Report with 3 records.', NULL, NULL, '::1', NULL, NULL, '2025-10-12 10:54:52'),
+(95, 1, 'FILTER', 'Applied filters: Date=2025-10-24, Status=All', NULL, NULL, '::1', NULL, NULL, '2025-10-12 10:55:04'),
+(96, 1, 'REPORT_DATA', 'Successfully loaded Due Payments Report with 3 records.', NULL, NULL, '::1', NULL, NULL, '2025-10-12 10:55:04'),
+(97, 1, 'FILTER', 'Applied filters: Date=2025-10-24, Status=Due Today', NULL, NULL, '::1', NULL, NULL, '2025-10-12 10:55:06'),
+(98, 1, 'REPORT_DATA', 'Successfully loaded Due Payments Report with 1 records.', NULL, NULL, '::1', NULL, NULL, '2025-10-12 10:55:06'),
+(99, 1, 'REPORT_DATA', 'Successfully loaded Due Payments Report with 3 records.', NULL, NULL, '::1', NULL, NULL, '2025-10-12 10:55:58'),
+(100, 1, 'FILTER', 'Applied filters: Date=None, Status=Due Today', NULL, NULL, '::1', NULL, NULL, '2025-10-12 10:56:03'),
+(101, 1, 'REPORT_DATA', 'Successfully loaded Due Payments Report with 1 records.', NULL, NULL, '::1', NULL, NULL, '2025-10-12 10:56:03'),
+(102, 1, 'REPORT_DATA', 'Successfully loaded Due Payments Report with 3 records.', NULL, NULL, '::1', NULL, NULL, '2025-10-12 10:56:36'),
+(103, 1, 'FILTER', 'Applied filters: Date=None, Status=Due Today', NULL, NULL, '::1', NULL, NULL, '2025-10-12 10:56:39'),
+(104, 1, 'REPORT_DATA', 'Successfully loaded Due Payments Report with 1 records.', NULL, NULL, '::1', NULL, NULL, '2025-10-12 10:56:39'),
+(105, 1, 'FILTER', 'Applied filters: Date=None, Status=Overdue', NULL, NULL, '::1', NULL, NULL, '2025-10-12 10:56:46'),
+(106, 1, 'REPORT_DATA', 'Loaded Due Payments Report with 0 records.', NULL, NULL, '::1', NULL, NULL, '2025-10-12 10:56:46'),
+(107, 1, 'FILTER', 'Applied filters: Date=2025-10-31, Status=Overdue', NULL, NULL, '::1', NULL, NULL, '2025-10-12 10:56:51'),
+(108, 1, 'REPORT_DATA', 'Loaded Due Payments Report with 0 records.', NULL, NULL, '::1', NULL, NULL, '2025-10-12 10:56:51'),
+(109, 1, 'FILTER', 'Applied filters: Date=2025-12-02, Status=Overdue', NULL, NULL, '::1', NULL, NULL, '2025-10-12 10:57:01'),
+(110, 1, 'REPORT_DATA', 'Loaded Due Payments Report with 0 records.', NULL, NULL, '::1', NULL, NULL, '2025-10-12 10:57:01'),
+(111, 1, 'FILTER', 'Applied filters: Date=2025-12-02, Status=Due Today', NULL, NULL, '::1', NULL, NULL, '2025-10-12 10:57:03'),
+(112, 1, 'REPORT_DATA', 'Successfully loaded Due Payments Report with 1 records.', NULL, NULL, '::1', NULL, NULL, '2025-10-12 10:57:03'),
+(113, 1, 'FILTER', 'Applied filters: Date=2025-12-02, Status=Upcoming', NULL, NULL, '::1', NULL, NULL, '2025-10-12 10:57:07'),
+(114, 1, 'REPORT_DATA', 'Successfully loaded Due Payments Report with 2 records.', NULL, NULL, '::1', NULL, NULL, '2025-10-12 10:57:07'),
+(115, 1, 'FILTER', 'Applied filters: Date=2026-01-01, Status=Upcoming', NULL, NULL, '::1', NULL, NULL, '2025-10-12 10:57:19'),
+(116, 1, 'REPORT_DATA', 'Successfully loaded Due Payments Report with 1 records.', NULL, NULL, '::1', NULL, NULL, '2025-10-12 10:57:19'),
+(117, 1, 'FILTER', 'Applied filters: Date=2026-01-01, Status=Due Today', NULL, NULL, '::1', NULL, NULL, '2025-10-12 10:57:23'),
+(118, 1, 'REPORT_DATA', 'Successfully loaded Due Payments Report with 2 records.', NULL, NULL, '::1', NULL, NULL, '2025-10-12 10:57:23'),
+(119, 1, 'NAVIGATION', 'Clicked \"User Management\" link, redirecting to UserManagement.html', NULL, NULL, '::1', NULL, NULL, '2025-10-12 10:57:57'),
+(120, 1, 'NAVIGATION', 'Clicked \"User Management\" link, redirecting to UserManagement.html', NULL, NULL, '::1', NULL, NULL, '2025-10-12 10:58:10'),
+(121, 1, 'VIEW', 'Viewed Report: Due Payments (ReportsDuePayments.html)', NULL, NULL, '::1', NULL, NULL, '2025-10-12 12:58:19'),
+(122, 1, 'REPORT_DATA', 'Successfully loaded Due Payments Report with 3 records.', NULL, NULL, '::1', NULL, NULL, '2025-10-12 12:58:19'),
+(123, 1, 'REPORT_DATA', 'Successfully loaded Due Payments Report with 3 records.', NULL, NULL, '::1', NULL, NULL, '2025-10-12 12:58:20'),
+(124, 1, 'REPORT_DATA', 'Successfully loaded Due Payments Report with 3 records.', NULL, NULL, '::1', NULL, NULL, '2025-10-12 12:58:21'),
+(125, 1, 'REPORT_DATA', 'Successfully loaded Due Payments Report with 3 records.', NULL, NULL, '::1', NULL, NULL, '2025-10-12 12:58:22'),
+(126, 1, 'REPORT_DATA', 'Successfully loaded Due Payments Report with 3 records.', NULL, NULL, '::1', NULL, NULL, '2025-10-12 13:00:34'),
+(127, 1, 'FILTER', 'Applied filters: Date=None, Status=Due Today', NULL, NULL, '::1', NULL, NULL, '2025-10-12 13:00:37'),
+(128, 1, 'REPORT_DATA', 'Successfully loaded Due Payments Report with 1 records.', NULL, NULL, '::1', NULL, NULL, '2025-10-12 13:00:37'),
+(129, 1, 'REPORT_DATA', 'Successfully loaded Due Payments Report with 3 records.', NULL, NULL, '::1', NULL, NULL, '2025-10-12 13:01:16'),
+(130, 1, 'REPORT_DATA', 'Successfully loaded Due Payments Report with 3 records.', NULL, NULL, '::1', NULL, NULL, '2025-10-12 13:07:21'),
+(131, 1, 'FILTER', 'Cleared all filters.', NULL, NULL, '::1', NULL, NULL, '2025-10-12 13:07:22'),
+(132, 1, 'REPORT_DATA', 'Successfully loaded Due Payments Report with 3 records.', NULL, NULL, '::1', NULL, NULL, '2025-10-12 13:07:22'),
+(133, 1, 'FILTER', 'Cleared all filters.', NULL, NULL, '::1', NULL, NULL, '2025-10-12 13:07:25'),
+(134, 1, 'REPORT_DATA', 'Successfully loaded Due Payments Report with 3 records.', NULL, NULL, '::1', NULL, NULL, '2025-10-12 13:07:25'),
+(135, 1, 'FILTER', 'Applied filters: Date=None, Status=Upcoming', NULL, NULL, '::1', NULL, NULL, '2025-10-12 13:07:27'),
+(136, 1, 'REPORT_DATA', 'Successfully loaded Due Payments Report with 2 records.', NULL, NULL, '::1', NULL, NULL, '2025-10-12 13:07:27'),
+(137, 1, 'FILTER', 'Cleared all filters.', NULL, NULL, '::1', NULL, NULL, '2025-10-12 13:07:29'),
+(138, 1, 'REPORT_DATA', 'Successfully loaded Due Payments Report with 3 records.', NULL, NULL, '::1', NULL, NULL, '2025-10-12 13:07:29'),
+(139, 1, 'REPORT_DATA', 'Successfully loaded Due Payments Report with 3 records.', NULL, NULL, '::1', NULL, NULL, '2025-10-12 13:08:46'),
+(140, 1, 'FILTER', 'Applied filters: Date=2025-10-22, Status=Due Today', NULL, NULL, '::1', NULL, NULL, '2025-10-12 13:08:53'),
+(141, 1, 'VIEW', 'Viewed Due: 2025-10-22 (Due Today)', NULL, NULL, '::1', NULL, NULL, '2025-10-12 13:08:53'),
+(142, 1, 'REPORT_DATA', 'Successfully loaded Due Payments Report with 2 records.', NULL, NULL, '::1', NULL, NULL, '2025-10-12 13:08:53'),
+(143, 1, 'VIEW', 'Successfully loaded Due Payments Report with 3 records.', NULL, NULL, '::1', NULL, NULL, '2025-10-12 13:10:42'),
+(144, 1, 'FILTER', 'Cleared all filters.', NULL, NULL, '::1', NULL, NULL, '2025-10-12 13:10:44'),
+(145, 1, 'VIEW', 'Successfully loaded Due Payments Report with 3 records.', NULL, NULL, '::1', NULL, NULL, '2025-10-12 13:10:44'),
+(146, 1, 'FILTER', 'Applied filters: Date=2025-10-15, Status=Due Today', NULL, NULL, '::1', NULL, NULL, '2025-10-12 13:11:08'),
+(147, 1, 'VIEW', 'Successfully loaded Due Payments Report with 2 records.', NULL, NULL, '::1', NULL, NULL, '2025-10-12 13:11:08'),
+(148, 1, 'VIEW', 'Successfully loaded Due Payments Report with 3 records.', NULL, NULL, '::1', NULL, NULL, '2025-10-12 13:11:54'),
+(149, 1, 'VIEW', 'Applied filters: Date=2025-10-16, Status=Upcoming', NULL, NULL, '::1', NULL, NULL, '2025-10-12 13:12:00'),
+(150, 1, 'VIEW', 'Successfully loaded Due Payments Report with 2 records.', NULL, NULL, '::1', NULL, NULL, '2025-10-12 13:12:00'),
+(151, 1, 'VIEW', 'Applied filters: Date=2025-10-16, Status=Due Today', NULL, NULL, '::1', NULL, NULL, '2025-10-12 13:12:03'),
+(152, 1, 'VIEW', 'Successfully loaded Due Payments Report with 1 records.', NULL, NULL, '::1', NULL, NULL, '2025-10-12 13:12:03'),
+(153, 1, 'VIEW', 'Viewed Report: Delinquent Accounts (ReportsOverduePayments.html)', NULL, NULL, '::1', NULL, NULL, '2025-10-12 13:12:21'),
+(154, 1, 'NAVIGATION', 'Clicked \"Tools\" link, redirecting to Tools.html', NULL, NULL, '::1', NULL, NULL, '2025-10-12 13:17:26'),
+(155, 1, 'VIEW', 'Viewed Report: Delinquent Accounts (ReportsOverduePayments.html)', NULL, NULL, '::1', NULL, NULL, '2025-10-12 13:20:12'),
+(156, 1, 'VIEW', 'Viewed Report: Existing Clients (ReportsExistingClient.html)', NULL, NULL, '::1', NULL, NULL, '2025-10-12 13:20:13'),
+(157, 1, 'VIEW', 'Viewed Report: Due Payments (ReportsDuePayments.html)', NULL, NULL, '::1', NULL, NULL, '2025-10-12 13:20:15'),
+(158, 1, 'VIEW', 'Successfully loaded Due Payments Report with 3 records.', NULL, NULL, '::1', NULL, NULL, '2025-10-12 13:20:15'),
+(159, 1, 'VIEW', 'Viewed Report: Due Payments (ReportsDuePayments.html)', NULL, NULL, '::1', NULL, NULL, '2025-10-12 13:35:47'),
+(160, 1, 'VIEW', 'Successfully loaded Due Payments Report with 3 records.', NULL, NULL, '::1', NULL, NULL, '2025-10-12 13:35:47'),
+(161, 1, 'VIEW', 'Successfully loaded Due Payments Report with 3 records.', NULL, NULL, '::1', NULL, NULL, '2025-10-12 14:10:03'),
+(162, 1, 'VIEW', 'Successfully loaded Due Payments Report with 3 records.', NULL, NULL, '::1', NULL, NULL, '2025-10-12 14:11:12'),
+(163, 1, 'VIEW', 'Applied filters: Date=None, Status=Upcoming', NULL, NULL, '::1', NULL, NULL, '2025-10-12 14:11:19'),
+(164, 1, 'VIEW', 'Successfully loaded Due Payments Report with 2 records.', NULL, NULL, '::1', NULL, NULL, '2025-10-12 14:11:19'),
+(165, 1, 'VIEW', 'Applied filters: Date=2025-10-15, Status=Upcoming', NULL, NULL, '::1', NULL, NULL, '2025-10-12 14:11:23'),
+(166, 1, 'VIEW', 'Successfully loaded Due Payments Report with 1 records.', NULL, NULL, '::1', NULL, NULL, '2025-10-12 14:11:24'),
+(167, 1, 'VIEW', 'Applied filters: Date=2025-10-15, Status=Due Today', NULL, NULL, '::1', NULL, NULL, '2025-10-12 14:11:26'),
+(168, 1, 'VIEW', 'Successfully loaded Due Payments Report with 2 records.', NULL, NULL, '::1', NULL, NULL, '2025-10-12 14:11:26'),
+(169, 1, 'VIEW', 'Applied filters: Date=2025-10-18, Status=Due Today', NULL, NULL, '::1', NULL, NULL, '2025-10-12 14:11:34'),
+(170, 1, 'VIEW', 'Successfully loaded Due Payments Report with 1 records.', NULL, NULL, '::1', NULL, NULL, '2025-10-12 14:11:34'),
+(171, 1, 'VIEW', 'Successfully loaded Due Payments Report with 3 records.', NULL, NULL, '::1', NULL, NULL, '2025-10-12 14:14:37'),
+(172, 1, 'VIEW', 'Successfully loaded Due Payments Report with 3 records.', NULL, NULL, '::1', NULL, NULL, '2025-10-12 14:15:26'),
+(173, 1, 'VIEW', 'Applied filters: Date=None, Status=Upcoming', NULL, NULL, '::1', NULL, NULL, '2025-10-12 14:15:31'),
+(174, 1, 'VIEW', 'Successfully loaded Due Payments Report with 2 records.', NULL, NULL, '::1', NULL, NULL, '2025-10-12 14:15:31'),
+(175, 1, 'LOGOUT', 'User logged out.', NULL, NULL, '::1', NULL, NULL, '2025-10-12 14:15:33'),
+(176, 1, 'User logged out: admin', '', NULL, NULL, '::1', NULL, NULL, '2025-10-12 14:15:33'),
+(177, 1, 'User logged in successfully: admin', '', NULL, NULL, '::1', NULL, NULL, '2025-10-12 14:15:39'),
+(178, 1, 'NAVIGATION', 'Clicked \"Reports\" link, redirecting to Reports.html', NULL, NULL, '::1', NULL, NULL, '2025-10-12 14:15:57'),
+(179, 1, 'VIEW', 'Viewed Report: Audit Trail (ReportsAuditTrail.html)', NULL, NULL, '::1', NULL, NULL, '2025-10-12 14:15:58'),
+(180, 1, 'VIEW', 'FAILED: Clicked report button \"Due Payments\" with no mapped page.', NULL, NULL, '::1', NULL, NULL, '2025-10-12 14:24:30'),
+(181, 1, 'VIEW', 'Successfully loaded Due Payments Report with 3 records.', NULL, NULL, '::1', NULL, NULL, '2025-10-12 14:24:30'),
+(182, 1, 'VIEW', 'Viewed Report: Audit Trail (ReportsAuditTrail.html)', NULL, NULL, '::1', NULL, NULL, '2025-10-12 14:24:34'),
+(183, 1, 'VIEW', 'FAILED: Clicked report button \"Due Payments\" with no mapped page.', NULL, NULL, '::1', NULL, NULL, '2025-10-12 14:24:36'),
+(184, 1, 'VIEW', 'Successfully loaded Due Payments Report with 3 records.', NULL, NULL, '::1', NULL, NULL, '2025-10-12 14:24:36'),
+(185, 1, 'VIEW', 'Successfully loaded Due Payments Report with 3 records.', NULL, NULL, '::1', NULL, NULL, '2025-10-12 14:25:21'),
+(186, 1, 'VIEW', 'Successfully loaded Due Payments Report with 3 records.', NULL, NULL, '::1', NULL, NULL, '2025-10-12 14:39:10'),
+(187, 1, 'VIEW', 'Applied filters: Date=2025-10-27, Status=Upcoming', NULL, NULL, '::1', NULL, NULL, '2025-10-12 14:39:18'),
+(188, 1, 'VIEW', 'Successfully loaded Due Payments Report with 2 records.', NULL, NULL, '::1', NULL, NULL, '2025-10-12 14:39:18'),
+(189, 1, 'VIEW', 'Successfully loaded Due Payments Report with 3 records.', NULL, NULL, '::1', NULL, NULL, '2025-10-12 14:39:23'),
+(190, 1, 'VIEW', 'Successfully loaded Due Payments Report with 3 records.', NULL, NULL, '::1', NULL, NULL, '2025-10-12 14:39:23'),
+(191, 1, 'VIEW', 'Successfully loaded Due Payments Report with 3 records.', NULL, NULL, '::1', NULL, NULL, '2025-10-12 14:39:23'),
+(192, 1, 'VIEW', 'Successfully loaded Due Payments Report with 3 records.', NULL, NULL, '::1', NULL, NULL, '2025-10-12 14:39:24'),
+(193, 1, 'VIEW', 'Successfully loaded Due Payments Report with 3 records.', NULL, NULL, '::1', NULL, NULL, '2025-10-12 14:48:23'),
+(194, 1, 'VIEW', 'Successfully loaded Due Payments Report with 3 records.', NULL, NULL, '::1', NULL, NULL, '2025-10-12 14:49:16'),
+(195, 1, 'VIEW', 'Applied filters: Date=2025-10-15, Status=Upcoming', NULL, NULL, '::1', NULL, NULL, '2025-10-12 14:49:23'),
+(196, 1, 'VIEW', 'Successfully loaded Due Payments Report with 1 records.', NULL, NULL, '::1', NULL, NULL, '2025-10-12 14:49:23'),
+(197, 1, 'VIEW', 'Successfully loaded Due Payments Report with 3 records.', NULL, NULL, '::1', NULL, NULL, '2025-10-12 14:49:52'),
+(198, 1, 'VIEW', 'Applied filters: Date=2025-10-15, Status=Upcoming', NULL, NULL, '::1', NULL, NULL, '2025-10-12 14:49:57'),
+(199, 1, 'VIEW', 'Successfully loaded Due Payments Report with 1 records.', NULL, NULL, '::1', NULL, NULL, '2025-10-12 14:49:57'),
+(200, 1, 'VIEW', 'Successfully loaded Due Payments Report with 3 records.', NULL, NULL, '::1', NULL, NULL, '2025-10-12 14:50:03'),
+(201, 1, 'VIEW', 'Successfully loaded Due Payments Report with 3 records.', NULL, NULL, '::1', NULL, NULL, '2025-10-12 14:50:36'),
+(202, 1, 'VIEW', 'Successfully loaded Due Payments Report with 3 records.', NULL, NULL, '::1', NULL, NULL, '2025-10-12 14:50:37'),
+(203, 1, 'VIEW', 'Successfully loaded Due Payments Report with 3 records.', NULL, NULL, '::1', NULL, NULL, '2025-10-12 14:50:37'),
+(204, 1, 'VIEW', 'Successfully loaded Due Payments Report with 3 records.', NULL, NULL, '::1', NULL, NULL, '2025-10-12 14:50:37'),
+(205, 1, 'VIEW', 'Applied filters: Date=2025-10-15, Status=Due Today', NULL, NULL, '::1', NULL, NULL, '2025-10-12 14:50:42'),
+(206, 1, 'VIEW', 'Successfully loaded Due Payments Report with 2 records.', NULL, NULL, '::1', NULL, NULL, '2025-10-12 14:50:42'),
+(207, 1, 'VIEW', 'Successfully loaded Due Payments Report with 3 records.', NULL, NULL, '::1', NULL, NULL, '2025-10-12 14:51:06'),
+(208, 1, 'EXPORT', 'Exported Due Payments Report to CSV.', NULL, NULL, '::1', NULL, NULL, '2025-10-12 14:51:08'),
+(209, 1, 'VIEW', 'Applied filters: Date=2025-10-23, Status=Due Today', NULL, NULL, '::1', NULL, NULL, '2025-10-12 14:51:31'),
+(210, 1, 'VIEW', 'Successfully loaded Due Payments Report with 1 records.', NULL, NULL, '::1', NULL, NULL, '2025-10-12 14:51:31'),
+(211, 1, 'EXPORT', 'Exported Due Payments Report to CSV.', NULL, NULL, '::1', NULL, NULL, '2025-10-12 14:51:32'),
+(212, 1, 'VIEW', 'Successfully loaded Due Payments Report with 3 records.', NULL, NULL, '::1', NULL, NULL, '2025-10-12 14:52:29'),
+(213, 1, 'CREATE', 'Exported Due Payments Report to CSV.', NULL, NULL, '::1', NULL, NULL, '2025-10-12 14:52:31'),
+(214, 1, 'NAVIGATION', 'Clicked \"User Management\" link, redirecting to UserManagement.html', NULL, NULL, '::1', NULL, NULL, '2025-10-12 14:52:54'),
+(215, 1, 'NAVIGATION', 'Clicked \"Tools\" link, redirecting to Tools.html', NULL, NULL, '::1', NULL, NULL, '2025-10-12 14:53:41'),
+(216, 1, 'NAVIGATION', 'Accessed tool \"Backup And Restore\", loading page ToolsBR.html', NULL, NULL, '::1', NULL, NULL, '2025-10-12 15:02:13'),
+(217, 1, 'NAVIGATION', 'FAILED: Clicked tool \"Interest Amount\" with no mapped page.', NULL, NULL, '::1', NULL, NULL, '2025-10-12 15:02:20'),
+(218, 1, 'NAVIGATION', 'Accessed tool \"City/ Barangays\", loading page ToolsPlaces.html', NULL, NULL, '::1', NULL, NULL, '2025-10-12 15:02:24'),
+(219, 1, 'NAVIGATION', 'Clicked \"Tools\" link, redirecting to Tools.html', NULL, NULL, '::1', NULL, NULL, '2025-10-12 15:03:14'),
+(220, 1, 'NAVIGATION', 'FAILED: Clicked tool \"Interest Amount\" with no mapped page.', NULL, NULL, '::1', NULL, NULL, '2025-10-12 15:03:16'),
+(221, 1, 'NAVIGATION', 'Accessed tool \"Backup And Restore\", loading page ToolsBR.html', NULL, NULL, '::1', NULL, NULL, '2025-10-12 15:03:28'),
+(222, 1, 'NAVIGATION', 'FAILED: Clicked tool \"Interest Amount\" with no mapped page.', NULL, NULL, '::1', NULL, NULL, '2025-10-12 15:03:31'),
+(223, 1, 'NAVIGATION', 'FAILED: Clicked tool \"Interest Amount\" with no mapped page.', NULL, NULL, '::1', NULL, NULL, '2025-10-12 15:03:59'),
+(224, 1, 'NAVIGATION', 'Accessed tool \"Interest Amount\", loading page ToolsInterest.html', NULL, NULL, '::1', NULL, NULL, '2025-10-12 15:04:01'),
+(225, 1, 'NAVIGATION', 'Clicked \"Tools\" link, redirecting to Tools.html', NULL, NULL, '::1', NULL, NULL, '2025-10-12 15:04:07'),
+(226, 1, 'NAVIGATION', 'Accessed tool \"Interest Amount\", loading page ToolsInterest.html', NULL, NULL, '::1', NULL, NULL, '2025-10-12 15:04:08'),
+(227, 1, 'NAVIGATION', 'Accessed tool \"City/ Barangays\", loading page ToolsPlaces.html', NULL, NULL, '::1', NULL, NULL, '2025-10-12 15:04:31'),
+(228, 1, 'NAVIGATION', 'Accessed tool \"Backup And Restore\", loading page ToolsBR.html', NULL, NULL, '::1', NULL, NULL, '2025-10-12 15:04:32'),
+(229, 1, 'NAVIGATION', 'Accessed tool \"Interest Amount\", loading page ToolsInterest.html', NULL, NULL, '::1', NULL, NULL, '2025-10-12 15:04:33'),
+(230, 1, 'NAVIGATION', 'Accessed tool \"City/ Barangays\", loading page ToolsPlaces.html', NULL, NULL, '::1', NULL, NULL, '2025-10-12 15:05:31'),
+(231, 1, 'NAVIGATION', 'Accessed tool \"City/ Barangays\", loading page ToolsPlaces.html', NULL, NULL, '::1', NULL, NULL, '2025-10-12 15:25:55'),
+(232, 1, 'User logged in successfully: admin', '', NULL, NULL, '::1', NULL, NULL, '2025-10-12 15:33:28'),
+(233, 1, 'NAVIGATION', 'Clicked \"Client Creation\" link, redirecting to ClientCreationForm.html', NULL, NULL, '::1', NULL, NULL, '2025-10-12 15:33:41'),
+(234, 1, 'NAVIGATION', 'Clicked \"Pending Accounts\" link, redirecting to PendingAccount.html', NULL, NULL, '::1', NULL, NULL, '2025-10-12 15:33:42'),
+(235, 1, 'NAVIGATION', 'Clicked \"Payment Collection\" link, redirecting to AccountsReceivable.html', '', '', '::1', '', '', '2025-10-12 15:33:43'),
+(236, 1, 'NAVIGATION', 'Clicked \"Ledger\" link, redirecting to Ledgers.html', NULL, NULL, '::1', NULL, NULL, '2025-10-12 15:33:44'),
+(237, 1, 'NAVIGATION', 'Clicked \"User Management\" link, redirecting to UserManagement.html', NULL, NULL, '::1', 'From URL: /Emerald-Microfinance/Ledgers.html', 'To URL: UserManagement.html', '2025-10-12 15:33:44'),
+(238, 1, 'NAVIGATION', 'Clicked \"Tools\" link, redirecting to Tools.html', NULL, NULL, '::1', NULL, NULL, '2025-10-12 15:33:47'),
+(239, 1, 'NAVIGATION', 'Accessed tool \"City/ Barangays\", loading page ToolsPlaces.html', NULL, NULL, '::1', NULL, NULL, '2025-10-12 15:33:48'),
+(240, 1, 'NAVIGATION', 'Accessed tool \"Backup And Restore\", loading page ToolsBR.html', NULL, NULL, '::1', NULL, NULL, '2025-10-12 15:38:50');
 
 -- --------------------------------------------------------
 
@@ -61,6 +313,13 @@ CREATE TABLE `clients` (
   `created_at` timestamp NOT NULL DEFAULT current_timestamp() ON UPDATE current_timestamp()
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 
+--
+-- Dumping data for table `clients`
+--
+
+INSERT INTO `clients` (`client_ID`, `last_name`, `first_name`, `middle_name`, `marital_status`, `gender`, `date_of_birth`, `city`, `barangay`, `postal_code`, `street_address`, `phone_number`, `email`, `employment_status`, `occupation`, `years_in_job`, `income`, `created_at`) VALUES
+(202500001, 'Mallari', 'Angel Laurence', 'Paras', 'Divorced', 'Female', '2001-07-11', 'Tarlac City', 'Amucao', '2300', '#205 Alvindia Segundo Tarlac City', '09212271315', 'laurence030703@gmail.com', '', '', 0, '0 - 5,000', '2025-10-10 16:41:17');
+
 -- --------------------------------------------------------
 
 --
@@ -73,6 +332,13 @@ CREATE TABLE `client_requirements` (
   `client_ID` bigint(20) NOT NULL,
   `created_at` text DEFAULT current_timestamp()
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
+
+--
+-- Dumping data for table `client_requirements`
+--
+
+INSERT INTO `client_requirements` (`has_valid_id`, `has_barangay_clearance`, `client_ID`, `created_at`) VALUES
+('Postal ID', 0, 202500001, '2025-10-11 00:41:17');
 
 -- --------------------------------------------------------
 
@@ -112,6 +378,15 @@ CREATE TABLE `guarantor` (
   `client_ID` bigint(20) DEFAULT NULL,
   `created_at` text DEFAULT current_timestamp()
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
+
+--
+-- Dumping data for table `guarantor`
+--
+
+INSERT INTO `guarantor` (`guarantor_id`, `guarantor_last_name`, `guarantor_first_name`, `guarantor_middle_name`, `guarantor_street_address`, `guarantor_phone_number`, `loan_application_id`, `client_ID`, `created_at`) VALUES
+(1, 'Mallari', 'Angel Laurence', 'Paras', '#205 Alvindia Segundo Tarlac City', '09212271315', 10202500001, 202500001, '2025-10-11 00:41:32'),
+(2, 'Mallari', 'Angel Laurence', 'Paras', '#205 Alvindia Segundo Tarlac City', '09212271315', 10202500002, 202500001, '2025-10-11 14:18:02'),
+(3, 'Jake', 'Syrus', 'Pars', 'balibago block 2', '12312312312', 10202500003, 202500001, '2025-10-11 14:23:03');
 
 -- --------------------------------------------------------
 
@@ -178,6 +453,15 @@ CREATE TABLE `loan_applications` (
   `created_at` text DEFAULT current_timestamp()
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 
+--
+-- Dumping data for table `loan_applications`
+--
+
+INSERT INTO `loan_applications` (`loan_application_id`, `colateral`, `loan_amount`, `payment_frequency`, `date_start`, `duration_of_loan`, `interest_rate`, `date_end`, `client_ID`, `status`, `paid`, `created_at`) VALUES
+(10202500001, 'Single Motor(Rusi 125)', 25000.00, 'monthly', '2025-10-01', '100 days', 20, '2026-01-09', 202500001, 'approved', 'Unpaid', '2025-10-11 00:41:32'),
+(10202500002, 'Single Motor(Rusi 125)', 30000.00, 'daily', '2025-10-01', '100 days', 20, '2026-01-09', 202500001, 'approved', 'Unpaid', '2025-10-11 14:18:02'),
+(10202500003, 'motor', 30000.00, 'weekly', '2025-10-01', '100 days', 20, '2026-01-09', 202500001, 'approved', 'Unpaid', '2025-10-11 14:23:03');
+
 -- --------------------------------------------------------
 
 --
@@ -185,7 +469,7 @@ CREATE TABLE `loan_applications` (
 --
 
 CREATE TABLE `loan_reconstruct` (
-  `loan_reconstruct_id` int(20) NOT NULL,
+  `loan_reconstruct_id` varchar(20) NOT NULL,
   `loan_application_id` bigint(20) NOT NULL,
   `reconstruct_amount` decimal(10,2) NOT NULL,
   `payment_frequency` varchar(50) NOT NULL,
@@ -226,7 +510,7 @@ INSERT INTO `marital_statuses` (`id`, `status`) VALUES
 
 CREATE TABLE `payment` (
   `payment_id` int(11) NOT NULL,
-  `loan_reconstruct_id` int(11) DEFAULT NULL,
+  `loan_reconstruct_id` varchar(20) DEFAULT NULL,
   `loan_application_id` bigint(20) NOT NULL,
   `client_id` bigint(20) NOT NULL,
   `amount_paid` decimal(10,2) NOT NULL,
@@ -512,7 +796,7 @@ ALTER TABLE `user_accounts`
 -- AUTO_INCREMENT for table `audit_logs`
 --
 ALTER TABLE `audit_logs`
-  MODIFY `log_id` int(11) NOT NULL AUTO_INCREMENT;
+  MODIFY `log_id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=241;
 
 --
 -- AUTO_INCREMENT for table `genders`
@@ -524,19 +808,13 @@ ALTER TABLE `genders`
 -- AUTO_INCREMENT for table `guarantor`
 --
 ALTER TABLE `guarantor`
-  MODIFY `guarantor_id` int(11) NOT NULL AUTO_INCREMENT;
+  MODIFY `guarantor_id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=4;
 
 --
 -- AUTO_INCREMENT for table `income_salaries`
 --
 ALTER TABLE `income_salaries`
   MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=5;
-
---
--- AUTO_INCREMENT for table `loan_reconstruct`
---
-ALTER TABLE `loan_reconstruct`
-  MODIFY `loan_reconstruct_id` int(20) NOT NULL AUTO_INCREMENT;
 
 --
 -- AUTO_INCREMENT for table `marital_statuses`
