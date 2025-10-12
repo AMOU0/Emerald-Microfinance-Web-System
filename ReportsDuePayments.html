@@ -1,0 +1,108 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Emerald Microfinance Dashboard</title>
+            <script src="JS/enforce_login.js"></script>
+    <link rel="stylesheet" href="CSS/reportsduepayments_style.css">
+</head>
+<body>
+    <aside class="sidebar">
+        <div class="sidebar-header">
+            Emerald Microfinance
+        </div>
+        <nav class="sidebar-nav">
+            <ul>
+                <li><a href="#" class="nav-link">Dashboard</a></li>
+                <li><a href="#" class="nav-link">Client Creation</a></li>
+                <li><a href="#" class="nav-link">Loan Application</a></li>
+                <li><a href="#" class="nav-link">Pending Accounts</a></li>
+                <li><a href="#" class="nav-link">Payment Collection</a></li>
+                <li><a href="#" class="nav-link">Ledger</a></li>
+                <li><a href="#" class="nav-link active">Reports</a></li>
+                <li><a href="#" class="nav-link">User Management</a></li>
+                <li><a href="#" class="nav-link">Tools</a></li>
+            </ul>
+        </nav>
+        <div class="sidebar-footer">
+            <button class="logout-button">
+                Logout
+            </button>
+        </div>
+    </aside>
+        <main class="main-content">
+        <header class="header reports-header">
+            <h1 class="header-title">Reports</h1>
+        </header>
+        <div class="reports-container">
+<div class="reports-sidebar">
+    <button class="report-button">Existing Clients</button>
+
+    <button class="report-button">Delinquent Accounts</button>
+
+    <button class="report-button active">Due Payments</button>
+    
+    <button class="report-button">Audit Trail</button>
+</div>
+<div class="report-viewer">
+    <h2 class="report-title">Due Payments Report </h2>
+    
+<div class="filter-controls">
+    <label for="due-date-filter">Filter by Due Date:</label>
+    <input type="date" id="due-date-filter">
+    
+    <div class="filter-group">
+        <label for="filter-action">Status:</label>
+        <select id="filter-action" value="Due Today">
+            <option value="">All Statuses</option>
+            <option value="Due Today">Due Today</option>
+            <option value="Upcoming">Upcoming</option>
+            <option value="Overdue">Overdue</option>
+        </select>
+    </div>
+    <button class="apply-filter-button">Apply Filters</button>
+</div>
+
+    <div class="summary-cards">
+        <div class="card total-due">
+            <h3>Total Amount Due Today</h3>
+            <p>₱ 0.00</p>
+        </div>
+        <div class="card accounts-due">
+            <h3>Accounts Due Today</h3>
+            <p>0</p>
+        </div>
+        <div class="card total-overdue">
+            <h3>Total Overdue Amount</h3>
+            <p class="overdue-amount">₱ 0.00</p>
+        </div>
+    </div>
+    
+    <div class="report-table-container">
+        <table>
+            <thead>
+                <tr>
+                    <th>Client Name</th>
+                    <th>Contact Number</th>
+                    <th>Loan ID</th>
+                    <th>Due Date</th>
+                    <th>Principal Due</th>
+                    <th>Interest Due</th>
+                    <th>Total Payment Due</th>
+                    <th>Status</th>
+                </tr>
+            </thead>
+        </table>
+    </div>
+
+    <div class="report-actions">
+        <button class="export-button">Export to CSV</button>
+    </div>
+</div>
+            </div>
+        </div>
+    </main>
+    <script src="JS/reportsduepayments_function.js"></script>
+</body>
+</html>

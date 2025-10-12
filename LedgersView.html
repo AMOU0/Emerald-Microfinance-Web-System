@@ -31,6 +31,7 @@
     <main class="main-content">
         <header class="header reports-header">
             <h1 class="header-title" id="ledger-header-title">Ledgers</h1>
+        <button class="return-btn">Return</button>
         </header>
         <div class="report-viewer">
             <form id="pendingAccountForm" class="form-section">
@@ -39,7 +40,6 @@
                 <header class="header summary-header">
                     <h1>Loan Application Summary</h1>
                 </header>
-
                 <div class="main-grid">
                     <div class="column-1">
                         <section class="client-section info-section">
@@ -81,20 +81,28 @@
                         </section>
                     </div>
 
-                    <section class="form-section">
-                        <h2 class="section-title">Loan Details</h2>
-                        <div class="loan-details-container">
-                            <div id="loanTableContainer">
-                                <p>Loading **[Loan Amortization Schedule Table]**...</p>
-                            </div>
-                        </div>
-                    </section>
-                    
+<section class="form-section">
+    <h2 class="section-title">Loan Details</h2>
+    <div class="loan-details-container">
+        <div id="dynamicLoanContent">
+            <p>Loading loan details...</p>
+        </div>
+    </div>
+</section>
+<div id="loanDetailModal" class="modal" style="display: none;">
+  <div class="modal-content">
+    <span id="closeModalButton" class="close">&times;</span>
+    <div class="modal-header">
+      <h2>Loan Details</h2>
+    </div>
+    <div id="modalBodyContent" class="modal-body">
+      </div>
+    </div>
+</div>
                 </div>
             </form>
         </div>
     </main>
-
     <script src="JS/ledgersview_function.js"></script> 
 </body>
 </html>

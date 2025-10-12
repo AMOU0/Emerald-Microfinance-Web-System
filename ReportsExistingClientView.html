@@ -4,9 +4,8 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Client Action Plan</title>
-            <script src="JS/enforce_login.js"></script>
+    <script src="JS/enforce_login.js"></script>
     <link rel="stylesheet" href="CSS/reportsexistingclientview_style.css">
-    
 </head>
 <body>
     <aside class="sidebar">
@@ -32,114 +31,84 @@
             </button>
         </div>
     </aside>
+
     <main class="main-content">
         <header class="header reports-header">
-            <h1 class="header-title">Reports</h1>
+            <h1 class="header-title">Existing Client Report</h1>
+                        <form id="pendingAccountForm" class="form-section">
+                        <input type="hidden" id="clientIdInput" name="client_id">
         </header>
         <div class="reports-container">
-            <div class="reports-sidebar">
-                <button class="report-button active">Existing Clients</button>
-                <button class="report-button">Delinquent Accounts</button>
-                <button class="report-button">Due Payments</button>
-                <button class="report-button">Audit Trail</button>
-            </div>
-            <div class="report-viewer">
-                <form id="pendingAccountForm" class="form-section">
-                    <input type="hidden" id="clientIdInput" name="client_id">
+<div class="reports-sidebar">
+    <button class="report-button active">Existing Clients</button>
 
-                    <section class="form-section">
-                        <h2 class="section-title">Personal Information</h2>
-                        <div class="grid-container">
-                            <div class="form-group">
-                                <label for="lastName" class="form-label">Last Name</label>
-                                <input type="text" id="lastName" name="lastName" class="form-input" disabled>
-                            </div>
-                            <div class="form-group">
-                                <label for="firstName" class="form-label">First Name</label>
-                                <input type="text" id="firstName" name="firstName" class="form-input" disabled>
-                            </div>
-                            <div class="form-group">
-                                <label for="middleName" class="form-label">Middle Name</label>
-                                <input type="text" id="middleName" name="middleName" class="form-input" disabled>
-                            </div>
-                            <div class="form-group">
-                                <label for="maritalStatus" class="form-label">Marital Status</label>
-                                <input type="text" id="maritalStatus" name="maritalStatus" class="form-input" disabled>
-                            </div>
-                            <div class="form-group">
-                                <label for="gender" class="form-label">Gender</label>                                
-                                <input type="text" id="gender" name="gender" class="form-input" disabled>
-                            </div>
-                            <div class="form-group date-input">
-                                <label for="dateOfBirth" class="form-label">Date of Birth</label>
-                                <input type="date" id="dateOfBirth" name="dateOfBirth" class="form-input" disabled>
-                            </div>
-                            <div class="form-group">
-                                <label for="city" class="form-label">City</label>
-                                <input type="text" id="city" name="city" class="form-input" disabled>
-                            </div>
-                            <div class="form-group">
-                                <label for="barangay" class="form-label">Barangay</label>
-                                <input type="text" id="barangay" name="barangay" class="form-input" disabled>
-                            </div>
-                            <div class="form-group">
-                                <label for="postalCode" class="form-label">Postal Code</label>
-                                <input type="text" id="postalCode" name="postalCode" class="form-input" disabled>
-                            </div>
-                            <div class="form-group full-width">
-                                <label for="streetAddress" class="form-label">Street Address</label>
-                                <input type="text" id="streetAddress" name="streetAddress" class="form-input" disabled>
-                            </div>
-                            <div class="form-group">
-                                <label for="phoneNumber" class="form-label">Phone Number</label>
-                                <input type="tel" id="phoneNumber" name="phoneNumber" class="form-input" disabled>
-                            </div>
-                            <div class="form-group">
-                                <label for="email" class="form-label">Email</label>
-                                <input type="email" id="email" name="email" class="form-input" disabled>
-                            </div>
-                            <div class="form-group">
-                                <label for="employmentStatus" class="form-label">Employment Status</label>
-                                <input type="text" id="employmentStatus" name="employmentStatus" class="form-input" disabled>
-                            </div>
-                            <div class="form-group">
-                                <label for="occupationPosition" class="form-label">Occupation/Position</label>
-                                <input type="text" id="occupationPosition" name="occupationPosition" class="form-input" disabled>
-                            </div>
-                            <div class="form-group">
-                                <label for="yearsInJob" class="form-label">Years in Job</label>
-                                <input type="number" id="yearsInJob" name="yearsInJob" class="form-input" disabled>
-                            </div>
-                            <div class="form-group">
-                                <label for="incomeSalary" class="form-label">Income/Salary(PHP)</label>
-                                <input type="text" id="incomeSalary" name="incomeSalary" class="form-input" disabled>
-                            </div>
-                            <div class="form-group full-width">
-                                <label for="cr" class="form-label">Collateral</label>
-                                <input type="text" id="cr" name="cr" class="form-input" disabled>
-                            </div>
-                            <div class="form-group checkbox-group">
-                                <input type="checkbox" id="barangayClearance" name="barangayClearance" class="form-checkbox" disabled>
-                                <label for="barangayClearance" class="form-checkbox-label">Barangay Clearance</label>
-                            </div>
-                            <div class="form-group checkbox-group">
-                                <input type="checkbox" id="validId" name="validId" class="form-checkbox" disabled>
-                                <label for="validId" class="form-checkbox-label">Valid ID</label>
-                            </div>
-                        </div>
-                    </section>
+    <button class="report-button">Delinquent Accounts</button>
+
+    <button class="report-button">Due Payments</button>
+    
+    <button class="report-button">Audit Trail</button>
+</div>
+                <div class="main-grid">
+                    <div class="column-1">
+                        <section class="client-section info-section">
+                            <h2 class="section-title">Client</h2>
+                            <dl class="data-list">
+                                <div class="data-group">
+                                    <dt>Client ID</dt>
+                                    <dd id="client-id-dd">[Loading...]</dd>
+                                </div>
+                                <div class="data-group">
+                                    <dt>Client Name</dt>
+                                    <dd id="client-name-dd">[Loading...]</dd>
+                                </div>
+                                <div class="data-group">
+                                    <dt>Marital Status</dt>
+                                    <dd id="marital-status-dd">[Loading...]</dd>
+                                </div>
+                                <div class="data-group">
+                                    <dt>Gender / Date of Birth</dt>
+                                    <dd id="gender-dob-dd">[Loading...]</dd>
+                                </div>
+                                <div class="data-group full-row">
+                                    <dt>Address</dt>
+                                    <dd id="address-dd">[Loading...]</dd>
+                                </div>
+                                <div class="data-group full-row">
+                                    <dt>Contact / Email</dt>
+                                    <dd id="contact-email-dd">[Loading...]</dd>
+                                </div>
+                                <div class="data-group full-row">
+                                    <dt>Employment / Income</dt>
+                                    <dd id="income-collateral-dd">[Loading...]</dd>
+                                </div>
+                                <div class="data-group full-row">
+                                    <dt>Collateral</dt>
+                                    <dd id="income-collateral-dd-2">[Loading...]</dd>
+                                </div>
+                            </dl>
+                        </section>
+                    </div>
 
 <section class="form-section">
     <h2 class="section-title">Loan Details</h2>
     <div class="loan-details-container">
-        <div id="loanTableContainer">
-            <p>Select a client to view their loans.</p>
+        <div id="dynamicLoanContent">
+            <p>Loading loan details...</p>
         </div>
-        </div>
+    </div>
 </section>
-        
-                </form>
-            </div>
+<div id="loanDetailModal" class="modal" style="display: none;">
+  <div class="modal-content">
+    <span id="closeModalButton" class="close">&times;</span>
+    <div class="modal-header">
+      <h2>Loan Details</h2>
+    </div>
+    <div id="modalBodyContent" class="modal-body">
+      </div>
+    </div>
+</div>
+                </div>
+            </form>
         </div>
     </main>
     <script src="JS/reportsexistingclientview_function.js"></script>

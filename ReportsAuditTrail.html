@@ -1,0 +1,141 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Emerald Microfinance Dashboard - Audit Trail</title>
+    <script src="JS/enforce_login.js"></script>
+    <link rel="stylesheet" href="CSS/reportsaudittrail_style.css"> 
+</head>
+<body>
+    <aside class="sidebar">
+        <div class="sidebar-header">
+            Emerald Microfinance
+        </div>
+        <nav class="sidebar-nav">
+            <ul>
+                <li><a href="#" class="nav-link">Dashboard</a></li>
+                <li><a href="#" class="nav-link">Client Creation</a></li>
+                <li><a href="#" class="nav-link">Loan Application</a></li>
+                <li><a href="#" class="nav-link">Pending Accounts</a></li>
+                <li><a href="#" class="nav-link">Payment Collection</a></li>
+                <li><a href="#" class="nav-link">Ledger</a></li>
+                <li><a href="#" class="nav-link active">Reports</a></li>
+                <li><a href="#" class="nav-link">User Management</a></li>
+                <li><a href="#" class="nav-link">Tools</a></li>
+            </ul>
+        </nav>
+        <div class="sidebar-footer">
+            <button class="logout-button">
+                Logout
+            </button>
+        </div>
+    </aside>
+    <main class="main-content">
+        <header class="header reports-header">
+            <h1 class="header-title">Reports</h1>
+        </header>
+        <div class="reports-container">
+            <div class="reports-sidebar">
+                <button class="report-button">Existing Clients</button>
+                <button class="report-button">Delinquent Accounts</button>
+                <button class="report-button">Due Payments</button>
+                <button class="report-button active">Audit Trail</button>
+            </div>
+            <div class="report-viewer">
+                <div class="audit-trail-container">
+                    
+                    <h2>System Audit Trail</h2>
+
+                    <div class="audit-filters-tools">
+                        <div class="filter-group">
+                            <label for="filter-start-date">Date Range:</label>
+                            <input type="date" id="filter-start-date" value="2024-01-01">
+                        </div>
+                         <div class="filter-group">
+                            <input type="date" id="filter-end-date"> 
+                         </div>
+                        <div class="filter-group">
+                            <label for="filter-action">Action:</label>
+                            <select id="filter-action">
+                                <option value="">All Actions</option>
+                                <option value="CREATED">Created</option>
+                                <option value="UPDATED">Updated</option>
+                                <option value="DELETED">Payment</option>
+                                <option value="VIEW">Viewed</option>
+                                <option value="NAVIGATION">Navigation</option> 
+                            </select>
+                        </div>
+
+                        <div class="filter-group">
+                            <label for="filter-user">User:</label>
+                            <select id="filter-user">
+                                <option value="">All Users</option>
+                            </select>
+                        </div>
+
+                        <div class="filter-group">
+                            <button id="apply-filter-btn" class="apply-filter-button">Apply Filters</button> 
+                        </div>
+
+                        <div class="tools-group">
+                            <button id="export-csv-btn" class="export-button"> 
+                                <i class="icon-download"></i> Export CSV
+                            </button>
+                        </div>
+                    </div>
+                    
+                    <div class="audit-table-wrapper">
+                        <table class="audit-table">
+                            <thead>
+                                <tr>
+                                    <th>Timestamp</th>
+                                    <th>User</th>
+                                    <th>Action</th>
+                                    <th>Description</th>
+                                    <th>Details</th>
+                                </tr>
+                            </thead>
+                            <tbody id="audit-trail-body"> 
+                                <tr><td colspan="5">Loading audit logs...</td></tr>
+                            </tbody>
+                        </table>
+                    </div>
+
+                    <div class="pagination-controls">
+                    </div>
+
+                    <div id="detail-modal" class="modal" style="display: none;"> 
+                        <div class="modal-content">
+                            <span class="close-button">&times;</span>
+                            <h3>Audit Record Details</h3>
+                            <div class="detail-section">
+                                <strong>Timestamp:</strong> <span id="detail-timestamp"></span><br>
+                                <strong>User:</strong> <span id="detail-user"></span><br>
+                                <strong>Action:</strong> <span id="detail-action"></span><br>
+                                <strong>Description:</strong> <span id="detail-description"></span><br> 
+                                <strong>Target ID/Table:</strong> <span id="detail-target"></span><br>
+                                <strong>IP Address:</strong> <span id="detail-ip"></span>
+                            </div>
+                            
+                            <h4>Change Log (Before vs. After)</h4>
+                            <div class="change-log-diff">
+                                <div class="diff-column before-state">
+                                    <h5>Before State</h5> 
+                                    <pre id="detail-before-state"></pre>
+                                </div>
+                                <div class="diff-column after-state">
+                                    <h5>After State</h5>
+                                    <pre id="detail-after-state"></pre>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                </div>
+            </div>
+        </div>
+    </main>
+    <script src="JS/reportsaudittrail_function.js"></script> 
+</body>
+</html>
