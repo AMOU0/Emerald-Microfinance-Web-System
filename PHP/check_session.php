@@ -1,5 +1,5 @@
 <?php
-// Start the session to be able to access the session variables
+// Start the session to be able to access the session variabl es
 session_start();
 header('Content-Type: application/json');
 

@@ -1,79 +1,129 @@
 <?php
-// Set header to return JSON format
+// Configuration for database connection
+$servername = "localhost";
+$username = "root";
+$password = "";
+$dbname = "emerald_microfinance";
+$charset = 'utf8mb4';
+
+// PDO DSN (Data Source Name) - Corrected to use defined variables
+$dsn = "mysql:host=$servername;dbname=$dbname;charset=$charset";
+$options = [
+    // Throw exceptions on errors
+    PDO::ATTR_ERRMODE            => PDO::ERRMODE_EXCEPTION,
+    // Fetch results as associative arrays by default
+    PDO::ATTR_DEFAULT_FETCH_MODE => PDO::FETCH_ASSOC,
+    // Turn off emulation mode for prepared statements
+    PDO::ATTR_EMULATE_PREPARES   => false,
+];
+
+// Set header for JSON response
 header('Content-Type: application/json');
 
-// --- Database Connection Configuration ---
-$servername = "localhost";
-$username = "root";     // <-- IMPORTANT: Replace with your actual database username
-$password = "";         // <-- IMPORTANT: Replace with your actual database password
-$dbname = "emerald_microfinance";
-
-// --- DYNAMIC CLIENT ID RETRIEVAL --
-$client_id = isset($_GET['client_id']) ? $_GET['client_id'] : null;
-
-// Check if client_id was provided
-if (!$client_id) {
-    // If no client_id is provided, the browser should already show "Error: Client ID Not Specified"
-    die(json_encode(["success" => false, "message" => "Client ID not specified in the URL."]));
+// --- 1. VALIDATE INPUT ---
+if (!isset($_GET['client_id']) || empty($_GET['client_id'])) {
+    echo json_encode(['error' => 'Client ID is missing.']);
+    exit;
 }
 
-// Create connection
-$conn = new mysqli($servername, $username, $password, $dbname);
+$clientId = $_GET['client_id'];
 
-// Check connection
-if ($conn->connect_error) {
-    die(json_encode(["success" => false, "error" => "Connection failed: " . $conn->connect_error]));
-}
+try {
+    // --- 2. DATABASE CONNECTION ---
+    $pdo = new PDO($dsn, $username, $password, $options);
 
-// SQL to fetch client data, requirements, and loan collateral using LEFT JOINs
-// LEFT JOIN ensures client data (c) is returned even if no matching records exist
-// in client_requirements (cr) or loan_applications (la).
-$sql = "
-    SELECT
-        c.last_name, c.first_name, c.middle_name, c.marital_status, c.gender, c.date_of_birth,
-        c.city, c.barangay, c.postal_code, c.street_address, c.phone_number, c.email,
-        c.employment_status, c.occupation, c.years_in_job, c.income,
-        cr.has_barangay_clearance,
-        cr.has_valid_id,
-        la.colateral
-    FROM clients c
-    LEFT JOIN client_requirements cr ON c.client_ID = cr.client_ID
-    LEFT JOIN loan_applications la ON c.client_ID = la.client_ID
-    WHERE c.client_ID = ?
-    LIMIT 1;
-";
+    // --- 3. SQL QUERY ---
+    $sql = "
+        SELECT
+            c.client_ID,
+            c.first_name,
+            c.middle_name,
+            c.last_name,
+            c.marital_status,
+            c.gender,
+            DATE_FORMAT(c.date_of_birth, '%M %d, %Y') AS formatted_dob,
+            c.street_address,
+            c.barangay,
+            c.city,
+            c.postal_code,
+            c.phone_number,
+            c.email,
+            c.employment_status,
+            c.occupation,
+            c.years_in_job,
+            c.income,
+            cr.has_valid_id AS collateral_valid_id,
+            cr.has_barangay_clearance AS collateral_barangay_clearance
+        FROM
+            clients c
+        LEFT JOIN
+            client_requirements cr ON c.client_ID = cr.client_ID
+        WHERE
+            c.client_ID = ?
+    ";
 
-$stmt = $conn->prepare($sql);
+    // --- 4. EXECUTE QUERY ---
+    $stmt = $pdo->prepare($sql);
+    $stmt->execute([$clientId]);
+    $clientData = $stmt->fetch();
 
-if ($stmt === false) {
-    $response = ["success" => false, "message" => "SQL Prepare Failed: " . $conn->error];
-} else {
-    // Bind the dynamically retrieved client ID (using 'i' for integer type)
-    $stmt->bind_param("i", $client_id);
-    $stmt->execute();
-    $result = $stmt->get_result();
-
-    if ($result->num_rows > 0) {
-        $data = $result->fetch_assoc();
+    if ($clientData) {
+        // --- 5. FORMAT DATA FOR FRONTEND ---
         
-        // Convert '0' and '1' from database to boolean-like values for JavaScript
-        // This ensures the JS checkbox logic works correctly.
-        $data['has_barangay_clearance'] = ($data['has_barangay_clearance'] == 1);
+        // Construct the full address
+        $fullAddress = sprintf(
+            "%s, %s, %s %s",
+            $clientData['street_address'],
+            $clientData['barangay'],
+            $clientData['city'],
+            $clientData['postal_code']
+        );
+
+        // Construct the Contact / Email field
+        $contactEmail = sprintf(
+            "%s / %s",
+            $clientData['phone_number'],
+            $clientData['email'] ?? 'N/A'
+        );
+
+        // Construct the Employment / Income field
+        $employmentIncome = sprintf(
+            "%s (%s, %d yrs) / %s",
+            $clientData['employment_status'] ?? 'N/A',
+            $clientData['occupation'] ?? 'N/A',
+            $clientData['years_in_job'] ?? 0,
+            $clientData['income'] ?? 'N/A'
+        );
         
+        // Construct the Collateral field
+        $collateral = sprintf(
+            "Valid ID: %s; Barangay Clearance: %s",
+            $clientData['collateral_valid_id'] ?? 'N/A',
+            $clientData['collateral_barangay_clearance'] == 1 ? 'Yes' : 'No'
+        );
+
+        // Prepare final data structure for the frontend
         $response = [
-            "success" => true,
-            "client" => $data
+            'client_ID' => $clientData['client_ID'],
+            'client_name' => "{$clientData['last_name']}, {$clientData['first_name']} {$clientData['middle_name']}",
+            'marital_status' => $clientData['marital_status'] ?? 'N/A',
+            'gender_dob' => "{$clientData['gender']} / {$clientData['formatted_dob']}",
+            'address' => $fullAddress,
+            'contact_email' => $contactEmail,
+            'employment_income' => $employmentIncome, // The requested field
+            'collateral' => $collateral
         ];
+
+        // --- 6. OUTPUT SUCCESS ---
+        echo json_encode($response);
     } else {
-        $response = [
-            "success" => false,
-            "message" => "Client with ID $client_id not found."
-        ];
+        echo json_encode(['error' => 'Client not found.']);
     }
-    $stmt->close();
+
+} catch (\PDOException $e) {
+    // --- 7. HANDLE ERROR ---
+    error_log("Database error: " . $e->getMessage());
+    echo json_encode(['error' => 'A database error occurred.']);
 }
 
-$conn->close();
-
-echo json_encode($response);
 ?>

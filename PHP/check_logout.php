@@ -3,7 +3,7 @@
 session_start();
 
 // 1. INCLUDE THE AUDIT TRAIL FUNCTION
-require_once 'audittrail_function.php'; 
+require_once 'audittrail_function.php'; // Updated include
 
 // Database credentials
 $servername = "localhost";

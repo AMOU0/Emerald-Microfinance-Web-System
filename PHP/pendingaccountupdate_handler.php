@@ -15,18 +15,58 @@ $options = [
     PDO::ATTR_EMULATE_PREPARES   => false,
 ];
 
+// --- 1.1 Start Session ---
+session_start();
+
+
+// Function to fetch the combined client data (used for before/after state)
+// This function remains crucial for capturing the state JSON.
+function fetch_client_data($pdo, $clientID) {
+    $sql = "
+        SELECT
+            c.*,
+            cr.has_barangay_clearance,
+            cr.has_valid_id,
+            g.guarantor_last_name,
+            g.guarantor_first_name,
+            g.guarantor_middle_name,
+            g.guarantor_street_address,
+            g.guarantor_phone_number,
+            la.loan_amount,
+            la.payment_frequency,
+            la.date_start,
+            la.duration_of_loan,
+            la.date_end,
+            la.colateral
+        FROM clients c
+        LEFT JOIN client_requirements cr ON c.client_ID = cr.client_ID
+        LEFT JOIN guarantor g ON c.client_ID = g.client_ID
+        LEFT JOIN loan_applications la ON c.client_ID = la.client_ID
+        WHERE c.client_ID = ? AND la.status = 'pending'
+        ORDER BY la.created_at DESC LIMIT 1;
+    ";
+    $stmt = $pdo->prepare($sql);
+    $stmt->execute([$clientID]);
+    return $stmt->fetch();
+}
+
+
 // --- 2. Input Validation and Preparation ---
 if ($_SERVER['REQUEST_METHOD'] !== 'POST') {
     echo json_encode(['success' => false, 'error' => 'Invalid request method.']);
     exit;
 }
 
-$clientID = trim($_POST['client_id'] ?? '');
+$clientID = trim($_POST['client_id'] ?? ''); 
 
 if (empty($clientID)) {
     echo json_encode(['success' => false, 'error' => 'Client ID is missing. Cannot save changes.']);
     exit;
 }
+
+// User ID is not needed here as logging is done client-side.
+// We keep it only for completeness if other server processes need it.
+// $userId = $_SESSION['user_id'] ?? 0; 
 
 // Personal Info Fields
 $lastName = trim($_POST['lastName'] ?? '');
@@ -47,9 +87,8 @@ $yearsInJob = filter_var($_POST['yearsInJob'] ?? 0, FILTER_VALIDATE_INT);
 $income = trim($_POST['incomeSalary'] ?? '');
 
 // Requirements Fields
-$hasBarangayClearance = isset($_POST['barangayClearanceCheck']) && $_POST['barangayClearanceCheck'] === 'on' ? 1 : 0;
-// If checkbox is checked AND a type is selected, use the type, otherwise '0'
-$hasValidIdCheck = isset($_POST['hasValidIdCheck']) && $_POST['hasValidIdCheck'] === 'on';
+$hasBarangayClearance = ($_POST['barangayClearanceCheck'] ?? 'off') === 'on' ? 1 : 0;
+$hasValidIdCheck = ($_POST['hasValidIdCheck'] ?? 'off') === 'on';
 $validIdType = $hasValidIdCheck ? trim($_POST['validIdType'] ?? 'Others') : '0';
 $colateral = trim($_POST['cr'] ?? '');
 
@@ -67,9 +106,18 @@ $dateStart = trim($_POST['date-start'] ?? '');
 $durationOfLoan = trim($_POST['duration-of-loan'] ?? '');
 $dateEnd = trim($_POST['date-end'] ?? '');
 
+
+$beforeState = null;
+$afterState = null;
+
 try {
     // --- 3. Database Connection and Transaction Start ---
     $pdo = new PDO($dsn, $username, $password, $options);
+    
+    // --- 3.1 Fetch BEFORE State for Audit Log (NEEDED to be returned to JS) ---
+    $beforeStateData = fetch_client_data($pdo, $clientID);
+    $beforeState = $beforeStateData ? json_encode($beforeStateData) : 'Client data not found before update.';
+
     $pdo->beginTransaction();
 
     // --- 4. Update clients Table (Personal Information) ---
@@ -87,7 +135,6 @@ try {
     ]);
     
     // --- 5. Update client_requirements Table (Requirements) ---
-    // UPSERT (INSERT OR UPDATE) to ensure a record exists
     $sqlRequirements = "INSERT INTO client_requirements (client_ID, has_barangay_clearance, has_valid_id)
         VALUES (?, ?, ?)
         ON DUPLICATE KEY UPDATE 
@@ -99,7 +146,6 @@ try {
     ]);
     
     // --- 6. Update guarantor Table (Guarantor Information) ---
-    // UPSERT (INSERT OR UPDATE)
     $sqlGuarantor = "INSERT INTO guarantor (client_ID, guarantor_last_name, guarantor_first_name, guarantor_middle_name, guarantor_street_address, guarantor_phone_number)
         VALUES (?, ?, ?, ?, ?, ?)
         ON DUPLICATE KEY UPDATE 
@@ -117,7 +163,6 @@ try {
     ]);
     
     // --- 7. Update loan_applications Table (Loan Details) ---
-    // Update the most recent pending loan application for the client
     $sqlLoan = "UPDATE loan_applications SET 
         loan_amount = ?, payment_frequency = ?, date_start = ?, 
         duration_of_loan = ?, date_end = ?, colateral = ?
@@ -133,13 +178,29 @@ try {
 
     // --- 8. Commit Transaction ---
     $pdo->commit();
-    echo json_encode(['success' => true, 'message' => 'Pending account details saved successfully.']);
+    
+    // --- 9. Fetch AFTER State and RETURN Data for client-side logging ---
+    $afterStateData = fetch_client_data($pdo, $clientID);
+    $afterState = $afterStateData ? json_encode($afterStateData) : 'Client data not found after update.';
+    
+    // The PHP must return all necessary log data for the JavaScript to send it to log_action.php
+    echo json_encode([
+        'success' => true, 
+        'message' => 'Pending account details saved successfully. Logging initiated by client.',
+        'audit_data' => [
+            'client_id' => $clientID,
+            'before_state' => $beforeState,
+            'after_state' => $afterState,
+            'target_table' => 'clients, client_requirements, guarantor, loan_applications'
+        ]
+    ]);
 
 } catch (PDOException $e) {
     if (isset($pdo) && $pdo->inTransaction()) {
         $pdo->rollBack();
     }
     error_log("Database Error (UPDATE): " . $e->getMessage());
+        
     echo json_encode(['success' => false, 'error' => 'Database error: Failed to save changes.']);
 } catch (Exception $e) {
     if (isset($pdo) && $pdo->inTransaction()) {

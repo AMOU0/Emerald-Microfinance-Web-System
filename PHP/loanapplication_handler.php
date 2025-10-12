@@ -54,16 +54,25 @@ try {
     // Begin transaction
     $conn->begin_transaction();
 
-    // Generate a unique loan application ID
+    // === START MODIFICATION FOR LOAN APPLICATION ID FORMAT ===
+    // Generate a unique loan application ID (Format: mmyyyy00001, sequential count resets monthly)
+    $current_month = date("m");
     $current_year = date("Y");
-    $sql_count = "SELECT COUNT(*) as count FROM loan_applications WHERE YEAR(created_at) = ?";
+    $current_month_year = date("mY"); // For the ID prefix
+    
+    // Count loan applications created in the current month and year
+    // This resets the sequential number every month.
+    $sql_count = "SELECT COUNT(*) as count FROM loan_applications WHERE YEAR(created_at) = ? AND MONTH(created_at) = ?";
     $stmt_count = $conn->prepare($sql_count);
-    $stmt_count->bind_param("s", $current_year);
+    $stmt_count->bind_param("ss", $current_year, $current_month);
     $stmt_count->execute();
     $result_count = $stmt_count->get_result();
     $row_count = $result_count->fetch_assoc();
     $loan_count = $row_count['count'] + 1;
-    $loan_application_id = $current_year . str_pad($loan_count, 5, '0', STR_PAD_LEFT);
+    
+    // Construct the new ID: mmyyyy + padded sequential number
+    $loan_application_id = $current_month_year . str_pad($loan_count, 5, '0', STR_PAD_LEFT);
+    // === END MODIFICATION FOR LOAN APPLICATION ID FORMAT ===
 
     // Insert into `loan_applications` table
     // CHANGE IS HERE: The hardcoded 'Approved' status has been changed to 'Pending'

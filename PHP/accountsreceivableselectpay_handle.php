@@ -56,7 +56,7 @@ try {
     // Crucial Check: Ensure the original loan hasn't been reconstructed
     // This check applies ONLY when paying the original loan (reconstruct_id is null/0)
     if (!$reconstruct_id) {
-        $check_reconstruct = $pdo->prepare("SELECT COUNT(*) FROM loan_reconstruct WHERE loan_application_id = ? AND status != 'fully_paid'");
+        $check_reconstruct = $pdo->prepare("SELECT COUNT(*) FROM loan_reconstruct WHERE loan_application_id = ? AND status != 'approved'");
         $check_reconstruct->execute([$loan_id]);
         if ($check_reconstruct->fetchColumn() > 0) {
              // This prevents paying the original loan when an active reconstruction exists
@@ -100,8 +100,8 @@ try {
     if ($remaining_balance_before <= 0) {
         $pdo->rollBack();
         // Update the status if it wasn't marked as fully paid already due to prior logic errors
-        if ($loan_status !== 'fully_paid') {
-            $update_sql = "UPDATE {$loan_table} SET status = 'fully_paid', paid = 'Paid' WHERE {$loan_id_field} = ?";
+        if ($loan_status !== 'approved') {
+            $update_sql = "UPDATE {$loan_table} SET status = 'approved', paid = 'Paid' WHERE {$loan_id_field} = ?";
             if ($reconstruct_id > 0) {
                 $pdo->prepare($update_sql)->execute([$reconstruct_id]);
             } else {
@@ -126,7 +126,7 @@ try {
     $new_remaining_balance = $remaining_balance_before - $final_payment_amount;
 
     if ($new_remaining_balance <= 0) {
-        $update_sql = "UPDATE {$loan_table} SET status = 'fully_paid', paid = 'Paid' WHERE {$loan_id_field} = ?";
+        $update_sql = "UPDATE {$loan_table} SET status = 'approved', paid = 'Paid' WHERE {$loan_id_field} = ?";
         
         if ($reconstruct_id > 0) {
             $pdo->prepare($update_sql)->execute([$reconstruct_id]);
