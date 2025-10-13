@@ -80,19 +80,25 @@
                         </div>
                         
                         <div class="card card--auto">
-                            <h3 class="card__title card__title--blue">Auto Backup Preference</h3>
-                            <p class="card__description">Set how often the system should remind or attempt a background backup.</p>
-                            
+                            <h3 class="card__title card__title--blue">Auto Backup/Restore Preference</h3>
+                            <p class="card__description">Set how often the system should remind or attempt a background backup and restore.</p>
+
                             <label for="autoBackupInterval" class="form__label">Interval:</label>
                             <select id="autoBackupInterval" class="form__select">
                                 <option value="off">Off</option>
                                 <option value="daily">Daily</option>
                                 <option value="weekly">Weekly</option>
                             </select>
-                            
+    
+                            <label for="autoRestoreTime" class="form__label" style="margin-top: 10px;">Restore Time (24h):</label>
+                            <input type="time" id="autoRestoreTime" class="form__input" value="03:00" required>
+    
+                            <label for="autoBackupTime" class="form__label" style="margin-top: 10px;">Backup Time (24h):</label>
+                            <input type="time" id="autoBackupTime" class="form__input" value="03:00" required>
+    
                             <button id="saveAutoBackupBtn" class="btn btn--secondary btn--save" disabled>
                                 <svg class="btn__icon btn__icon--inline" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7H5a2 2 0 00-2 2v10a2 2 0 002 2h14a2 2 0 002-2V9a2 2 0 00-2-2h-3m-1 4l-3 3m0 0l-3-3m3 3V4"></path></svg>
-                                Save Preference
+                                    Save Preference
                             </button>
                             <p id="currentAutoBackup" class="card__preference-status"></p>
                         </div>
@@ -101,15 +107,14 @@
                     <h2 class="tool-block__heading log-heading">Backup/Restore Activity Log</h2>
                     <div class="log-table-container">
                         <table class="data-table">
-                            <thead class="data-table__head">
-                                <tr>
-                                    <th class="data-table__th">Timestamp</th>
-                                    <th class="data-table__th">Operation</th>
-                                    <th class="data-table__th">Status</th>
-                                    <th class="data-table__th">Processed By</th>
-                                    <th class="data-table__th">Details</th>
-                                </tr>
-                            </thead>
+<thead class="data-table__head">
+    <tr>
+        <th class="data-table__th">Timestamp</th>
+        <th class="data-table__th">Processed By</th>
+        <th class="data-table__th">Action Type</th> 
+        <th class="data-table__th">Details</th>
+    </tr>
+</thead>
                             <tbody id="backupLogTableBody" class="data-table__body">
                                 <tr><td colspan="5" class="data-table__no-data">Loading log history...</td></tr>
                             </tbody>
