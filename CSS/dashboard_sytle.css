@@ -1,0 +1,258 @@
+/* General Body and Container Styling */
+body {
+    font-family: 'Inter', sans-serif;
+    background-color: #333;
+    margin: 0;
+    padding: 0;
+    display: flex;
+    min-height: 100vh;
+    color: #fff;
+}
+
+.sidebar {
+    width: 280px;
+    background-color: #2D3748;
+    color: #FFFFFF;
+    display: flex;
+    flex-direction: column;
+    padding: 24px 0;
+    border-top-right-radius: 16px;
+    border-bottom-right-radius: 16px;
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+}
+
+.sidebar-header {
+    font-size: 24px;
+    font-weight: 700;
+    padding: 0 24px 24px;
+    border-bottom: 1px solid #4A5568;
+    margin-bottom: 24px;
+}
+
+.sidebar-nav ul {
+    list-style: none;
+    padding: 0;
+    margin: 0;
+    flex-grow: 1;
+}
+
+.nav-link {
+    display: block;
+    padding: 12px 24px;
+    color: #CBD5E0;
+    font-weight: 500;
+    transition: background-color 0.2s ease-in-out;
+    border-radius: 8px;
+    margin: 0 12px 8px;
+    text-decoration: none; /* Add this to remove the underline */
+}
+
+.nav-link:hover {
+    background-color: #4A5568;
+    color: #FFFFFF;
+}
+
+.nav-link.active {
+    background-color: #48BB78;
+    color: #FFFFFF;
+    font-weight: 600;
+}
+
+.sidebar-footer {
+    padding: 24px;
+    border-top: 1px solid #4A5568;
+    margin-top: 24px;
+}
+
+.logout-button {
+    width: 100%;
+    background-color: #E53E3E;
+    color: #FFFFFF;
+    padding: 12px 24px;
+    border-radius: 8px;
+    font-weight: 600;
+    transition: background-color 0.2s ease-in-out;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+    border: none;
+    cursor: pointer;
+}
+
+.logout-button:hover {
+    background-color: #C53030;
+}
+
+/* Main Content Area */
+main {
+    flex: 1;
+    padding: 1.5rem;
+    overflow-y: auto;
+}
+
+/* Dashboard Header */
+main > header {
+    background-color: #4CAF50;
+    color: white;
+    font-size: 2.25rem;
+    font-weight: bold;
+    padding: 1rem 1.5rem;
+    border-radius: 8px;
+    margin-bottom: 1.5rem;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+}
+
+/* Main Content Layout (Client's Due and Info Cards) */
+main > div {
+    display: flex;
+    gap: 1.5rem;
+}
+
+/* Client's Due Section */
+section {
+    flex: 1;
+    background-color: #2d3748;
+    padding: 1.5rem;
+    border-radius: 8px;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+}
+
+/* Client's Due Header and Legend */
+section > div:first-child {
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+    align-items: flex-start;
+    margin-bottom: 1rem;
+}
+
+section h2 {
+    font-size: 1.25rem;
+    font-weight: 600;
+    color: white;
+    margin-bottom: 0.5rem;
+}
+
+section > div:first-child > div {
+    display: flex;
+    flex-direction: column;
+    gap: 0.5rem;
+    font-size: 0.875rem;
+    color: white;
+}
+
+section > div:first-child > div > div {
+    display: flex;
+    align-items: center;
+}
+
+section > div:first-child span {
+    width: 0.75rem;
+    height: 0.75rem;
+    border-radius: 9999px;
+    margin-right: 0.5rem;
+}
+
+/* Specific legend colors */
+section > div:first-child span:nth-child(1) { background-color: #22c55e; }
+section > div:first-child span:nth-child(2) { background-color: #eab308; }
+section > div:first-child span:nth-child(3) { background-color: #ef4444; }
+
+/* Table Styling */
+table {
+    min-width: 100%;
+    background-color: #4a5568;
+    border-radius: 8px;
+    overflow: hidden;
+    color: white;
+    border-collapse: collapse;
+}
+
+table thead tr {
+    background-color: #4a5568;
+    text-align: left;
+}
+
+table th,
+table td {
+    padding: 0.75rem 1rem;
+    border-bottom: 1px solid #6b7280;
+}
+
+/* Specific row colors */
+table tbody tr:nth-child(1) { background-color: #166534; }
+table tbody tr:nth-child(2) { background-color: #a16207; }
+table tbody tr:nth-child(3) { background-color: #b91c1c; }
+table tbody tr:not(:nth-child(-n+3)) { background-color: #4a5568; }
+
+/* Right Column (Info Cards) */
+aside:last-of-type {
+    width: 320px;
+    display: flex;
+    flex-direction: column;
+    gap: 1.5rem;
+}
+
+/* Individual Info Card Styling */
+aside:last-of-type > div {
+    background-color: #2d3748;
+    padding: 1.5rem;
+    border-radius: 8px;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+    color: white;
+}
+
+aside:last-of-type h3 {
+    font-size: 1.125rem;
+    font-weight: 600;
+    margin-bottom: 0.5rem;
+}
+
+aside:last-of-type > div > div {
+    background-color: #4a5568;
+    height: 6rem;
+    border-radius: 6px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: #a0aec0;
+    font-size: 1.25rem;
+}
+
+/* Custom Scrollbar for aesthetic */
+::-webkit-scrollbar {
+    width: 8px;
+}
+
+::-webkit-scrollbar-track {
+    background: #444;
+    border-radius: 10px;
+}
+
+::-webkit-scrollbar-thumb {
+    background: #888;
+    border-radius: 10px;
+}
+
+::-webkit-scrollbar-thumb:hover {
+    background: #555;
+}
+
+/* Responsive adjustments */
+@media (max-width: 1024px) {
+    main > div {
+        flex-direction: column;
+    }
+
+    aside:last-of-type {
+        width: 100%;
+    }
+}
+
+@media (max-width: 768px) {
+    body {
+        flex-direction: column;
+    }
+
+    main {
+        padding: 1rem;
+    }
+}

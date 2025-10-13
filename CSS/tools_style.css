@@ -1,0 +1,344 @@
+/* --- Global & Body Styles (Copied from the 'tailwind' inspiration) --- */
+body {
+    font-family: 'Inter', sans-serif;
+    /* Using the color from the first block for a light background */
+    background-color: #f7fafc; 
+    margin: 0;
+    padding: 0;
+    display: flex; /* Setup for sidebar and main content side-by-side */
+    min-height: 100vh;
+    color: #333; /* Default text color set to dark for the light background */
+}
+
+/* --- Sidebar Styles (Copied and adapted) --- */
+.sidebar {
+    width: 280px;
+    background-color: #2D3748; /* Dark background */
+    color: #FFFFFF;
+    display: flex;
+    flex-direction: column;
+    padding: 24px 0;
+    /* Using modern rounded corners */
+    border-top-right-radius: 16px;
+    border-bottom-right-radius: 16px;
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+    /* For a fixed sidebar, you might want to uncomment these:
+    position: fixed; 
+    height: 100vh;
+    */
+}
+
+.sidebar-header {
+    font-size: 24px;
+    font-weight: 700;
+    padding: 0 24px 24px;
+    border-bottom: 1px solid #4A5568;
+    margin-bottom: 24px;
+}
+
+.sidebar-nav {
+    flex-grow: 1;
+}
+
+.sidebar-nav ul {
+    list-style: none;
+    padding: 0;
+    margin: 0;
+}
+
+.nav-link {
+    display: block;
+    padding: 12px 24px;
+    color: #CBD5E0;
+    font-weight: 500;
+    transition: background-color 0.2s ease-in-out;
+    border-radius: 8px;
+    margin: 0 12px 8px;
+    text-decoration: none;
+}
+
+.nav-link:hover {
+    background-color: #4A5568;
+    color: #FFFFFF;
+}
+
+.nav-link.active {
+    background-color: #48BB78; /* Active green */
+    color: #FFFFFF;
+    font-weight: 600;
+}
+
+.sidebar-footer {
+    padding: 24px;
+    border-top: 1px solid #4A5568;
+    margin-top: 24px;
+}
+
+.logout-button {
+    width: 100%;
+    background-color: #E53E3E;
+    color: #FFFFFF;
+    padding: 12px 24px;
+    border-radius: 8px;
+    font-weight: 600;
+    transition: background-color 0.2s ease-in-out;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+    border: none;
+    cursor: pointer;
+}
+
+.logout-button:hover {
+    background-color: #C53030;
+}
+
+/* --- Main Content Layout --- */
+.main-content {
+    flex-grow: 1;
+    display: flex;
+    flex-direction: column;
+    /* Use the same light background as the body but with padding */
+    background-color: #f7fafc; 
+    padding: 24px;
+}
+
+/* Using 'header' from your HTML instead of '.main-header' */
+.header {
+    background-color: #48BB78; /* Primary active green color */
+    color: white;
+    padding: 16px 24px;
+    border-radius: 8px;
+    margin-bottom: 24px;
+}
+
+.header h1 {
+    margin: 0;
+    font-size: 1.5rem;
+    font-weight: 600;
+}
+
+.content-panel {
+    display: flex;
+    flex-grow: 1;
+    gap: 24px; /* Consistent gap value */
+    background-color: transparent; /* Allows main-content background to show */
+}
+
+/* --- Tools Menu (Sub-navigation) --- */
+.tools-menu {
+    flex-shrink: 0;
+    width: 250px;
+    padding: 0; /* No padding needed here, content will be styled inside */
+    box-sizing: border-box;
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+}
+
+.menu-button {
+    width: 100%; /* Changed from 90% to 100% to fit the container */
+    padding: 10px;
+    background-color: white; /* Changed from E0E0E0 to white */
+    border: 1px solid #d1d5db; /* Lighter border */
+    color: #2D3748;
+    cursor: pointer;
+    text-align: left; /* Aligned left for better flow */
+    font-size: 16px;
+    font-weight: 500;
+    border-radius: 8px; /* Square corners for consistency */
+    transition: background-color 0.2s ease-in-out, border-color 0.2s;
+}
+
+.menu-button:hover {
+    background-color: #e9ecef; 
+    border-color: #48BB78;
+}
+
+/* --- Content Area Styles (Tool Content) --- */
+
+.content-area {
+    flex-grow: 1; 
+    background-color: white;
+    padding: 30px; /* Increased padding */
+    margin: 0; /* Remove margin to use the parent's padding */
+    border: 1px solid #d1d5db;
+    border-radius: 8px; 
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.05);
+    min-width: 0;
+    color: #333;
+}
+
+/* --- Interest Rate Tool Specific Styling (#interest-amount-tool) --- */
+
+#interest-amount-tool h2 {
+    color: #2D3748; /* Darker heading color */
+    border-bottom: 2px solid #edf2f7;
+    padding-bottom: 15px;
+    margin-bottom: 25px;
+    font-size: 2rem;
+}
+
+#interest-amount-tool p {
+    color: #718096;
+    margin-bottom: 25px;
+}
+
+/* Current Active Interest Rate Display */
+.tool-section:first-of-type {
+    margin-bottom: 30px;
+    padding: 20px;
+    border: 1px solid #48BB78; 
+    border-left: 5px solid #48BB78; /* Accent border on the left */
+    border-radius: 8px;
+    background-color: #f0fff4; 
+}
+
+#active-interest-rate {
+    color: #48BB78;
+    font-size: 1.8em;
+    font-weight: 700;
+    margin-left: 10px;
+}
+
+/* Form for Setting New Interest Rate */
+#new-interest-form {
+    display: flex;
+    gap: 20px;
+    align-items: flex-end;
+    padding: 20px;
+    border: none; /* Removed the border */
+    border-radius: 8px;
+    background-color: #f7fafc; /* Light background for the form area */
+    margin-bottom: 30px;
+}
+
+#new-interest-form > div {
+    flex-grow: 1;
+}
+
+#new-interest-form label {
+    display: block;
+    margin-bottom: 6px;
+    font-weight: 600;
+    color: #4a5568;
+}
+
+#new-interest-form input {
+    width: 100%;
+    padding: 10px;
+    border: 1px solid #e2e8f0;
+    border-radius: 4px;
+    box-sizing: border-box;
+    font-size: 1em;
+    background-color: white;
+}
+
+#date_start {
+    background-color: #edf2f7; 
+    cursor: not-allowed;
+    color: #718096;
+}
+
+#new-interest-form button[type="submit"] {
+    padding: 10px 24px;
+    background-color: #48BB78; 
+    color: white;
+    border: none;
+    border-radius: 4px;
+    cursor: pointer;
+    font-weight: 600;
+    transition: background-color 0.2s;
+    flex-shrink: 0;
+    box-shadow: 0 2px 4px rgba(72, 187, 120, 0.4);
+}
+
+#new-interest-form button[type="submit"]:hover {
+    background-color: #38a169;
+}
+
+/* Divider */
+hr {
+    margin: 30px 0;
+    border: 0;
+    border-top: 1px solid #e2e8f0;
+}
+
+/* --- Interest Rate History Table --- */
+
+.table-container {
+    max-height: 400px; /* Taller table container */
+    overflow-y: auto;
+    border: 1px solid #e0e0e0;
+    border-radius: 8px;
+}
+
+#interest-history-table {
+    width: 100%;
+    border-collapse: collapse;
+}
+
+#interest-history-table thead tr {
+    background-color: #ebf4ff; /* Light blue header */
+    position: sticky;
+    top: 0;
+    z-index: 1;
+}
+
+#interest-history-table th,
+#interest-history-table td {
+    border: 1px solid #eee;
+    padding: 12px 10px;
+    text-align: left;
+    font-size: 0.9em;
+}
+
+#interest-history-table th {
+    font-weight: 700;
+    color: #2d3748;
+}
+
+#interest-history-table tbody tr:nth-child(even) {
+    background-color: #fcfcfc;
+}
+
+#interest-history-table tbody tr:hover {
+    background-color: #f7fafc;
+}
+
+.rate-status {
+    font-weight: 500;
+}
+
+.rate-status[data-status="activated"] {
+    color: #48BB78;
+    font-weight: 700;
+}
+
+/* Table Action Buttons */
+.edit-btn {
+    padding: 6px 12px;
+    background-color: #3182CE; 
+    color: white;
+    border: none;
+    border-radius: 4px;
+    cursor: pointer;
+    transition: background-color 0.2s;
+    margin-right: 8px;
+}
+
+.deactivate-btn {
+    padding: 6px 12px;
+    background-color: #E53E3E; 
+    color: white;
+    border: none;
+    border-radius: 4px;
+    cursor: pointer;
+    transition: background-color 0.2s;
+}
+
+.edit-btn:hover { background-color: #2b6cb0; }
+.deactivate-btn:hover:not(:disabled) { background-color: #c53030; }
+.deactivate-btn:disabled {
+    background-color: #cbd5e0;
+    cursor: not-allowed;
+    box-shadow: none;
+}

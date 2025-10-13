@@ -1,0 +1,550 @@
+/* --- Imports and General Body/Container Styling (PROVIDED) --- */
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap');
+body {
+    font-family: 'Inter', sans-serif;
+    background-color: #333;
+    margin: 0;
+    padding: 0;
+    display: flex;
+    min-height: 100vh;
+    color: #fff;
+}
+
+.sidebar {
+    width: 280px;
+    background-color: #2D3748;
+    color: #FFFFFF;
+    display: flex;
+    flex-direction: column;
+    padding: 24px 0;
+    border-top-right-radius: 16px;
+    border-bottom-right-radius: 16px;
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+}
+
+.sidebar-header {
+    font-size: 24px;
+    font-weight: 700;
+    padding: 0 24px 24px;
+    border-bottom: 1px solid #4A5568;
+    margin-bottom: 24px;
+}
+
+.sidebar-nav ul {
+    list-style: none;
+    padding: 0;
+    margin: 0;
+    flex-grow: 1;
+}
+
+.nav-link {
+    display: block;
+    padding: 12px 24px;
+    color: #CBD5E0;
+    font-weight: 500;
+    transition: background-color 0.2s ease-in-out;
+    border-radius: 8px;
+    margin: 0 12px 8px;
+    text-decoration: none;
+}
+
+.nav-link:hover {
+    background-color: #4A5568;
+    color: #FFFFFF;
+}
+
+.nav-link.active {
+    background-color: #48BB78;
+    color: #FFFFFF;
+    font-weight: 600;
+}
+
+.sidebar-footer {
+    padding: 24px;
+    border-top: 1px solid #4A5568;
+    margin-top: 24px;
+}
+
+.logout-button {
+    width: 100%;
+    background-color: #E53E3E;
+    color: #FFFFFF;
+    padding: 12px 24px;
+    border-radius: 8px;
+    font-weight: 600;
+    transition: background-color 0.2s ease-in-out;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+    border: none;
+    cursor: pointer;
+}
+
+.logout-button:hover {
+    background-color: #C53030;
+}
+
+/* --- Main Content Styling (PROVIDED) --- */
+.main-content {
+    flex-grow: 1;
+    display: flex;
+    flex-direction: column;
+    background-color: #E2E8F0;
+    padding: 32px;
+    color: #000;
+}
+
+.main-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    background-color: #A0D3B4;
+    padding: 16px 24px;
+    border-radius: 12px;
+    margin-bottom: 24px;
+}
+
+.main-header h1 {
+    font-size: 32px;
+    font-weight: 700;
+    margin: 0;
+    color: #2D3748;
+}
+
+/* --- Form Styling (PROVIDED) --- */
+.account-receivable-form-section {
+    flex-grow: 1;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+
+.form-container {
+    display: grid;
+    grid-template-rows: auto auto;
+    grid-template-columns: 2fr 1fr;
+    grid-template-areas:
+        "client payment"
+        "loan payment";
+    background-color: #A0D3B4;
+    padding: 24px;
+    border-radius: 12px;
+    gap: 24px;
+    width: 100%;
+    max-width: 900px;
+}
+
+.client-information-group {
+    grid-area: client;
+    background-color: #f7fafc;
+    padding: 16px;
+    border-radius: 8px;
+    box-shadow: inset 0 2px 4px rgba(0, 0, 0, 0.1);
+}
+
+.loan-information-group {
+    grid-area: loan;
+    background-color: #f7fafc;
+    padding: 16px;
+    border-radius: 8px;
+    box-shadow: inset 0 2px 4px rgba(0, 0, 0, 0.1);
+}
+
+.payment-group {
+    grid-area: payment;
+    background-color: #E2E8F0;
+    padding: 16px;
+    border-radius: 8px;
+    box-shadow: inset 0 2px 4px rgba(0, 0, 0, 0.1);
+    display: flex;
+    flex-direction: column;
+    justify-content: flex-start;
+    align-items: stretch;
+}
+
+h2 {
+    font-size: 20px;
+    font-weight: 600;
+    margin-top: 0;
+    margin-bottom: 16px;
+    color: #2D3748;
+}
+
+.form-fields {
+    display: grid;
+    gap: 16px;
+    grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+}
+
+.client-information-group .form-fields {
+    grid-template-columns: repeat(2, 1fr);
+}
+
+.loan-information-group .form-fields {
+    grid-template-columns: repeat(2, 1fr);
+}
+
+.payment-group .form-fields {
+    display: flex;
+    flex-direction: column;
+    gap: 16px;
+    flex-grow: 1;
+    justify-content: space-between;
+}
+
+.input-group {
+    display: flex;
+    flex-direction: column;
+}
+
+.input-group label {
+    font-size: 12px;
+    font-weight: 500;
+    color: #4A5568;
+    text-transform: uppercase;
+    margin-bottom: 4px;
+}
+
+.input-group input {
+    padding: 8px 12px;
+    border: 1px solid #CBD5E0;
+    border-radius: 6px;
+    font-size: 16px;
+    background-color: #fff;
+    color: #2D3748;
+}
+
+.pay-button {
+    width: 100%;
+    background-color: #48BB78;
+    color: #FFFFFF;
+    padding: 12px 24px;
+    border-radius: 8px;
+    font-weight: 600;
+    border: none;
+    cursor: pointer;
+    transition: background-color 0.2s ease-in-out;
+}
+
+.pay-button:hover {
+    background-color: #38A169;
+}
+
+/* General button styles for both pay and return buttons */
+.action-button {
+    padding: 12px 24px;
+    border: none;
+    border-radius: 8px;
+    font-size: 16px;
+    font-weight: 600;
+    cursor: pointer;
+    transition: background-color 0.2s ease-in-out;
+}
+
+/* Specific styles for the RETURN button */
+.return-button {
+    background-color: #A0D3B4;
+    color: #2D3748;
+}
+
+.return-button:hover {
+    background-color: #8CC29E;
+}
+
+/* --- Message Container (PROVIDED) --- */
+#message-container {
+    min-height: 1.5rem;
+    text-align: center;
+    font-weight: 500;
+    margin-bottom: 1rem;
+}
+
+/* Colors for message types */
+.text-red-600 {
+    color: #dc2626;
+}
+.text-green-600 {
+    color: #16a34a;
+}
+.text-gray-600 {
+    color: #4b5563;
+}
+
+/* --- FIXED & ADDED STYLES FOR JS-GENERATED CONTENT (TABLES/MODAL) --- */
+
+/* Main container for the schedule, now handling injected content */
+.ammortization-schedule-container {
+    margin-top: 30px;
+}
+
+#loanTableContainer {
+    background-color: #ffffff;
+    border-radius: 0.5rem;
+    box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
+    padding: 1.5rem;
+    color: #000; /* Ensure text is dark inside the white container */
+}
+
+/* Loan Info Summary when loaded directly */
+.loan-info-summary {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 20px;
+    margin-bottom: 20px;
+}
+.loan-info-summary h3 {
+    flex-basis: 100%;
+    border-bottom: 1px solid #ddd;
+    padding-bottom: 5px;
+    color: #2D3748;
+    font-size: 18px;
+}
+.loan-info-summary p {
+    flex: 1 1 45%; /* Two columns */
+    margin: 5px 0;
+    font-size: 14px;
+}
+.loan-info-summary strong {
+    color: #4A5568;
+}
+
+/* Standard Loan List Table (when no loanID is present) */
+.loan-table {
+    width: 100%;
+    border-collapse: collapse;
+    margin-top: 15px;
+    font-size: 14px;
+}
+
+.loan-table th, .loan-table td {
+    padding: 12px 15px;
+    border: 1px solid #e2e8f0; /* Light border */
+    text-align: left;
+}
+
+.loan-table th {
+    background-color: #f7fafc; /* Very light background */
+    color: #2D3748;
+    font-weight: 600;
+    text-transform: uppercase;
+}
+
+.loan-row {
+    cursor: pointer;
+    transition: background-color 0.2s;
+}
+
+.loan-row:hover {
+    background-color: #ebf4ff; /* Light blue hover for interactivity */
+}
+
+/* Amortization Schedule Table (Injected/Modal Content) */
+.loan-schedule-table {
+    width: 100%;
+    border-collapse: collapse;
+    margin-top: 15px;
+    font-size: 0.85em;
+    table-layout: auto; /* Allow columns to adjust */
+}
+
+.loan-schedule-table th, .loan-schedule-table td {
+    padding: 10px 8px;
+    border: 1px solid #e2e8f0;
+    text-align: right;
+    white-space: nowrap;
+}
+
+.loan-schedule-table th {
+    background-color: #edf2f7; 
+    color: #4A5568;
+    font-weight: 600;
+}
+
+/* Align date columns left */
+.loan-schedule-table th:nth-child(1),
+.loan-schedule-table td:nth-child(1),
+.loan-schedule-table th:nth-child(5),
+.loan-schedule-table td:nth-child(5) {
+    text-align: left;
+}
+
+/* --- MODAL STYLES (Used when clicking a row) --- */
+.modal-overlay {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background-color: rgba(0, 0, 0, 0.7);
+    display: flex; 
+    justify-content: center;
+    align-items: center;
+    z-index: 1000;
+    opacity: 0;
+    visibility: hidden; /* Start hidden */
+    transition: opacity 0.3s, visibility 0.3s;
+}
+
+.modal-overlay.is-active {
+    opacity: 1;
+    visibility: visible;
+}
+
+.modal-content {
+    background: #fff;
+    color: #000;
+    padding: 25px;
+    border-radius: 8px;
+    width: 90%;
+    max-width: 950px;
+    max-height: 90vh;
+    overflow-y: auto;
+    box-shadow: 0 8px 30px rgba(0, 0, 0, 0.5);
+    transform: translateY(-50px);
+    opacity: 0;
+    transition: transform 0.3s ease-out, opacity 0.3s ease-out;
+}
+
+.modal-content.is-active {
+    transform: translateY(0);
+    opacity: 1;
+}
+
+.modal-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    border-bottom: 1px solid #ddd;
+    padding-bottom: 10px;
+    margin-bottom: 15px;
+}
+
+.close-modal-btn {
+    background: none;
+    border: none;
+    font-size: 28px;
+    line-height: 1;
+    color: #777;
+    cursor: pointer;
+    padding: 0;
+}
+
+.modal-body {
+    display: flex;
+    flex-direction: column;
+    gap: 20px;
+}
+
+/* Responsive layout for loan info and schedule inside modal */
+@media (min-width: 768px) {
+    .loan-info-summary {
+        display: block; /* Disable flex wrapping inside modal for better structure */
+    }
+    .modal-body > .loan-info-summary {
+        padding-right: 10px;
+    }
+}
+
+/* --- Print Styles --- */
+@media print {
+    /* Hide non-essential print elements */
+    .sidebar,
+    .main-header,
+    .account-receivable-form-section,
+    #message-container,
+    .loan-details-footer .print-btn,
+    .return-button {
+        display: none !important;
+    }
+
+    /* Reset main content for full print width */
+    .main-content {
+        padding: 0;
+        margin: 0;
+        background-color: #fff;
+        color: #000;
+    }
+    
+    #loanTableContainer {
+        box-shadow: none;
+        padding: 0;
+        border-radius: 0;
+    }
+
+    /* Ensure tables print correctly */
+    .loan-schedule-table {
+        width: 100%;
+        font-size: 10pt;
+    }
+
+    .loan-schedule-table th, .loan-schedule-table td {
+        padding: 5px;
+        border-color: #000;
+    }
+
+    /* Print only the modal content if it's open (for click actions) */
+    .modal-overlay.is-active {
+        position: static;
+        display: block !important;
+        opacity: 1 !important;
+        visibility: visible !important;
+        background: none;
+    }
+    .modal-content.is-active {
+        box-shadow: none;
+        transform: none;
+        max-width: 100%;
+        width: 100%;
+        padding: 0;
+    }
+    .modal-header, .modal-footer {
+        display: none;
+    }
+}
+
+/* --- 1. Ensure the main container is visible and has room --- */
+#loanTableContainer {
+    background-color: #ffffff; /* Must be visible against dark background */
+    color: #000;              /* Must have dark text */
+    padding: 1.5rem;
+    border-radius: 0.5rem;
+    box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
+    /* Important: Allows the wide table to scroll horizontally on small screens */
+    overflow-x: auto; 
+}
+
+/* --- 2. Style the Amortization Schedule Table itself --- */
+.loan-schedule-table {
+    /* Critical: Ensures table takes full width of the container */
+    width: 100%; 
+    /* Ensures minimum width so columns don't compress too much */
+    min-width: 700px; 
+    border-collapse: collapse;
+    margin-top: 15px;
+    font-size: 0.85em;
+    table-layout: auto; 
+}
+
+/* --- 3. Style Table Headers and Cells --- */
+.loan-schedule-table th, 
+.loan-schedule-table td {
+    padding: 10px 8px;
+    border: 1px solid #e2e8f0; /* Light borders for cell separation */
+    text-align: right; /* Default text alignment for numbers */
+    white-space: nowrap; /* Prevents long numbers/dates from wrapping */
+}
+
+/* Style the Header Row */
+.loan-schedule-table th {
+    background-color: #edf2f7; 
+    color: #4A5568;
+    font-weight: 600;
+}
+
+/* --- 4. Special Alignment for Date Columns --- */
+/* Target the Date of Payment (1st column) and Date of Amount Paid (5th column) */
+.loan-schedule-table th:nth-child(1),
+.loan-schedule-table td:nth-child(1),
+.loan-schedule-table th:nth-child(5),
+.loan-schedule-table td:nth-child(5) {
+    text-align: left; /* Dates look better aligned left */
+}
+

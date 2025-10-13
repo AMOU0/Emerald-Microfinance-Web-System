@@ -1,0 +1,527 @@
+/* =========================================
+   1. General and Layout Styling
+   ========================================= */
+body {
+    font-family: 'Inter', sans-serif;
+    background-color: #333;
+    margin: 0;
+    padding: 0;
+    display: flex;
+    min-height: 100vh;
+    color: #fff; /* Default text color for body, overridden by main-content */
+}
+
+/* --- Sidebar Styling --- */
+.sidebar {
+    width: 280px;
+    background-color: #2D3748;
+    color: #FFFFFF;
+    display: flex;
+    flex-direction: column;
+    padding: 24px 0;
+    border-top-right-radius: 16px;
+    border-bottom-right-radius: 16px;
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+}
+.sidebar-header {
+    font-size: 24px;
+    font-weight: 700;
+    padding: 0 24px 24px;
+    border-bottom: 1px solid #4A5568;
+    margin-bottom: 24px;
+}
+.sidebar-nav ul {
+    list-style: none;
+    padding: 0;
+    margin: 0;
+    flex-grow: 1;
+}
+.nav-link {
+    display: block;
+    padding: 12px 24px;
+    color: #CBD5E0;
+    font-weight: 500;
+    transition: background-color 0.2s ease-in-out;
+    border-radius: 8px;
+    margin: 0 12px 8px;
+    text-decoration: none;
+}
+.nav-link:hover {
+    background-color: #4A5568;
+    color: #FFFFFF;
+}
+.nav-link.active {
+    background-color: #48BB78;
+    color: #FFFFFF;
+    font-weight: 600;
+}
+.sidebar-footer {
+    padding: 24px;
+    border-top: 1px solid #4A5568;
+    margin-top: 24px;
+}
+.logout-button {
+    width: 100%;
+    background-color: #E53E3E;
+    color: #FFFFFF;
+    padding: 12px 24px;
+    border-radius: 8px;
+    font-weight: 600;
+    transition: background-color 0.2s ease-in-out;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+    border: none;
+    cursor: pointer;
+}
+.logout-button:hover {
+    background-color: #C53030;
+}
+
+/* --- Main Content Styling --- */
+.main-content {
+    flex-grow: 1;
+    display: flex;
+    flex-direction: column;
+    background-color: #F8F9FA;
+    padding: 32px;
+    color: #000; /* Main content text color */
+}
+.header.reports-header {
+    background-color: #A0D3B4;
+    color: #2D3748;
+    padding: 16px 24px;
+    border-radius: 12px;
+    margin-bottom: 24px;
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+}
+.header-title {
+    font-size: 1.75rem;
+    font-weight: 700;
+    color: #2D3748;
+    margin: 0;
+}
+.report-viewer {
+    flex-grow: 1;
+    background-color: #FFFFFF;
+    border-radius: 12px;
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+    padding: 24px;
+}
+
+/* =========================================
+   2. Report and Form Section Styles
+   ========================================= */
+
+/* --- Grid and Info Sections --- */
+.main-grid {
+    display: grid;
+    grid-template-columns: 1fr;
+    gap: 24px;
+}
+@media (min-width: 768px) {
+    .main-grid {
+        grid-template-columns: 1fr 1fr;
+    }
+}
+.info-section {
+    padding: 16px;
+    background-color: #F7FAFC;
+    border-radius: 8px;
+    border: 1px solid #E2E8F0;
+}
+.section-title {
+    font-size: 1.2rem;
+    font-weight: 700;
+    color: #2D3748;
+    margin-top: 0;
+    margin-bottom: 15px;
+    padding-bottom: 8px;
+    border-bottom: 2px solid;
+}
+.client-section .section-title { border-color: #4299E1; }
+.guarantor-section .section-title { border-color: #9F7AEA; }
+.loan-section .section-title { border-color: #48BB78; }
+
+/* --- Data List (DL) for Compact Display --- */
+.data-list {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 12px 16px;
+}
+.data-group.full-row {
+    grid-column: 1 / -1;
+}
+.data-group dt {
+    font-size: 0.85rem;
+    font-weight: 500;
+    color: #718096;
+    margin-bottom: 2px;
+}
+.data-group dd {
+    margin: 0;
+    font-size: 1rem;
+    font-weight: 600;
+    color: #2D3748;
+    line-height: 1.3;
+    word-wrap: break-word;
+    word-break: break-all;
+}
+@media (max-width: 500px) {
+    .data-list {
+        grid-template-columns: 1fr;
+    }
+}
+
+/* =========================================
+   3. Loan History Table Styling (Summary View)
+   ========================================= */
+.loan-details-table {
+    width: 100%;
+    border-collapse: collapse;
+    margin-top: 20px;
+    box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+}
+.loan-details-table th, 
+.loan-details-table td {
+    border: 1px solid #ddd;
+    padding: 12px 15px;
+    text-align: left;
+    color: #2D3748; /* Ensure text is dark inside the table */
+}
+.loan-details-table th {
+    background-color: #f2f2f2;
+    color: #333;
+    font-weight: bold;
+}
+
+/* Clickable Row Styles */
+.clickable-loan-row {
+    cursor: pointer;
+    transition: background-color 0.3s ease;
+}
+.clickable-loan-row:hover {
+    background-color: #e9e9e9;
+}
+
+/* Currency/Numeric Alignment */
+.loan-details-table td:nth-child(2),
+.loan-details-table td:nth-child(3),
+.loan-details-table td:nth-child(4) {
+    text-align: right;
+    font-weight: 500;
+}
+
+/* =========================================
+   4. Modal Styling (Single Loan Details)
+   ========================================= */
+
+/* The Modal Backdrop */
+.modal-overlay {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background-color: rgba(0, 0, 0, 0.7);
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    z-index: 1000;
+    /* Use 'display: none' in base CSS, JS toggles 'display: block' or a class */
+    display: none; 
+}
+/* Utility Class to Prevent Body Scroll (Handled by JS) */
+.modal-open {
+    overflow: hidden;
+}
+
+/* Modal Content/Box */
+.modal-content {
+    background-color: #fff;
+    padding: 30px;
+    border-radius: 8px;
+    box-shadow: 0 4px 20px rgba(0, 0, 0, 0.2);
+    width: 90%;
+    max-width: 900px;
+    max-height: 90vh;
+    overflow-y: auto;
+    position: relative;
+    color: #1A202C; /* Default text color inside modal */
+}
+
+/* Modal Header and Close Button */
+.modal-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    border-bottom: 1px solid #e5e7eb;
+    padding-bottom: 1rem;
+    margin-bottom: 1rem;
+}
+.modal-header h3 { /* Using h3 for modal title consistency */
+    margin: 0;
+    color: #1A202C;
+    font-weight: 700;
+    border-bottom: none; /* Remove blue border from main modal title */
+}
+.close-modal-btn {
+    background: none;
+    border: none;
+    font-size: 30px;
+    color: #aaa;
+    cursor: pointer;
+    transition: color 0.2s ease;
+    padding: 0;
+    line-height: 1;
+}
+.close-modal-btn:hover {
+    color: #888;
+}
+
+/* Modal Body Content Styling */
+.modal-body {
+    line-height: 1.6;
+}
+.modal-body h3 { /* Styling for sub-titles within the modal body */
+    border-bottom: 2px solid #007bff; 
+    padding-bottom: 5px;
+    margin-top: 20px;
+    color: #007bff;
+    font-weight: 700;
+}
+.loan-info p {
+    margin: 8px 0;
+    color: #1A202C;
+}
+.loan-info strong {
+    display: inline-block;
+    min-width: 150px;
+}
+.modal-body pre { /* Styling for payment schedule/json output */
+    background-color: #f5f5f5;
+    border: 1px solid #ccc;
+    padding: 10px;
+    border-radius: 4px;
+    white-space: pre-wrap;
+    color: #1A202C;
+}
+
+/* Payment Schedule Table (Loan Schedule) */
+.loan-schedule table {
+    width: 100%;
+    border-collapse: collapse;
+    margin-top: 20px;
+    font-size: 14px;
+}
+.loan-schedule th,
+.loan-schedule td {
+    border: 1px solid #ddd;
+    padding: 10px;
+    text-align: left;
+    color: #1A202C;
+}
+.loan-schedule th {
+    background-color: #f2f2f2;
+    font-weight: bold;
+}
+.modal-footer {
+    text-align: right;
+    border-top: 1px solid #eee;
+    padding-top: 15px;
+    margin-top: 20px;
+}
+.print-btn {
+    padding: 10px 20px;
+    background-color: #007bff;
+    color: white;
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+    font-size: 16px;
+    transition: background-color 0.2s ease;
+}
+.print-btn:hover {
+    background-color: #0056b3;
+}
+/* Reports Specific Styling */
+.reports-container {
+    display: flex;
+    gap: 24px;
+}
+
+.reports-sidebar {
+    /* Styles for the container of report buttons */
+    display: flex;
+    flex-direction: column;
+    gap: 12px; /* Spacing between the buttons */
+    padding: 24px; /* Internal padding for the sidebar container */
+    background-color: #F8F9FA; /* A light background, matching .main-content's general area */
+    border-radius: 12px;
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.05); /* Subtle shadow */
+    align-self: flex-start; /* Prevents the sidebar from stretching the full height */
+}
+
+.report-button {
+    /* Base styles for all report buttons */
+    width: 200px; /* Consistent width for all buttons */
+    padding: 12px 24px;
+    border: 1px solid #CBD5E0; /* Lighter border for non-active state */
+    border-radius: 8px;
+    background-color: #FFFFFF; /* White background for default state */
+    color: #4A5568; /* Darker text color */
+    font-size: 16px;
+    font-weight: 600;
+    text-align: left; /* Align text to the left */
+    cursor: pointer;
+    transition: background-color 0.2s, color 0.2s, border-color 0.2s;
+    outline: none; /* Remove focus outline on click/focus */
+}
+
+.report-button:hover:not(.active) {
+    /* Hover effect for non-active buttons */
+    background-color: #EDF2F7; /* Very light gray on hover */
+    color: #2D3748;
+    border-color: #A0AEC0;
+}
+
+.report-button.active {
+    /* Styles for the currently active button */
+    background-color: #4A5568; /* Dark background from the provided sidebar style */
+    color: #FFFFFF;
+    border-color: #4A5568; /* Solid border for active state */
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1); /* Slight lift */
+}
+/* ------------------------------------------------------------------
+ * MODAL STRUCTURE AND GENERAL STYLES (Assuming these are needed)
+ * ------------------------------------------------------------------ */
+
+.modal {
+    display: none; /* Hidden by default */
+    position: fixed; /* Stay in place */
+    z-index: 1000; /* Sit on top */
+    left: 0;
+    top: 0;
+    width: 100%;
+    height: 100%;
+    overflow: auto; /* Enable scroll if needed */
+    background-color: rgba(0,0,0,0.4); /* Black w/ opacity */
+}
+
+.modal-content {
+    background-color: #fefefe;
+    margin: 5% auto; /* 5% from the top and centered */
+    padding: 20px;
+    border: 1px solid #888;
+    width: 80%; /* Could be adjusted */
+    max-width: 900px;
+    border-radius: 8px;
+    box-shadow: 0 4px 8px 0 rgba(0,0,0,0.2), 0 6px 20px 0 rgba(0,0,0,0.19);
+}
+
+.modal-open {
+    overflow: hidden; /* Prevents background scrolling when modal is open */
+}
+
+.close-button {
+    color: #aaa;
+    float: right;
+    font-size: 28px;
+    font-weight: bold;
+}
+
+.close-button:hover,
+.close-button:focus {
+    color: #000;
+    text-decoration: none;
+    cursor: pointer;
+}
+
+.loan-detail-header {
+    border-bottom: 2px solid #ccc;
+    padding-bottom: 10px;
+    margin-bottom: 20px;
+}
+
+/* ------------------------------------------------------------------
+ * INFORMATION DISPLAY LAYOUT (Guarantor/Loan Details)
+ * ------------------------------------------------------------------ */
+
+.info-box {
+    margin-bottom: 30px;
+    padding: 10px;
+    border: 1px solid #ddd;
+    border-radius: 4px;
+}
+
+.info-header {
+    border-bottom: 1px dashed #ddd;
+    padding-bottom: 5px;
+    margin-bottom: 15px;
+}
+
+.info-columns {
+    display: flex;
+    justify-content: space-between;
+    flex-wrap: wrap;
+    margin-bottom: 5px;
+}
+
+.info-item {
+    width: 48%; /* Ensures two items fit side-by-side */
+    padding: 5px 0;
+    box-sizing: border-box; /* Includes padding in the width calculation */
+}
+
+.info-label {
+    font-weight: bold;
+    color: #555;
+    display: block;
+    margin-bottom: 2px;
+    font-size: 0.9em;
+}
+
+.info-value {
+    font-weight: bold;
+    color: #333;
+}
+
+/* ------------------------------------------------------------------
+ * PAYMENT HISTORY TABLE STYLES
+ * ------------------------------------------------------------------ */
+
+.table-responsive {
+    max-height: 400px;
+    overflow-y: auto;
+    border: 1px solid #ddd; /* Border around the scrollable area */
+    border-radius: 4px;
+}
+
+.payment-table {
+    width: 100%;
+    border-collapse: collapse;
+    margin-bottom: 0; /* Important since it's inside a responsive div */
+}
+
+.payment-table th, .payment-table td {
+    padding: 10px;
+    border: 1px solid #ddd;
+    text-align: left; /* Default alignment */
+}
+
+.payment-table thead tr {
+    background-color: #4CAF50;
+    color: white;
+    /* Sticky header for scrollable table */
+    position: sticky; 
+    top: 0;
+    z-index: 10;
+    box-shadow: 0 2px 2px -1px rgba(0, 0, 0, 0.4);
+}
+
+.payment-table tbody tr:nth-child(even) {
+    background-color: #f9f9f9; /* Zebra striping */
+}
+
+/* Align financial columns to the right */
+.payment-table .amount-column {
+    text-align: right;
+}
