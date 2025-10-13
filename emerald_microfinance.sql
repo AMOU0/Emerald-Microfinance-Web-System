@@ -3,7 +3,7 @@
 -- https://www.phpmyadmin.net/
 --
 -- Host: 127.0.0.1
--- Generation Time: Oct 12, 2025 at 06:15 PM
+-- Generation Time: Oct 13, 2025 at 09:08 PM
 -- Server version: 10.4.32-MariaDB
 -- PHP Version: 8.2.12
 
@@ -284,7 +284,193 @@ INSERT INTO `audit_logs` (`log_id`, `user_id`, `action`, `description`, `target_
 (237, 1, 'NAVIGATION', 'Clicked \"User Management\" link, redirecting to UserManagement.html', NULL, NULL, '::1', 'From URL: /Emerald-Microfinance/Ledgers.html', 'To URL: UserManagement.html', '2025-10-12 15:33:44'),
 (238, 1, 'NAVIGATION', 'Clicked \"Tools\" link, redirecting to Tools.html', NULL, NULL, '::1', NULL, NULL, '2025-10-12 15:33:47'),
 (239, 1, 'NAVIGATION', 'Accessed tool \"City/ Barangays\", loading page ToolsPlaces.html', NULL, NULL, '::1', NULL, NULL, '2025-10-12 15:33:48'),
-(240, 1, 'NAVIGATION', 'Accessed tool \"Backup And Restore\", loading page ToolsBR.html', NULL, NULL, '::1', NULL, NULL, '2025-10-12 15:38:50');
+(240, 1, 'NAVIGATION', 'Accessed tool \"Backup And Restore\", loading page ToolsBR.html', NULL, NULL, '::1', NULL, NULL, '2025-10-12 15:38:50'),
+(241, 1, 'NAVIGATION', 'Accessed tool \"Interest Amount\", loading page ToolsInterest.html', NULL, NULL, '::1', NULL, NULL, '2025-10-12 16:59:43'),
+(242, 1, 'NAVIGATION', 'Accessed tool \"Backup And Restore\", loading page ToolsBR.html', NULL, NULL, '::1', NULL, NULL, '2025-10-12 16:59:44'),
+(243, 1, 'NAVIGATION', 'Accessed tool \"Interest Amount\", loading page ToolsInterest.html', NULL, NULL, '::1', NULL, NULL, '2025-10-12 18:02:30'),
+(244, 1, 'NAVIGATION', 'Accessed tool \"City/ Barangays\", loading page ToolsPlaces.html', NULL, NULL, '::1', NULL, NULL, '2025-10-12 18:02:31'),
+(245, 1, 'NAVIGATION', 'Accessed tool \"Backup And Restore\", loading page ToolsBR.html', NULL, NULL, '::1', NULL, NULL, '2025-10-12 18:02:36'),
+(246, 1, 'NAVIGATION', 'Clicked \"User Management\" link, redirecting to UserManagement.html', NULL, NULL, '::1', NULL, NULL, '2025-10-12 18:04:39'),
+(247, 1, 'VIEW', 'Viewed Report: Audit Trail (ReportsAuditTrail.html)', NULL, NULL, '::1', NULL, NULL, '2025-10-12 18:04:43'),
+(248, 1, 'NAVIGATION', 'Clicked \"User Management\" link, redirecting to UserManagement.html', NULL, NULL, '::1', NULL, NULL, '2025-10-12 18:07:47'),
+(249, 1, 'NAVIGATION', 'Accessed tool \"Backup And Restore\", loading page ToolsBR.html', NULL, NULL, '::1', NULL, NULL, '2025-10-12 18:07:49'),
+(250, 1, 'TOOL_ACTION', 'Initiated **Database Backup** for database: emerald_microfinance.', NULL, NULL, '::1', NULL, NULL, '2025-10-12 18:10:56'),
+(251, 1, 'CREATED', 'Initiated **Database Backup** for database: emerald_microfinance.', NULL, NULL, '::1', NULL, NULL, '2025-10-12 18:12:23'),
+(252, 1, 'NAVIGATION', 'Accessed tool \"Interest Amount\", loading page ToolsInterest.html', NULL, NULL, '::1', NULL, NULL, '2025-10-12 18:12:30'),
+(253, 1, 'NAVIGATION', 'Clicked \"User Management\" link, redirecting to UserManagement.html', NULL, NULL, '::1', NULL, NULL, '2025-10-12 18:13:59'),
+(254, 1, 'VIEW', 'Viewed Report: Existing Clients (ReportsExistingClient.html)', NULL, NULL, '::1', NULL, NULL, '2025-10-12 18:14:20'),
+(255, 1, 'VIEW', 'Viewed Report: Delinquent Accounts (ReportsOverduePayments.html)', NULL, NULL, '::1', NULL, NULL, '2025-10-12 18:14:21'),
+(256, 1, 'NAVIGATION', 'Clicked \"User Management\" link, redirecting to UserManagement.html', NULL, NULL, '::1', NULL, NULL, '2025-10-12 18:14:24'),
+(257, 1, 'NAVIGATION', 'Clicked \"Reports\" link, redirecting to Reports.html', NULL, NULL, '::1', NULL, NULL, '2025-10-12 18:14:29'),
+(258, 1, 'NAVIGATION', 'Clicked \"Tools\" link, redirecting to Tools.html', NULL, NULL, '::1', NULL, NULL, '2025-10-12 18:14:31'),
+(259, 1, 'NAVIGATION', 'Accessed tool \"Backup And Restore\", loading page ToolsBR.html', NULL, NULL, '::1', NULL, NULL, '2025-10-12 18:14:32'),
+(260, 1, 'CREATED', 'Initiated **Database Backup** for database: emerald_microfinance.', NULL, NULL, '::1', NULL, NULL, '2025-10-12 18:16:58'),
+(261, 1, 'CREATED', 'Initiated **Manual Database Backup** for database: emerald_microfinance.', NULL, NULL, '::1', NULL, NULL, '2025-10-12 18:17:08'),
+(262, 1, 'NAVIGATION', 'Clicked \"Reports\" link, redirecting to Reports.html', NULL, NULL, '::1', NULL, NULL, '2025-10-12 18:20:12'),
+(263, 1, 'VIEW', 'Viewed Report: Audit Trail (ReportsAuditTrail.html)', NULL, NULL, '::1', NULL, NULL, '2025-10-12 18:20:14'),
+(264, 1, 'NAVIGATION', 'Clicked \"Tools\" link, redirecting to Tools.html', NULL, NULL, '::1', NULL, NULL, '2025-10-12 18:24:06'),
+(265, 1, 'NAVIGATION', 'Accessed tool \"Backup And Restore\", loading page ToolsBR.html', NULL, NULL, '::1', NULL, NULL, '2025-10-12 18:24:07'),
+(266, 1, 'CREATED_BR', 'Initiated **Manual Database Backup** for database: emerald_microfinance.', NULL, NULL, '::1', NULL, NULL, '2025-10-12 18:31:13'),
+(267, 1, 'CREATED_BR', 'Initiated **Manual Database Backup** for database: emerald_microfinance.', NULL, NULL, '::1', NULL, NULL, '2025-10-12 18:46:49'),
+(268, 1, 'NAVIGATION', 'Clicked \"User Management\" link, redirecting to UserManagement.html', NULL, NULL, '::1', NULL, NULL, '2025-10-13 04:43:12'),
+(269, 1, 'NAVIGATION', 'Accessed tool \"Backup And Restore\", loading page ToolsBR.html', NULL, NULL, '::1', NULL, NULL, '2025-10-13 04:43:14'),
+(270, 1, 'CREATED_BR', 'Initiated **Manual Database Backup** for database: emerald_microfinance.', NULL, NULL, '::1', NULL, NULL, '2025-10-13 04:43:19'),
+(271, 1, 'UPDATED_BR', 'Successfully completed  **Manual Database Restore** using file: emerald_microfinance_2025-10-13_06-43-19.sql.', NULL, NULL, '::1', NULL, NULL, '2025-10-13 04:43:30'),
+(272, 1, 'NAVIGATION', 'Clicked \"Reports\" link, redirecting to Reports.html', NULL, NULL, '::1', NULL, NULL, '2025-10-13 04:44:05'),
+(273, 1, 'VIEW', 'Viewed Report: Due Payments (ReportsDuePayments.html)', NULL, NULL, '::1', NULL, NULL, '2025-10-13 04:44:08'),
+(274, 1, 'VIEW', 'Successfully loaded Due Payments Report with 3 records.', NULL, NULL, '::1', NULL, NULL, '2025-10-13 04:44:09'),
+(275, 1, 'VIEW', 'Viewed Report: Existing Clients (ReportsExistingClient.html)', NULL, NULL, '::1', NULL, NULL, '2025-10-13 04:44:10'),
+(276, 1, 'NAVIGATION', 'Clicked \"User Management\" link, redirecting to UserManagement.html', NULL, NULL, '::1', NULL, NULL, '2025-10-13 04:44:30'),
+(277, 1, 'NAVIGATION', 'Accessed tool \"City/ Barangays\", loading page ToolsPlaces.html', NULL, NULL, '::1', NULL, NULL, '2025-10-13 04:44:34'),
+(278, 1, 'NAVIGATION', 'Clicked \"User Management\" link, redirecting to UserManagement.html', NULL, NULL, '::1', NULL, NULL, '2025-10-13 04:44:36'),
+(279, 1, 'NAVIGATION', 'Clicked \"Ledger\" link, redirecting to Ledgers.html', NULL, NULL, '::1', NULL, NULL, '2025-10-13 04:44:37'),
+(280, 1, 'NAVIGATION', 'Clicked \"Reports\" link, redirecting to Reports.html', NULL, NULL, '::1', 'From URL: /Emerald-Microfinance/Ledgers.html', 'To URL: Reports.html', '2025-10-13 04:44:38'),
+(281, 1, 'NAVIGATION', 'Clicked \"User Management\" link, redirecting to UserManagement.html', NULL, NULL, '::1', NULL, NULL, '2025-10-13 05:45:58'),
+(282, 1, 'NAVIGATION', 'Password Change button clicked, redirecting to UserPasswordChange.html', NULL, NULL, '::1', NULL, NULL, '2025-10-13 05:49:48'),
+(283, 1, 'NAVIGATION', 'Username Change button clicked, redirecting to UserUsernameChange.html', NULL, NULL, '::1', NULL, NULL, '2025-10-13 05:49:50'),
+(284, 1, 'NAVIGATION', 'Account Creation button clicked, redirecting to UserCreation.html', NULL, NULL, '::1', NULL, NULL, '2025-10-13 05:49:51'),
+(285, 1, 'NAVIGATION', 'Existing Accounts button clicked, redirecting to UserExisting.html', NULL, NULL, '::1', NULL, NULL, '2025-10-13 05:49:52'),
+(286, 1, 'NAVIGATION', 'Clicked \"Reports\" link, redirecting to Reports.html', NULL, NULL, '::1', NULL, NULL, '2025-10-13 05:52:32'),
+(287, 1, 'VIEW', 'Viewed Report: Audit Trail (ReportsAuditTrail.html)', NULL, NULL, '::1', NULL, NULL, '2025-10-13 05:52:33'),
+(288, 1, 'NAVIGATION', 'Clicked \"Reports\" link, redirecting to Reports.html', NULL, NULL, '::1', NULL, NULL, '2025-10-13 06:02:54'),
+(289, 1, 'VIEW', 'Viewed Report: Delinquent Accounts (ReportsOverduePayments.html)', NULL, NULL, '::1', NULL, NULL, '2025-10-13 06:02:55'),
+(290, 1, 'VIEW', 'Viewed Report: Delinquent Accounts (ReportsOverduePayments.html)', NULL, NULL, '::1', NULL, NULL, '2025-10-13 06:02:57'),
+(291, 1, 'VIEW', 'Viewed Report: Delinquent Accounts (ReportsDelinquentAccounts.html)', NULL, NULL, '::1', NULL, NULL, '2025-10-13 06:03:16'),
+(292, 1, 'VIEW', 'Viewed Report: Delinquent Accounts (ReportsDelinquentAccounts.html)', NULL, NULL, '::1', NULL, NULL, '2025-10-13 06:04:17'),
+(293, 1, 'NAVIGATION', 'Clicked \"User Management\" link, redirecting to UserManagement.html', NULL, NULL, '::1', NULL, NULL, '2025-10-13 06:13:36'),
+(294, 1, 'NAVIGATION', 'Clicked \"Tools\" link, redirecting to Tools.html', NULL, NULL, '::1', NULL, NULL, '2025-10-13 06:13:37'),
+(295, 1, 'NAVIGATION', 'Accessed tool \"City/ Barangays\", loading page ToolsPlaces.html', NULL, NULL, '::1', NULL, NULL, '2025-10-13 06:13:38'),
+(296, 1, 'NAVIGATION', 'Accessed tool \"Interest Amount\", loading page ToolsInterest.html', NULL, NULL, '::1', NULL, NULL, '2025-10-13 06:13:39'),
+(297, 1, 'NAVIGATION', 'Accessed tool \"Backup And Restore\", loading page ToolsBR.html', NULL, NULL, '::1', NULL, NULL, '2025-10-13 06:13:40'),
+(298, 1, 'NAVIGATION', 'Clicked \"User Management\" link, redirecting to UserManagement.html', NULL, NULL, '::1', NULL, NULL, '2025-10-13 06:13:42'),
+(299, 1, 'NAVIGATION', 'Clicked \"Reports\" link, redirecting to Reports.html', NULL, NULL, '::1', NULL, NULL, '2025-10-13 06:13:48'),
+(300, 1, 'NAVIGATION', 'Clicked \"User Management\" link, redirecting to UserManagement.html', NULL, NULL, '::1', NULL, NULL, '2025-10-13 06:13:58'),
+(301, 1, 'NAVIGATION', 'Password Change button clicked, redirecting to UserPasswordChange.html', NULL, NULL, '::1', NULL, NULL, '2025-10-13 06:14:00'),
+(302, 1, 'NAVIGATION', 'Existing Accounts button clicked, redirecting to UserExisting.html', NULL, NULL, '::1', NULL, NULL, '2025-10-13 06:14:03'),
+(303, 1, 'NAVIGATION', 'Username Change button clicked, redirecting to UserUsernameChange.html', NULL, NULL, '::1', NULL, NULL, '2025-10-13 06:17:16'),
+(304, 1, 'NAVIGATION', 'Clicked \"Tools\" link, redirecting to Tools.html', NULL, NULL, '::1', NULL, NULL, '2025-10-13 06:57:47'),
+(305, 1, 'NAVIGATION', 'Clicked \"User Management\" link, redirecting to UserManagement.html', NULL, NULL, '::1', NULL, NULL, '2025-10-13 06:57:49'),
+(306, 1, 'NAVIGATION', 'Clicked \"Tools\" link, redirecting to Tools.html', NULL, NULL, '::1', NULL, NULL, '2025-10-13 06:57:50'),
+(307, 1, 'NAVIGATION', 'Clicked \"User Management\" link, redirecting to UserManagement.html', NULL, NULL, '::1', NULL, NULL, '2025-10-13 06:57:51'),
+(308, 1, 'NAVIGATION', 'Clicked \"Reports\" link, redirecting to Reports.html', NULL, NULL, '::1', NULL, NULL, '2025-10-13 06:57:57'),
+(309, 1, 'VIEW', 'Viewed Report: Delinquent Accounts (ReportsDelinquentAccounts.html)', NULL, NULL, '::1', NULL, NULL, '2025-10-13 06:57:58'),
+(310, 1, 'VIEW', 'Viewed Report: Due Payments (ReportsDuePayments.html)', NULL, NULL, '::1', NULL, NULL, '2025-10-13 06:58:27'),
+(311, 1, 'VIEW', 'Successfully loaded Due Payments Report with 3 records.', NULL, NULL, '::1', NULL, NULL, '2025-10-13 06:58:27'),
+(312, 1, 'VIEW', 'Viewed Report: Delinquent Accounts (ReportsDelinquentAccounts.html)', NULL, NULL, '::1', NULL, NULL, '2025-10-13 06:58:29'),
+(313, 1, 'VIEW', 'Viewed Report: Due Payments (ReportsDuePayments.html)', NULL, NULL, '::1', NULL, NULL, '2025-10-13 06:58:30'),
+(314, 1, 'VIEW', 'Successfully loaded Due Payments Report with 3 records.', NULL, NULL, '::1', NULL, NULL, '2025-10-13 06:58:30'),
+(315, 1, 'NAVIGATION', 'Clicked \"Payment Collection\" link, redirecting to AccountsReceivable.html', NULL, NULL, '::1', NULL, NULL, '2025-10-13 07:00:15'),
+(316, 1, 'NAVIGATION', 'Clicked \"Pending Accounts\" link, redirecting to PendingAccount.html', NULL, NULL, '::1', NULL, NULL, '2025-10-13 07:00:17'),
+(317, 1, 'NAVIGATION', 'Clicked \"Payment Collection\" link, redirecting to AccountsReceivable.html', '', '', '::1', '', '', '2025-10-13 07:00:18'),
+(318, 1, 'NAVIGATION', 'SELECT button clicked for Loan ID 10202500003. Redirecting to payment page.', 'loan_applications', '10202500003', '::1', NULL, NULL, '2025-10-13 07:00:27'),
+(319, 1, 'VIEW', 'Successfully loaded loan details and schedule for Client ID: 202500001, Loan ID: 10202500003', NULL, NULL, '::1', NULL, NULL, '2025-10-13 07:00:27'),
+(320, 1, 'PAYMENT', 'Successfully processed payment of 2571.43 for Client ID: 202500001, Loan ID: 10202500003.', 'payment', '10202500003', '::1', '{\"loanId\":\"10202500003\",\"clientId\":\"202500001\",\"balance\":\"36000.00\",\"amountToPay\":\"2571.43\",\"paymentAmount\":\"2571.43\"}', '{\"message\":\"Payment recorded successfully.\",\"amount\":\"2571.43\"}', '2025-10-13 07:00:29'),
+(321, 1, 'VIEW', 'Successfully loaded loan details and schedule for Client ID: 202500001, Loan ID: 10202500003', NULL, NULL, '::1', NULL, NULL, '2025-10-13 07:00:29'),
+(322, 1, 'PAYMENT', 'Successfully processed payment of 2571.43 for Client ID: 202500001, Loan ID: 10202500003.', 'payment', '10202500003', '::1', '{\"loanId\":\"10202500003\",\"clientId\":\"202500001\",\"balance\":\"33428.57\",\"amountToPay\":\"2571.43\",\"paymentAmount\":\"2571.43\"}', '{\"message\":\"Payment recorded successfully.\",\"amount\":\"2571.43\"}', '2025-10-13 07:00:30'),
+(323, 1, 'VIEW', 'Successfully loaded loan details and schedule for Client ID: 202500001, Loan ID: 10202500003', NULL, NULL, '::1', NULL, NULL, '2025-10-13 07:00:30'),
+(324, 1, 'PAYMENT', 'Successfully processed payment of 2571.43 for Client ID: 202500001, Loan ID: 10202500003.', 'payment', '10202500003', '::1', '{\"loanId\":\"10202500003\",\"clientId\":\"202500001\",\"balance\":\"30857.14\",\"amountToPay\":\"2571.43\",\"paymentAmount\":\"2571.43\"}', '{\"message\":\"Payment recorded successfully.\",\"amount\":\"2571.43\"}', '2025-10-13 07:00:30'),
+(325, 1, 'VIEW', 'Successfully loaded loan details and schedule for Client ID: 202500001, Loan ID: 10202500003', NULL, NULL, '::1', NULL, NULL, '2025-10-13 07:00:30'),
+(326, 1, 'PAYMENT', 'Successfully processed payment of 2571.43 for Client ID: 202500001, Loan ID: 10202500003.', 'payment', '10202500003', '::1', '{\"loanId\":\"10202500003\",\"clientId\":\"202500001\",\"balance\":\"28285.71\",\"amountToPay\":\"2571.43\",\"paymentAmount\":\"2571.43\"}', '{\"message\":\"Payment recorded successfully.\",\"amount\":\"2571.43\"}', '2025-10-13 07:00:31'),
+(327, 1, 'VIEW', 'Successfully loaded loan details and schedule for Client ID: 202500001, Loan ID: 10202500003', NULL, NULL, '::1', NULL, NULL, '2025-10-13 07:00:31'),
+(328, 1, 'PAYMENT', 'Successfully processed payment of 2571.43 for Client ID: 202500001, Loan ID: 10202500003.', 'payment', '10202500003', '::1', '{\"loanId\":\"10202500003\",\"clientId\":\"202500001\",\"balance\":\"25714.28\",\"amountToPay\":\"2571.43\",\"paymentAmount\":\"2571.43\"}', '{\"message\":\"Payment recorded successfully.\",\"amount\":\"2571.43\"}', '2025-10-13 07:00:31'),
+(329, 1, 'VIEW', 'Successfully loaded loan details and schedule for Client ID: 202500001, Loan ID: 10202500003', NULL, NULL, '::1', NULL, NULL, '2025-10-13 07:00:31'),
+(330, 1, 'PAYMENT', 'Successfully processed payment of 2571.43 for Client ID: 202500001, Loan ID: 10202500003.', 'payment', '10202500003', '::1', '{\"loanId\":\"10202500003\",\"clientId\":\"202500001\",\"balance\":\"23142.85\",\"amountToPay\":\"2571.43\",\"paymentAmount\":\"2571.43\"}', '{\"message\":\"Payment recorded successfully.\",\"amount\":\"2571.43\"}', '2025-10-13 07:00:31'),
+(331, 1, 'VIEW', 'Successfully loaded loan details and schedule for Client ID: 202500001, Loan ID: 10202500003', NULL, NULL, '::1', NULL, NULL, '2025-10-13 07:00:31'),
+(332, 1, 'PAYMENT', 'Successfully processed payment of 2571.43 for Client ID: 202500001, Loan ID: 10202500003.', 'payment', '10202500003', '::1', '{\"loanId\":\"10202500003\",\"clientId\":\"202500001\",\"balance\":\"20571.42\",\"amountToPay\":\"2571.43\",\"paymentAmount\":\"2571.43\"}', '{\"message\":\"Payment recorded successfully.\",\"amount\":\"2571.43\"}', '2025-10-13 07:00:31'),
+(333, 1, 'VIEW', 'Successfully loaded loan details and schedule for Client ID: 202500001, Loan ID: 10202500003', NULL, NULL, '::1', NULL, NULL, '2025-10-13 07:00:31'),
+(334, 1, 'PAYMENT', 'Successfully processed payment of 2571.43 for Client ID: 202500001, Loan ID: 10202500003.', 'payment', '10202500003', '::1', '{\"loanId\":\"10202500003\",\"clientId\":\"202500001\",\"balance\":\"17999.99\",\"amountToPay\":\"2571.43\",\"paymentAmount\":\"2571.43\"}', '{\"message\":\"Payment recorded successfully.\",\"amount\":\"2571.43\"}', '2025-10-13 07:00:32'),
+(335, 1, 'VIEW', 'Successfully loaded loan details and schedule for Client ID: 202500001, Loan ID: 10202500003', NULL, NULL, '::1', NULL, NULL, '2025-10-13 07:00:32'),
+(336, 1, 'PAYMENT', 'Successfully processed payment of 2571.43 for Client ID: 202500001, Loan ID: 10202500003.', 'payment', '10202500003', '::1', '{\"loanId\":\"10202500003\",\"clientId\":\"202500001\",\"balance\":\"17999.99\",\"amountToPay\":\"2571.43\",\"paymentAmount\":\"2571.43\"}', '{\"message\":\"Payment recorded successfully.\",\"amount\":\"2571.43\"}', '2025-10-13 07:00:32');
+INSERT INTO `audit_logs` (`log_id`, `user_id`, `action`, `description`, `target_table`, `target_id`, `ip_address`, `before_state`, `after_state`, `created_at`) VALUES
+(337, 1, 'VIEW', 'Successfully loaded loan details and schedule for Client ID: 202500001, Loan ID: 10202500003', NULL, NULL, '::1', NULL, NULL, '2025-10-13 07:00:32'),
+(338, 1, 'NAVIGATION', 'Clicked \"Payment Collection\" link, redirecting to AccountsReceivable.html', NULL, NULL, '::1', NULL, NULL, '2025-10-13 07:00:34'),
+(339, 1, 'NAVIGATION', 'RESTRUCTURE button clicked for Loan ID 10202500003. Redirecting to reconstruct page.', 'loan_applications', '10202500003', '::1', NULL, NULL, '2025-10-13 07:00:37'),
+(340, 1, 'UPDATE', 'Reconstructed Loan ID: 10202500003. New terms: Freq:weekly, Duration:100 days', 'loans', '10202500003', '::1', NULL, NULL, '2025-10-13 07:00:45'),
+(341, 1, 'NAVIGATION', 'Clicked \"Ledger\" link, redirecting to Ledgers.html', NULL, NULL, '::1', NULL, NULL, '2025-10-13 07:00:47'),
+(342, 1, 'VIEW', 'Selected client \"Angel Laurence Paras Mallari\" (ID: 202500001) to view ledger.', 'clients', '202500001', '::1', 'From URL: /Emerald-Microfinance/Ledgers.html', 'To URL: LedgersView.html?client_id=202500001', '2025-10-13 07:00:48'),
+(343, 1, 'VIEW', 'Opened Loan Detail Modal for Loan ID: 10202500003.', 'loan_applications', '10202500003', '::1', NULL, NULL, '2025-10-13 07:00:49'),
+(344, 1, 'VIEW', 'Closed Loan Detail Modal via outside click.', 'UI_ACTION', 'loanDetailModal', '::1', NULL, NULL, '2025-10-13 07:00:56'),
+(345, 1, 'NAVIGATION', 'Mapsd from Ledgers View to Ledger page.', 'NAVIGATION', 'Ledgers.html', '::1', NULL, NULL, '2025-10-13 07:00:56'),
+(346, 1, 'NAVIGATION', 'Clicked \"Payment Collection\" link, redirecting to AccountsReceivable.html', NULL, NULL, '::1', 'From URL: /Emerald-Microfinance/Ledgers.html', 'To URL: AccountsReceivable.html', '2025-10-13 07:00:58'),
+(347, 1, 'NAVIGATION', 'SELECT button clicked for Loan ID 10202500003. Redirecting to payment page.', 'loan_reconstruct', '100001102025', '::1', NULL, NULL, '2025-10-13 07:01:02'),
+(348, 1, 'VIEW', 'Successfully loaded loan details and schedule for Client ID: 202500001, Loan ID: 10202500003', NULL, NULL, '::1', NULL, NULL, '2025-10-13 07:01:02'),
+(349, 1, 'PAYMENT', 'Successfully processed payment of 1102.04 for Client ID: 202500001, Loan ID: 10202500003.', 'payment', '10202500003', '::1', '{\"loanId\":\"10202500003\",\"clientId\":\"202500001\",\"balance\":\"15428.56\",\"amountToPay\":\"1102.04\",\"paymentAmount\":\"1102.04\"}', '{\"message\":\"Payment recorded successfully.\",\"amount\":\"1102.04\"}', '2025-10-13 07:01:07'),
+(350, 1, 'VIEW', 'Successfully loaded loan details and schedule for Client ID: 202500001, Loan ID: 10202500003', NULL, NULL, '::1', NULL, NULL, '2025-10-13 07:01:07'),
+(351, 1, 'PAYMENT', 'Successfully processed payment of 1102.04 for Client ID: 202500001, Loan ID: 10202500003.', 'payment', '10202500003', '::1', '{\"loanId\":\"10202500003\",\"clientId\":\"202500001\",\"balance\":\"14326.52\",\"amountToPay\":\"1102.04\",\"paymentAmount\":\"1102.04\"}', '{\"message\":\"Payment recorded successfully.\",\"amount\":\"1102.04\"}', '2025-10-13 07:01:11'),
+(352, 1, 'VIEW', 'Successfully loaded loan details and schedule for Client ID: 202500001, Loan ID: 10202500003', NULL, NULL, '::1', NULL, NULL, '2025-10-13 07:01:11'),
+(353, 1, 'NAVIGATION', 'Clicked \"Payment Collection\" link, redirecting to AccountsReceivable.html', NULL, NULL, '::1', NULL, NULL, '2025-10-13 07:01:18'),
+(354, 1, 'NAVIGATION', 'Clicked \"Ledger\" link, redirecting to Ledgers.html', NULL, NULL, '::1', NULL, NULL, '2025-10-13 07:01:19'),
+(355, 1, 'VIEW', 'Selected client \"Angel Laurence Paras Mallari\" (ID: 202500001) to view ledger.', 'clients', '202500001', '::1', 'From URL: /Emerald-Microfinance/Ledgers.html', 'To URL: LedgersView.html?client_id=202500001', '2025-10-13 07:01:20'),
+(356, 1, 'VIEW', 'Opened Loan Detail Modal for Loan ID: 10202500003.', 'loan_applications', '10202500003', '::1', NULL, NULL, '2025-10-13 07:01:21'),
+(357, 1, 'VIEW', 'Closed Loan Detail Modal via outside click.', 'UI_ACTION', 'loanDetailModal', '::1', NULL, NULL, '2025-10-13 07:01:34'),
+(358, 1, 'NAVIGATION', 'Mapsd from Ledgers View to Reports page.', 'NAVIGATION', 'Reports.html', '::1', NULL, NULL, '2025-10-13 07:01:35'),
+(359, 1, 'VIEW', 'Viewed Report: Existing Clients (ReportsExistingClient.html)', NULL, NULL, '::1', NULL, NULL, '2025-10-13 07:01:36'),
+(360, 1, 'NAVIGATION', 'Clicked \"Payment Collection\" link, redirecting to AccountsReceivable.html', NULL, NULL, '::1', NULL, NULL, '2025-10-13 07:01:38'),
+(361, 1, 'NAVIGATION', 'Clicked \"Pending Accounts\" link, redirecting to PendingAccount.html', NULL, NULL, '::1', NULL, NULL, '2025-10-13 07:01:40'),
+(362, 1, 'NAVIGATION', 'Clicked \"Payment Collection\" link, redirecting to AccountsReceivable.html', '', '', '::1', '', '', '2025-10-13 07:01:42'),
+(363, 1, 'NAVIGATION', 'RESTRUCTURE button clicked for Loan ID 10202500003. Redirecting to reconstruct page.', 'loan_reconstruct', '100001102025', '::1', NULL, NULL, '2025-10-13 07:01:45'),
+(364, 1, 'NAVIGATION', 'Clicked \"Payment Collection\" link, redirecting to AccountsReceivable.html', NULL, NULL, '::1', NULL, NULL, '2025-10-13 07:02:35'),
+(365, 1, 'NAVIGATION', 'RESTRUCTURE button clicked for Loan ID 10202500003. Redirecting to reconstruct page.', 'loan_reconstruct', '100001102025', '::1', NULL, NULL, '2025-10-13 07:03:57'),
+(366, 1, 'PAGE_LOAD', 'Initial page load complete. Triggering session check.', NULL, NULL, '::1', NULL, NULL, '2025-10-13 07:04:06'),
+(367, 1, 'NAVIGATION', 'RESTRUCTURE button clicked for Loan ID 10202500003. Redirecting to reconstruct page.', 'loan_reconstruct', '100001102025', '::1', NULL, NULL, '2025-10-13 07:05:12'),
+(368, 1, 'RETURN_BUTTON_CLICK', 'User clicked RETURN button, redirecting to AccountsReceivable.html.', NULL, NULL, '::1', NULL, NULL, '2025-10-13 07:10:29'),
+(369, 1, 'RETURN_BUTTON_CLICK', 'User clicked RETURN button, redirecting to AccountsReceivable.html.', NULL, NULL, '::1', NULL, NULL, '2025-10-13 07:10:32'),
+(370, 1, 'NAVIGATION', 'RESTRUCTURE button clicked for Loan ID 10202500002. Redirecting to reconstruct page.', 'loan_applications', '10202500002', '::1', NULL, NULL, '2025-10-13 07:10:45'),
+(371, 1, 'NAVIGATION', 'User clicked RETURN button, redirecting to AccountsReceivable.html.', NULL, NULL, '::1', NULL, NULL, '2025-10-13 07:12:15'),
+(372, 1, 'NAVIGATION', 'SELECT button clicked for Loan ID 10202500003. Redirecting to payment page.', 'loan_reconstruct', '100001102025', '::1', NULL, NULL, '2025-10-13 07:12:18'),
+(373, 1, 'VIEW', 'Successfully loaded loan details and schedule for Client ID: 202500001, Loan ID: 10202500003', NULL, NULL, '::1', NULL, NULL, '2025-10-13 07:12:18'),
+(374, 1, 'NAVIGATION', 'User clicked RETURN button, redirecting to AccountsReceivable.html.', NULL, NULL, '::1', NULL, NULL, '2025-10-13 07:12:20'),
+(375, 1, 'NAVIGATION', 'Clicked \"Ledger\" link, redirecting to Ledgers.html', NULL, NULL, '::1', NULL, NULL, '2025-10-13 07:12:49'),
+(376, 1, 'VIEW', 'Selected client \"Angel Laurence Paras Mallari\" (ID: 202500001) to view ledger.', 'clients', '202500001', '::1', 'From URL: /Emerald-Microfinance/Ledgers.html', 'To URL: LedgersView.html?client_id=202500001', '2025-10-13 07:12:50'),
+(377, 1, 'NAVIGATION', 'Executed \'returnToLedgers\' function, redirecting to Ledgers.html', 'NAVIGATION', 'Ledgers.html', '::1', NULL, NULL, '2025-10-13 07:12:52'),
+(378, 1, 'NAVIGATION', 'Clicked \"Reports\" link, redirecting to Reports.html', NULL, NULL, '::1', 'From URL: /Emerald-Microfinance/Ledgers.html', 'To URL: Reports.html', '2025-10-13 07:12:56'),
+(379, 1, 'NAVIGATION', 'Clicked \"Loan Application\" link, redirecting to LoanApplication.html', NULL, NULL, '::1', NULL, NULL, '2025-10-13 07:12:57'),
+(380, 1, 'NAVIGATION', 'Clicked \"Client Creation\" link, redirecting to ClientCreationForm.html', NULL, NULL, '::1', NULL, NULL, '2025-10-13 07:12:59'),
+(381, 1, 'NAVIGATION', 'Clicked \"Pending Accounts\" link, redirecting to PendingAccount.html', NULL, NULL, '::1', NULL, NULL, '2025-10-13 07:13:00'),
+(382, 1, 'NAVIGATION', 'Clicked \"Loan Application\" link, redirecting to LoanApplication.html', '', '', '::1', '', '', '2025-10-13 07:13:02'),
+(383, 1, 'VIEWED', 'Opened Client Search Modal.', 'clients', NULL, '::1', NULL, NULL, '2025-10-13 07:13:04'),
+(384, 1, 'VIEWED', 'Fetched Interest Rate: 20%', 'interest_pecent', NULL, '::1', NULL, NULL, '2025-10-13 07:13:04'),
+(385, 1, 'UPDATED', 'Selected Client ID 202500001 (Angel Laurence Paras Mallari) for loan application.', 'clients', '202500001', '::1', '{\"clientID\":\"\",\"clientName\":\"\"}', '{\"clientID\":\"202500001\",\"clientName\":\"Angel Laurence Paras Mallari\"}', '2025-10-13 07:13:05'),
+(386, 1, 'CREATED', 'Attempting submission for Client ID: 202500001. Target: loan_applications (202500001)', 'loan_applications', '202500001', '::1', NULL, NULL, '2025-10-13 07:13:15'),
+(387, 1, 'VIEWED', 'Opened Loan Details Modal for Loan ID: 10202500004. Target: loan_applications (10202500004)', NULL, NULL, '::1', NULL, NULL, '2025-10-13 07:13:15'),
+(388, 1, 'CREATED', 'Loan application successfully created. Loan ID: 10202500004. Client ID: 202500001.', 'loan_applications', '10202500004', '::1', NULL, '{\"clientID\":\"202500001\",\"clientName\":\"Angel Laurence Paras Mallari\",\"colateral\":\"Single Motor(Rusi 125)\",\"guarantorLastName\":\"Mallari\",\"guarantorFirstName\":\"Angel Laurence\",\"guarantorMiddleName\":\"Paras\",\"guarantorStreetAddress\":\"#205 Alvindia Segundo Tarlac City\",\"guarantorPhoneNumber\":\"09212271315\",\"loan-amount\":30000,\"payment-frequency\":\"monthly\",\"date-start\":\"2025-10-30\",\"duration-of-loan\":\"100 days\",\"date-end\":\"2026-02-07\",\"interest-rate\":20,\"loanID\":\"10202500004\"}', '2025-10-13 07:13:15'),
+(389, 1, 'VIEWED', 'Closed Loan Details Modal for Loan ID: 10202500004', NULL, NULL, '::1', NULL, NULL, '2025-10-13 07:13:20'),
+(390, 1, 'NAVIGATION', 'Clicked \"Pending Accounts\" link, redirecting to PendingAccount.html', NULL, NULL, '::1', NULL, NULL, '2025-10-13 07:13:23'),
+(391, 1, 'VIEW', 'Viewed Client Profile for Client ID: 202500001', 'clients', '202500001', '::1', '', '', '2025-10-13 07:13:25'),
+(392, 1, 'NAVIGATION', 'User clicked RETURN button, redirecting to AccountsReceivable.html.', NULL, NULL, '::1', NULL, NULL, '2025-10-13 07:14:30'),
+(393, 1, 'NAVIGATION', 'Clicked \"Loan Application\" link, redirecting to LoanApplication.html', NULL, NULL, '::1', NULL, NULL, '2025-10-13 07:14:44'),
+(394, 1, 'NAVIGATION', 'Clicked \"Pending Accounts\" link, redirecting to PendingAccount.html', NULL, NULL, '::1', NULL, NULL, '2025-10-13 07:14:45'),
+(395, 1, 'VIEW', 'Viewed Client Profile for Client ID: 202500001', 'clients', '202500001', '::1', '', '', '2025-10-13 07:15:03'),
+(396, 1, 'NAVIGATION', 'User clicked RETURN button, redirecting to PendingAccount.html.', NULL, NULL, '::1', NULL, NULL, '2025-10-13 07:15:06'),
+(397, 1, 'VIEW', 'Viewed Client Profile for Client ID: 202500001', 'clients', '202500001', '::1', '', '', '2025-10-13 07:16:31'),
+(398, 1, 'NAVIGATION', 'User clicked RETURN button, redirecting to PendingAccount.html.', NULL, NULL, '::1', NULL, NULL, '2025-10-13 07:17:53'),
+(399, 1, 'NAVIGATION', 'Clicked \"Payment Collection\" link, redirecting to AccountsReceivable.html', '', '', '::1', '', '', '2025-10-13 07:17:55'),
+(400, 1, 'NAVIGATION', 'Clicked \"Ledger\" link, redirecting to Ledgers.html', NULL, NULL, '::1', NULL, NULL, '2025-10-13 07:17:55'),
+(401, 1, 'VIEW', 'Selected client \"Angel Laurence Paras Mallari\" (ID: 202500001) to view ledger.', 'clients', '202500001', '::1', 'From URL: /Emerald-Microfinance/Ledgers.html', 'To URL: LedgersView.html?client_id=202500001', '2025-10-13 07:17:57'),
+(402, 1, 'NAVIGATION', 'Mapsd from Ledgers View to Reports page.', 'NAVIGATION', 'Reports.html', '::1', NULL, NULL, '2025-10-13 07:17:58'),
+(403, 1, 'VIEW', 'Viewed Report: Due Payments (ReportsDuePayments.html)', NULL, NULL, '::1', NULL, NULL, '2025-10-13 07:18:00'),
+(404, 1, 'VIEW', 'Successfully loaded Due Payments Report with 3 records.', NULL, NULL, '::1', NULL, NULL, '2025-10-13 07:18:00'),
+(405, 1, 'VIEW', 'Viewed Report: Audit Trail (ReportsAuditTrail.html)', NULL, NULL, '::1', NULL, NULL, '2025-10-13 07:18:02'),
+(406, 1, 'VIEW', 'FAILED: Clicked report button \"Existing Clients\" with no mapped page.', NULL, NULL, '::1', NULL, NULL, '2025-10-13 07:18:04'),
+(407, 1, 'VIEW', 'Accessed detailed view for Client ID: 202500001', 'clients', '202500001', '::1', NULL, NULL, '2025-10-13 07:18:05'),
+(408, 1, 'VIEW', 'Viewed Report: Existing Clients (ReportsExistingClient.html)', NULL, NULL, '::1', NULL, NULL, '2025-10-13 07:18:09'),
+(409, 1, 'NAVIGATION', 'Clicked \"User Management\" link, redirecting to UserManagement.html', NULL, NULL, '::1', NULL, NULL, '2025-10-13 07:18:11'),
+(410, 1, 'NAVIGATION', 'Clicked \"Tools\" link, redirecting to Tools.html', NULL, NULL, '::1', NULL, NULL, '2025-10-13 07:18:12'),
+(411, 1, 'User logged in successfully: admin', '', NULL, NULL, '::1', NULL, NULL, '2025-10-13 17:07:47'),
+(412, 1, 'NAVIGATION', 'Clicked \"Reports\" link, redirecting to Reports.html', NULL, NULL, '::1', NULL, NULL, '2025-10-13 17:07:49'),
+(413, 1, 'NAVIGATION', 'Clicked \"User Management\" link, redirecting to UserManagement.html', NULL, NULL, '::1', NULL, NULL, '2025-10-13 17:07:50'),
+(414, 1, 'NAVIGATION', 'Clicked \"Tools\" link, redirecting to Tools.html', NULL, NULL, '::1', NULL, NULL, '2025-10-13 17:07:50'),
+(415, 1, 'NAVIGATION', 'Accessed tool \"Interest Amount\", loading page ToolsInterest.html', NULL, NULL, '::1', NULL, NULL, '2025-10-13 17:07:52'),
+(416, 1, 'NAVIGATION', 'Clicked \"Pending Accounts\" link, redirecting to PendingAccount.html', NULL, NULL, '::1', NULL, NULL, '2025-10-13 17:45:15'),
+(417, 1, 'NAVIGATION', 'Clicked \"Payment Collection\" link, redirecting to AccountsReceivable.html', '', '', '::1', '', '', '2025-10-13 17:45:16'),
+(418, 1, 'NAVIGATION', 'Clicked \"Loan Application\" link, redirecting to LoanApplication.html', NULL, NULL, '::1', NULL, NULL, '2025-10-13 17:45:17'),
+(419, 1, 'NAVIGATION', 'Clicked \"Payment Collection\" link, redirecting to AccountsReceivable.html', NULL, NULL, '::1', NULL, NULL, '2025-10-13 17:45:18'),
+(420, 1, 'NAVIGATION', 'Clicked \"User Management\" link, redirecting to UserManagement.html', NULL, NULL, '::1', NULL, NULL, '2025-10-13 17:45:44'),
+(421, 1, 'User logged in successfully: admin', '', NULL, NULL, '::1', NULL, NULL, '2025-10-13 17:48:26'),
+(422, 1, 'User logged in successfully: admin', '', NULL, NULL, '::1', NULL, NULL, '2025-10-13 17:51:58'),
+(423, 1, 'User logged in successfully: admin', '', NULL, NULL, '::1', NULL, NULL, '2025-10-13 17:52:31'),
+(425, 1, 'User logged in successfully: admin', '', NULL, NULL, '::1', NULL, NULL, '2025-10-13 17:55:04'),
+(426, 1, 'User logged out: admin', '', NULL, NULL, '::1', NULL, NULL, '2025-10-13 17:55:05');
 
 -- --------------------------------------------------------
 
@@ -386,7 +572,8 @@ CREATE TABLE `guarantor` (
 INSERT INTO `guarantor` (`guarantor_id`, `guarantor_last_name`, `guarantor_first_name`, `guarantor_middle_name`, `guarantor_street_address`, `guarantor_phone_number`, `loan_application_id`, `client_ID`, `created_at`) VALUES
 (1, 'Mallari', 'Angel Laurence', 'Paras', '#205 Alvindia Segundo Tarlac City', '09212271315', 10202500001, 202500001, '2025-10-11 00:41:32'),
 (2, 'Mallari', 'Angel Laurence', 'Paras', '#205 Alvindia Segundo Tarlac City', '09212271315', 10202500002, 202500001, '2025-10-11 14:18:02'),
-(3, 'Jake', 'Syrus', 'Pars', 'balibago block 2', '12312312312', 10202500003, 202500001, '2025-10-11 14:23:03');
+(3, 'Jake', 'Syrus', 'Pars', 'balibago block 2', '12312312312', 10202500003, 202500001, '2025-10-11 14:23:03'),
+(4, 'Mallari', 'Angel Laurence', 'Paras', '#205 Alvindia Segundo Tarlac City', '09212271315', 10202500004, 202500001, '2025-10-13 15:13:15');
 
 -- --------------------------------------------------------
 
@@ -430,7 +617,16 @@ INSERT INTO `interest_pecent` (`interest_ID`, `Interest_Pecent`, `status`, `date
 ('I20250001', 20, 'deactivated', '2025-10-06'),
 ('I20250002', 21, 'deactivated', '2025-10-06'),
 ('I20250003', 2, 'deactivated', '2025-10-06'),
-('I20250004', 20, 'activated', '2025-10-06');
+('I20250004', 20, 'deactivated', '2025-10-06'),
+('I20250001', 20, 'deactivated', '2025-10-06'),
+('I20250002', 21, 'deactivated', '2025-10-06'),
+('I20250003', 2, 'deactivated', '2025-10-06'),
+('I20250004', 20, 'deactivated', '2025-10-06'),
+('I20250005', 21, 'deactivated', '2025-10-14'),
+('I20250006', 20, 'deactivated', '2025-10-14'),
+('I20250007', 22, 'deactivated', '2025-10-14'),
+('I20250008', 12, 'deactivated', '2025-10-14'),
+('I20250009', 20, 'activated', '2025-10-14');
 
 -- --------------------------------------------------------
 
@@ -460,7 +656,8 @@ CREATE TABLE `loan_applications` (
 INSERT INTO `loan_applications` (`loan_application_id`, `colateral`, `loan_amount`, `payment_frequency`, `date_start`, `duration_of_loan`, `interest_rate`, `date_end`, `client_ID`, `status`, `paid`, `created_at`) VALUES
 (10202500001, 'Single Motor(Rusi 125)', 25000.00, 'monthly', '2025-10-01', '100 days', 20, '2026-01-09', 202500001, 'approved', 'Unpaid', '2025-10-11 00:41:32'),
 (10202500002, 'Single Motor(Rusi 125)', 30000.00, 'daily', '2025-10-01', '100 days', 20, '2026-01-09', 202500001, 'approved', 'Unpaid', '2025-10-11 14:18:02'),
-(10202500003, 'motor', 30000.00, 'weekly', '2025-10-01', '100 days', 20, '2026-01-09', 202500001, 'approved', 'Unpaid', '2025-10-11 14:23:03');
+(10202500003, 'motor', 30000.00, 'weekly', '2025-10-01', '100 days', 20, '2026-01-09', 202500001, 'approved', 'Unpaid', '2025-10-11 14:23:03'),
+(10202500004, 'Single Motor(Rusi 125)', 30000.00, 'monthly', '2025-10-30', '100 days', 20, '2026-02-07', 202500001, 'Pending', 'Unpaid', '2025-10-13 15:13:15');
 
 -- --------------------------------------------------------
 
@@ -480,6 +677,13 @@ CREATE TABLE `loan_reconstruct` (
   `status` varchar(25) NOT NULL,
   `date_created` date NOT NULL DEFAULT current_timestamp()
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
+
+--
+-- Dumping data for table `loan_reconstruct`
+--
+
+INSERT INTO `loan_reconstruct` (`loan_reconstruct_id`, `loan_application_id`, `reconstruct_amount`, `payment_frequency`, `interest_rate`, `date_start`, `duration`, `date_end`, `status`, `date_created`) VALUES
+('100001102025', 10202500003, 12857.13, 'weekly', 20, '2025-10-14', '100 days', '2026-01-22', '1', '2025-10-13');
 
 -- --------------------------------------------------------
 
@@ -517,6 +721,23 @@ CREATE TABLE `payment` (
   `date_payed` timestamp NOT NULL DEFAULT current_timestamp(),
   `processby` varchar(255) NOT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
+
+--
+-- Dumping data for table `payment`
+--
+
+INSERT INTO `payment` (`payment_id`, `loan_reconstruct_id`, `loan_application_id`, `client_id`, `amount_paid`, `date_payed`, `processby`) VALUES
+(1, NULL, 10202500003, 202500001, 2571.43, '2025-10-13 07:00:29', 'system'),
+(2, NULL, 10202500003, 202500001, 2571.43, '2025-10-13 07:00:30', 'system'),
+(3, NULL, 10202500003, 202500001, 2571.43, '2025-10-13 07:00:30', 'system'),
+(4, NULL, 10202500003, 202500001, 2571.43, '2025-10-13 07:00:31', 'system'),
+(5, NULL, 10202500003, 202500001, 2571.43, '2025-10-13 07:00:31', 'system'),
+(6, NULL, 10202500003, 202500001, 2571.43, '2025-10-13 07:00:31', 'system'),
+(7, NULL, 10202500003, 202500001, 2571.43, '2025-10-13 07:00:31', 'system'),
+(8, NULL, 10202500003, 202500001, 2571.43, '2025-10-13 07:00:32', 'system'),
+(9, NULL, 10202500003, 202500001, 2571.43, '2025-10-13 07:00:32', 'system'),
+(10, '100001102025', 10202500003, 202500001, 1102.04, '2025-10-13 07:01:07', 'system'),
+(11, '100001102025', 10202500003, 202500001, 1102.04, '2025-10-13 07:01:11', 'system');
 
 -- --------------------------------------------------------
 
@@ -796,7 +1017,7 @@ ALTER TABLE `user_accounts`
 -- AUTO_INCREMENT for table `audit_logs`
 --
 ALTER TABLE `audit_logs`
-  MODIFY `log_id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=241;
+  MODIFY `log_id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=427;
 
 --
 -- AUTO_INCREMENT for table `genders`
@@ -808,7 +1029,7 @@ ALTER TABLE `genders`
 -- AUTO_INCREMENT for table `guarantor`
 --
 ALTER TABLE `guarantor`
-  MODIFY `guarantor_id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=4;
+  MODIFY `guarantor_id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=5;
 
 --
 -- AUTO_INCREMENT for table `income_salaries`
@@ -826,7 +1047,7 @@ ALTER TABLE `marital_statuses`
 -- AUTO_INCREMENT for table `payment`
 --
 ALTER TABLE `payment`
-  MODIFY `payment_id` int(11) NOT NULL AUTO_INCREMENT;
+  MODIFY `payment_id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=12;
 
 --
 -- AUTO_INCREMENT for table `philippine_barangays`
