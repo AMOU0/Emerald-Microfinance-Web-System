@@ -1,11 +1,11 @@
 <?php
-// Start the session at the very beginning
+// Start the session at the  very beginning
 session_start(); 
 
 header('Content-Type: application/json');
 
 // 1. INCLUDE THE AUDIT TRAIL FUNCTION
-require_once 'audittrail_function.php'; // Updated include
+require_once 'loginaudittrail_function.php'; // Updated include
 
 // Database credentials
 $servername = "localhost";
@@ -30,7 +30,7 @@ if (empty($user_username) || empty($user_password)) {
     exit();
 }
 
-// NOTE: You are using plain text passwords. This is a MAJOR security vulnerability.
+// NOTE: You are using plain tex t passwords. This is a MAJOR security vulnerability.
 // You MUST use password_hash() for registration and password_verify() for login.
 // I have used the correct table name 'user_accounts' as per your SQL dump.
 
