@@ -1,0 +1,73 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Emerald Microfinance Dashboard</title>
+            <script src="JS/enforce_login.js"></script>
+    <link rel="stylesheet" href="CSS/reportsrelease_style.css">
+</head>
+<body>
+    <aside class="sidebar">
+        <div class="sidebar-header">
+            Emerald Microfinance
+        </div>
+        <nav class="sidebar-nav">
+            <ul>
+                <li><a href="#" class="nav-link">Dashboard</a></li>
+                <li><a href="#" class="nav-link">Client Creation</a></li>
+                <li><a href="#" class="nav-link">Loan Application</a></li>
+                <li><a href="#" class="nav-link">Pending Accounts</a></li>
+                <li><a href="#" class="nav-link">Payment Collection</a></li>
+                <li><a href="#" class="nav-link">Ledger</a></li>
+                <li><a href="#" class="nav-link active">Reports</a></li>
+                <li><a href="#" class="nav-link">Tools</a></li>
+            </ul>
+        </nav>
+        <div class="sidebar-footer">
+            <button class="logout-button">
+                Logout
+            </button>
+        </div>
+    </aside>
+        <main class="main-content">
+        <header class="header reports-header">
+            <h1 class="header-title">Reports</h1>
+        </header>
+        <div class="reports-container">
+<div class="reports-sidebar">
+    <button class="report-button">Existing Clients</button>
+
+    <button class="report-button">Overdue</button>
+
+    <button class="report-button">Due Payments</button>
+    
+    <button class="report-button">Audit Trail</button>
+
+    <button class="report-button active">Reports Release</button>
+
+</div>
+<div class="report-viewer">
+                <div class="search-container mb-4">
+                    <input type="text" id="report-search" class="form-input w-full"  placeholder="Search by Client Name">
+                </div>
+
+                <table>
+                    <thead>
+                        <tr>
+                            <th>CLIENT ID/NAME</th>
+                            <th>LOAN ID</th>
+                            <th>AMOUNT DUE</th>
+                            <th>ACTION</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr><td colspan="4">Loading reports...</td></tr> 
+                    </tbody>
+                </table>
+            </div>
+            
+    </main>
+    <script src="JS/reportsrelease_function.js"></script>
+</body>
+</html>

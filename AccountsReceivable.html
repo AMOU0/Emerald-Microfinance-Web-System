@@ -21,7 +21,6 @@
                 <li><a href="#" class="nav-link active">Payment Collection</a></li>
                 <li><a href="#" class="nav-link">Ledger</a></li>
                 <li><a href="#" class="nav-link">Reports</a></li>
-                <li><a href="#" class="nav-link">User Management</a></li>
                 <li><a href="#" class="nav-link">Tools</a></li>
             </ul>
         </nav>
@@ -44,17 +43,16 @@
             <div class="search-container">
                 <input type="text" id="searchInput" placeholder="Search by Client ID, Loan ID or Name...">
             </div>
-                    <section class="account-receivable-table-section"></section>
             <div class="table-container">
                 <div class="table-header">
                     <div class="table-header-cell small-column"></div>
-                    <div class="table-header-cell">Client ID</div>
-                    <div class="table-header-cell">Loan ID</div>
-                    <div class="table-header-cell">Name</div>
-                    <div class="table-header-cell">Principal Amount</div>
-                    <div class="table-header-cell">Interest Amount</div>
-                    <div class="table-header-cell">Loan Amount</div>
-                    <div class="table-header-cell">Due Date</div>
+                    <div class="table-header-cell sortable" data-sort-key="client_ID">Client ID</div>
+                    <div class="table-header-cell sortable" data-sort-key="loan_application_id">Loan ID</div>
+                    <div class="table-header-cell sortable" data-sort-key="name">Name</div>
+                    <div class="table-header-cell sortable" data-sort-key="principal_amount">Principal Amount</div>
+                    <div class="table-header-cell sortable" data-sort-key="interest_amount">Interest Amount</div>
+                    <div class="table-header-cell sortable" data-sort-key="total_loan_amount">Loan Amount</div>
+                    <div class="table-header-cell sortable" data-sort-key="date_end">Due Date</div>
                 </div>
                 <div class="table-body approved-account-table-body">
                 </div>

@@ -21,8 +21,7 @@
                 <li><a href="#" class="nav-link">Payment Collection</a></li>
                 <li><a href="#" class="nav-link">Ledger</a></li>
                 <li><a href="#" class="nav-link">Reports</a></li>
-                <li><a href="#" class="nav-link active">User Management</a></li>
-                <li><a href="#" class="nav-link">Tools</a></li>
+                <li><a href="#" class="nav-link active">Tools</a></li>
             </ul>
         </nav>
         <div class="sidebar-footer">
@@ -37,6 +36,12 @@
             <h1>User Management</h1>
         </header>
         <div class="content-panel">
+            <div class="tools-menu">
+                <button class="menu-button">Backup And Restore</button>
+                <button class="menu-button">Interest Amount</button>
+                <button class="menu-button">User Management</button>
+                </div>
+        <div class="content-panel">
             <div class="user-management-menu">
                 <button id="password-change-btn" class="user-management-menu-button">Password Change</button>
                 <button id="username-change-btn" class="user-management-menu-button">Username Change</button>
@@ -45,19 +50,16 @@
             </div>
            
             <!-- This is the existing-user-panel with the table of user accounts -->
-            <div class="existing-user-panel flex flex-col flex-grow">
-                    <div class="header-buttons">
-                        <button class="action-button view-button-pending">View</button>
-                    </div>
+                    <div class="existing-user-panel flex flex-col flex-grow">
+ 
 
                 <section class="pending-account-table-section">
                 <div class="pending-account-table-header">
-                <div class="table-header-cell small-column"></div>
                 <div class="table-header-cell">USER ID</div>
                 <div class="table-header-cell">NAME</div>
                 <div class="table-header-cell">USERNAME</div>
                 <div class="table-header-cell">ROLE</div>
-            </div>
+                <div class="table-header-cell">STATUS</div> </div>
     <div class="pending-account-table-body">
     </div>
 </section>

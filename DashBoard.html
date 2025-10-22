@@ -22,7 +22,6 @@
                 <li><a href="#" class="nav-link">Payment Collection</a></li>
                 <li><a href="#" class="nav-link">Ledger</a></li>
                 <li><a href="#" class="nav-link">Reports</a></li>
-                <li><a href="#" class="nav-link">User Management</a></li>
                 <li><a href="#" class="nav-link">Tools</a></li>
             </ul>
         </nav>
@@ -33,91 +32,70 @@
         </div>
     </aside>
     <!-- Main Content Area -->
-    <main>
-        <!-- Dashboard Header -->
-        <header>
-            Dashboard
-        </header>
-
-        <div>
-            <!-- Client's Due Section -->
-            <section>
-                <div>
-                    <h2>Client's Due</h2>
-                    <div>
-                        <div>
-                            <span></span> Due Today
-                        </div>
-                        <div>
-                            <span></span> Due This Week
-                        </div>
-                        <div>
-                            <span></span> Overdue
-                        </div>
-                    </div>
-                </div>
-
-                <div>
-                    <table>
-                        <thead>
-                            <tr>
-                                <th>Account Number</th>
-                                <th>Name</th>
-                                <th>Contact Number</th>
-                            </tr>
-                        </thead>
-                        <tbody>
-                            <!-- Example Rows -->
-                            <tr>
-                                <td>20250101001</td>
-                                <td>Gizelle Kerby Rose Reyes</td>
-                                <td>09XXXXXXXXX</td>
-                            </tr>
-                            <tr>
-                                <td>20250108032</td>
-                                <td>Joseph Akol</td>
-                                <td>09XXXXXXXXX</td>
-                            </tr>
-                            <tr>
-                                <td>20240101043</td>
-                                <td>John Nigel Landingin</td>
-                                <td>09XXXXXXXXX</td>
-                            </tr>
-                            <!-- Empty Rows for visual spacing -->
-                            <tr><td>&nbsp;</td><td>&nbsp;</td><td>&nbsp;</td></tr>
-                            <tr><td>&nbsp;</td><td>&nbsp;</td><td>&nbsp;</td></tr>
-                            <tr><td>&nbsp;</td><td>&nbsp;</td><td>&nbsp;</td></tr>
-                            <tr><td>&nbsp;</td><td>&nbsp;</td><td>&nbsp;</td></tr>
-                            <tr><td>&nbsp;</td><td>&nbsp;</td><td>&nbsp;</td></tr>
-                        </tbody>
-                    </table>
-                </div>
-            </section>
-
-            <!-- Right Column - Info Cards -->
-            <aside>
-                <div>
-                    <h3>Pending Account</h3>
-                    <div>
-                        <!-- Placeholder for content -->
-                    </div>
-                </div>
-
-                <div>
-                    <h3>Profit Today</h3>
-                    <div>
-                        <!-- Placeholder for content -->
-                    </div>
-                </div>
-
-                <div>
-                    <h3>Release Amount</h3>
-                    <div>
-                        PHP XXXXXX
-                    </div>
-                </div>
-            </aside>
+   <main class="main-content">
+      <header class="main-header">
+        <div class="header-strip">
+          <h1 class="dashboard-title">Dashboard</h1>
+          <div class="date-box">Date: <span id="current-date"></span></div>
         </div>
+      </header>
+
+      <!-- Tiles -->
+
+      <!-- Tiles: data-tile-key used to look up the URL in JS --> 
+      <section class="tiles-grid">
+        <!-- Tile 1: Expected Profit -->
+<div class="tile large" data-color="collection-today" data-tile-key="tile-1">
+    <div class="tile-content">
+        <h3>Collection Today</h3>
+        <p class="value" id="collection-today-value">P 0.00</p>
+    </div>
+</div>
+        <!-- Tile 2: For Release -->
+<div class="tile large" data-color="release" data-tile-key="tile-2">
+    <div class="tile-content">
+        <h3>For Release <span class="subtext" id="release-date-display"></span></h3>
+        <p class="value" id="release-value-display">PHP 0.00</p>
+    </div>
+</div>
+
+        <div class="tile" data-color="due-today" data-tile-key="tile-3">
+          <div class="tile-content">
+            <h3>Due Today</h3>
+            <p class="value" id="due-today-count">0</p>
+          </div>
+        </div>
+
+        <!-- Tile 5: Overdue -->
+        <div class="tile" data-color="overdue" data-tile-key="tile-5">
+          <div class="tile-content">
+            <h3>Overdue</h3>
+            <p class="value">0</p>
+          </div>
+        </div>
+
+<div class="tile" data-color="pending" data-tile-key="tile-6">
+  <div class="tile-content">
+    <h3>Pending Loans</h3> 
+    <p class="value" id="pending-loans-count">0</p>
+  </div>
+</div>
+
+<div class="tile" data-color="active" data-tile-key="tile-7">
+  <div class="tile-content">
+    <h3>Active Loans</h3>
+    <p class="value" id="active-loans-count">0</p>
+  </div>
+</div>
+
+<div class="tile" data-color="TotalClients" data-tile-key="tile-9">
+  <div class="tile-content">
+    <h3>Total Clients</h3>
+    <p class="value" id="total-clients-value">0</p>
+  </div>
+</div>
+        </div>
+      </section>
     </main>
         <script src="JS/dashboard_function.js"></script>
 </body>

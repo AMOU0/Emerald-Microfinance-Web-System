@@ -21,7 +21,6 @@
                 <li><a href="#" class="nav-link">Payment Collection</a></li>
                 <li><a href="#" class="nav-link">Ledger</a></li>
                 <li><a href="#" class="nav-link">Reports</a></li>
-                <li><a href="#" class="nav-link">User Management</a></li>
                 <li><a href="#" class="nav-link">Tools</a></li>
             </ul>
         </nav>
@@ -34,7 +33,11 @@
     <main class="main-content">
         <header class="header">
             <h1 class="header-title">Loan Application</h1>
-            <input type="input" id="clientID" name="clientID" placeholder="Client ID">
+            <input type="input" id="clientID" name="clientID" placeholder="Client ID" readonly>
+            <div class="client-info-display">
+                <label>Client Name:</label>
+                <span id="displayClientName">Not Selected</span>
+            </div>
             <button type="button" class="search-client-button" id="showClientsBtn">Search client</button>
         </header>
         <div class="main-content-form">

@@ -21,7 +21,6 @@
                 <li><a href="#" class="nav-link">Payment Collection</a></li>
                 <li><a href="#" class="nav-link">Ledger</a></li>
                 <li><a href="#" class="nav-link active">Reports</a></li>
-                <li><a href="#" class="nav-link">User Management</a></li>
                 <li><a href="#" class="nav-link">Tools</a></li>
             </ul>
         </nav>
@@ -39,34 +38,33 @@
 <div class="reports-sidebar">
     <button class="report-button">Existing Clients</button>
 
-    <button class="report-button active">Delinquent Accounts</button>
+    <button class="report-button active">Overdue</button>
 
     <button class="report-button">Due Payments</button>
     
     <button class="report-button">Audit Trail</button>
+    
+    <button class="report-button">Reports Release</button>
+
 </div>
             <div class="report-viewer">
 <div class="report-viewer">
     <header class="report-header">
 
         <div class="filter-bar">
-                    <h2>Delinquent Accounts Overview</h2>
+                    <h2>Overdue Overview</h2>
             <button class="export-btn">Export to CSV</button>
         </div>
     </header>
 
     <div class="kpi-grid">
         <div class="kpi-box red">
-            <span class="kpi-label">Total Delinquent Accounts</span>
-            <span class="kpi-value">45</span>
+            <span class="kpi-label">Total Overdue</span>
+            <span class="kpi-value">0</span>
         </div>
         <div class="kpi-box">
-            <span class="kpi-label">Total Principal Due</span>
-            <span class="kpi-value">₱ 25,340.00</span>
-        </div>
-        <div class="kpi-box warning">
-            <span class="kpi-label">Portfolio at Risk (PAR)</span>
-            <span class="kpi-value">₱ 125,980.00</span>
+            <span class="kpi-label">Total Due Amount</span>
+            <span class="kpi-value">₱ 0</span>
         </div>
     </div>
 
@@ -75,20 +73,15 @@
             <tr>
                 <th>Client ID/Name</th>
                 <th>Loan ID</th>
-                <th>Loan Officer</th>
-                <th>DPD</th> <th>Amount Due</th>
-                <th>Outstanding Balance</th>
+                <th>Amount Due</th>
                 <th>Action</th>
             </tr>
         </thead>
         <tbody>
             <tr class="high-risk">
-                <td>C1001 / Jane Doe</td>
-                <td>L-2025-0123</td>
-                <td>R. Smith</td>
-                <td>120</td>
-                <td class="past-due-amount">₱ 560.00</td>
-                <td>₱ 3,500.00</td>
+                <td></td>
+                <td></td>
+                <td class="past-due-amount">₱ 0</td>
                 <td><button class="action-btn">Collect Payment</button></td>
             </tr>
             </tbody>

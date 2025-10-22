@@ -5,7 +5,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Emerald Microfinance</title>
             <script src="JS/enforce_login.js"></script>
-    <link rel="stylesheet" href="CSS/usercreationview_style.css">
+    <link rel="stylesheet" href="CSS/userexistingview_style.css">
 </head>
 <body>
     <aside class="sidebar">
@@ -21,8 +21,7 @@
                 <li><a href="#" class="nav-link">Payment Collection</a></li>
                 <li><a href="#" class="nav-link">Ledger</a></li>
                 <li><a href="#" class="nav-link">Reports</a></li>
-                <li><a href="#" class="nav-link active">User Management</a></li>
-                <li><a href="#" class="nav-link">Tools</a></li>
+                <li><a href="#" class="nav-link active">Tools</a></li>
             </ul>
         </nav>
         <div class="sidebar-footer">
@@ -37,14 +36,20 @@
             <h1>User Management</h1>
         </header>
         <div class="content-panel">
+            <div class="tools-menu">
+                <button class="menu-button">Backup And Restore</button>
+                <button class="menu-button">Interest Amount</button>
+                <button class="menu-button">User Management</button>
+                </div>
+        <div class="content-panel">
             <div class="user-management-menu">
                 <button id="password-change-btn" class="user-management-menu-button">Password Change</button>
                 <button id="username-change-btn" class="user-management-menu-button">Username Change</button>
-                <button id="account-creation-btn" class="user-management-menu-button active">Account Creation</button>
-                <button id="existing-accounts-btn" class="user-management-menu-button">Existing Accounts</button>
+                <button id="account-creation-btn" class="user-management-menu-button">Account Creation</button>
+                <button id="existing-accounts-btn" class="user-management-menu-button active">Existing Accounts</button>
             </div>
             <div class="account-creation-form-panel">
-                <h2>Account Creation</h2>
+                <h2>Account Details</h2>
                 <div id="status-message" class="mb-4 text-center"></div>
                 <form class="account-creation-form">
                     <div class="form-field">
@@ -59,32 +64,39 @@
                         <label for="account-username" class="form-label">Username</label>
                         <input type="text" id="account-username" name="username" class="form-input">
                     </div>
-                    <div class="form-field">
-                        <label for="account-password" class="form-label">Password</label>
-                        <input type="password" id="account-password" name="password" class="form-input">
-                    </div>
-                    <div class="form-field">
-                        <label for="account-confirm-password" class="form-label">Confirm Password</label>
-                        <input type="password" id="account-confirm-password" name="confirm-password" class="form-input">
-                    </div>
-                    <div class="form-field">
-                        <label for="account-role" class="form-label">Role</label>
-                        <select id="account-role" name="role" class="form-select">
-                            <option value="" disabled selected>Select a role</option>
-                            <option value="Admin">Admin</option>
-                            <option value="loan-officer">Loan Officer</option>
-                            <option value="Recruiter">Recruiter</option>
-                        </select>
-                    </div>
-                    <div class="form-actions">
-                        <button type="submit" class="create-account-button">
-                            Create
-                        </button>
-                    </div>
+    <div id="password-fields-container" class="form-field-group">
+    <button type="button" id="reset-password-toggle" class="create-account-button" style="background-color: #f6ad55; margin-bottom: 1rem; display: none;">
+        Reset User Password
+    </button>
+    
+    <div class="form-field">
+        <label for="account-password" class="form-label">New Password</label>
+        <input type="password" id="account-password" name="password" class="form-input" disabled>
+    </div>
+    <div class="form-field">
+        <label for="account-confirm-password" class="form-label">Confirm New Password</label>
+        <input type="password" id="account-confirm-password" name="confirm-password" class="form-input" disabled>
+    </div>
+</div>
+
+<div class="form-field">
+    <label for="account-role" class="form-label">Role</label>
+    <select id="account-role" name="role" class="form-select" disabled> 
+        <option value="" disabled selected>Select a role</option>
+        <option value="Admin">Admin</option>
+        <option value="loan-officer">Loan Officer</option>
+        <option value="Recruiter">Recruiter</option>
+    </select>
+</div>
+<div class="form-actions">
+    <button type="submit" class="create-account-button" id="update-user-button">
+        Update User
+    </button>
+</div>
                 </form>
             </div>
         </div>
     </main>
-    <script src="JS/usercreationview_function.js"></script>
+    <script src="JS/userexistingview_function.js"></script>
 </body>
 </html>

@@ -13,7 +13,6 @@
             Emerald Microfinance
         </div>
         <nav class="sidebar-nav">
-            <ul>
                 <li><a href="#" class="nav-link">Dashboard</a></li>
                 <li><a href="#" class="nav-link">Client Creation</a></li>
                 <li><a href="#" class="nav-link">Loan Application</a></li>
@@ -21,7 +20,6 @@
                 <li><a href="#" class="nav-link">Payment Collection</a></li>
                 <li><a href="#" class="nav-link">Ledger</a></li>
                 <li><a href="#" class="nav-link">Reports</a></li>
-                <li><a href="#" class="nav-link">User Management</a></li>
                 <li><a href="#" class="nav-link active">Tools</a></li>
             </ul>
         </nav>
@@ -37,12 +35,11 @@
             <h1>Tools</h1>
         </header>
         <div class="content-panel">
-            <div class="tools-menu">    
-                <button class="menu-button-active">Backup And Restore</button>
+            <div class="tools-menu">
+                <button class="menu-button">Backup And Restore</button>
                 <button class="menu-button">Interest Amount</button>
-                <button class="menu-button">City/ Barangays</button>
+                <button class="menu-button">User Management</button>
             </div>
-            
             <div class="tool-area">
                 <div id="backup-restore-tool" class="tool-block">
                     <h2 class="tool-block__heading">Database Backup And Restore</h2>
@@ -78,30 +75,7 @@
                                 Start Restore
                             </button>
                         </div>
-                        
-                        <div class="card card--auto">
-                            <h3 class="card__title card__title--blue">Auto Backup/Restore Preference</h3>
-                            <p class="card__description">Set how often the system should remind or attempt a background backup and restore.</p>
-
-                            <label for="autoBackupInterval" class="form__label">Interval:</label>
-                            <select id="autoBackupInterval" class="form__select">
-                                <option value="off">Off</option>
-                                <option value="daily">Daily</option>
-                                <option value="weekly">Weekly</option>
-                            </select>
-    
-                            <label for="autoRestoreTime" class="form__label" style="margin-top: 10px;">Restore Time (24h):</label>
-                            <input type="time" id="autoRestoreTime" class="form__input" value="03:00" required>
-    
-                            <label for="autoBackupTime" class="form__label" style="margin-top: 10px;">Backup Time (24h):</label>
-                            <input type="time" id="autoBackupTime" class="form__input" value="03:00" required>
-    
-                            <button id="saveAutoBackupBtn" class="btn btn--secondary btn--save" disabled>
-                                <svg class="btn__icon btn__icon--inline" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7H5a2 2 0 00-2 2v10a2 2 0 002 2h14a2 2 0 002-2V9a2 2 0 00-2-2h-3m-1 4l-3 3m0 0l-3-3m3 3V4"></path></svg>
-                                    Save Preference
-                            </button>
-                            <p id="currentAutoBackup" class="card__preference-status"></p>
-                        </div>
+                    
                     </div>
 
                     <h2 class="tool-block__heading log-heading">Backup/Restore Activity Log</h2>
@@ -114,7 +88,7 @@
         <th class="data-table__th">Action Type</th> 
         <th class="data-table__th">Details</th>
     </tr>
-</thead>
+</thead>    
                             <tbody id="backupLogTableBody" class="data-table__body">
                                 <tr><td colspan="5" class="data-table__no-data">Loading log history...</td></tr>
                             </tbody>

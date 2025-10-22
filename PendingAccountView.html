@@ -21,7 +21,6 @@
                 <li><a href="#" class="nav-link">Payment Collection</a></li>
                 <li><a href="#" class="nav-link">Ledger</a></li>
                 <li><a href="#" class="nav-link">Reports</a></li>
-                <li><a href="#" class="nav-link">User Management</a></li>
                 <li><a href="#" class="nav-link">Tools</a></li>
             </ul>
         </nav>
@@ -85,10 +84,6 @@
                             <option value="">Select...</option>
                         </select>
                     </div>
-                    <div class="form-group">
-                        <label for="postalCode" class="form-label">Postal Code *</label>
-                        <input type="text" id="postalCode" name="postalCode" class="form-input" required>
-                    </div>
                     <div class="form-group full-width">
                         <label for="streetAddress" class="form-label">Street Address *</label>
                         <input type="text" id="streetAddress" name="streetAddress" class="form-input" required>
@@ -98,12 +93,12 @@
                         <input type="tel" id="phoneNumber" name="phoneNumber" class="form-input" required>
                     </div>
                     <div class="form-group">
-                        <label for="email" class="form-label">Email</label>
-                        <input type="email" id="email" name="email" class="form-input">
-                    </div>
-                    <div class="form-group">
                         <label for="employmentStatus" class="form-label">Employment Status</label>
-                        <input type="text" id="employmentStatus" name="employmentStatus" class="form-input">
+                        <select id="employmentStatus" name="employmentStatus" class="form-select">
+                        <option value="">Select...</option>
+                        <option value="Employed">Employed</option>
+                        <option value="Unemployed">Unemployed</option>
+                        </select>
                     </div>
                     <div class="form-group">
                         <label for="occupationPosition" class="form-label">Occupation/Position</label>

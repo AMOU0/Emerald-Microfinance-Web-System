@@ -21,7 +21,6 @@
                 <li><a href="#" class="nav-link">Payment Collection</a></li>
                 <li><a href="#" class="nav-link">Ledger</a></li>
                 <li><a href="#" class="nav-link">Reports</a></li>
-                <li><a href="#" class="nav-link active">User Management</a></li>
                 <li><a href="#" class="nav-link">Tools</a></li>
             </ul>
         </nav>
@@ -36,11 +35,16 @@
         <header class="main-header">
             <h1>User Management</h1>
         </header>
+                   <div class="tools-menu">
+                <button class="menu-button">Backup And Restore</button>
+                <button class="menu-button">Interest Amount</button>
+                <button class="menu-button">User Management</button>
+                </div>
         <div class="content-panel">
             <div class="user-management-menu">
                 <button id="password-change-btn" class="user-management-menu-button">Password Change</button>
                 <button id="username-change-btn" class="user-management-menu-button">Username Change</button>
-                <button id="account-creation-btn" class="user-management-menu-button active">Account Creation</button>
+                <button id="account-creation-btn" class="user-management-menu-button active">Create User</button>
                 <button id="existing-accounts-btn" class="user-management-menu-button">Existing Accounts</button>
             </div>
             <div class="account-creation-form-panel">
@@ -72,8 +76,8 @@
                         <select id="account-role" name="role" class="form-select">
                             <option value="" disabled selected>Select a role</option>
                             <option value="Admin">Admin</option>
-                            <option value="loan-officer">Loan Officer</option>
-                            <option value="Recruiter">Recruiter</option>
+                            <option value="Manager">Manager</option>
+                            <option value="Loan Officer">Loan Officer</option>
                         </select>
                     </div>
                     <div class="form-actions">

@@ -21,7 +21,6 @@
                 <li><a href="#" class="nav-link">Payment Collection</a></li>
                 <li><a href="#" class="nav-link">Ledger</a></li>
                 <li><a href="#" class="nav-link active">Reports</a></li>
-                <li><a href="#" class="nav-link">User Management</a></li>
                 <li><a href="#" class="nav-link">Tools</a></li>
             </ul>
         </nav>
@@ -32,62 +31,68 @@
         </div>
     </aside>
 
+
     <main class="main-content">
         <header class="header reports-header">
-            <h1 class="header-title">Existing Client Report</h1>
-                        <form id="pendingAccountForm" class="form-section">
-                        <input type="hidden" id="clientIdInput" name="client_id">
+            <h1 class="header-title">Reports</h1>
+            <button class="return-btn">Return</button>
         </header>
-        <div class="reports-container">
+                <div class="reports-container">
 <div class="reports-sidebar">
     <button class="report-button active">Existing Clients</button>
 
-    <button class="report-button">Delinquent Accounts</button>
+    <button class="report-button">Overdue</button>
 
     <button class="report-button">Due Payments</button>
     
     <button class="report-button">Audit Trail</button>
+
+    <button class="report-button">Reports Release</button>
+
 </div>
+        <div class="report-viewer">
+            <form action="" method="post">
+                <input type="hidden" id="clientIdInput" name="client_id">
                 <div class="main-grid">
-                    <div class="column-1">
-                        <section class="client-section info-section">
-                            <h2 class="section-title">Client</h2>
-                            <dl class="data-list">
-                                <div class="data-group">
-                                    <dt>Client ID</dt>
-                                    <dd id="client-id-dd">[Loading...]</dd>
-                                </div>
-                                <div class="data-group">
-                                    <dt>Client Name</dt>
-                                    <dd id="client-name-dd">[Loading...]</dd>
-                                </div>
-                                <div class="data-group">
-                                    <dt>Marital Status</dt>
-                                    <dd id="marital-status-dd">[Loading...]</dd>
-                                </div>
-                                <div class="data-group">
-                                    <dt>Gender / Date of Birth</dt>
-                                    <dd id="gender-dob-dd">[Loading...]</dd>
-                                </div>
-                                <div class="data-group full-row">
-                                    <dt>Address</dt>
-                                    <dd id="address-dd">[Loading...]</dd>
-                                </div>
-                                <div class="data-group full-row">
-                                    <dt>Contact / Email</dt>
-                                    <dd id="contact-email-dd">[Loading...]</dd>
-                                </div>
-                                <div class="data-group full-row">
-                                    <dt>Employment / Income</dt>
-                                    <dd id="income-collateral-dd">[Loading...]</dd>
-                                </div>
-                                <div class="data-group full-row">
-                                    <dt>Collateral</dt>
-                                    <dd id="income-collateral-dd-2">[Loading...]</dd>
-                                </div>
-                            </dl>
-                        </section>
-                    </div>
+
+                    <section class="info-section client-section">
+                        <h2 class="section-title">Client Information</h2>
+                        <dl class="data-list">
+                            <div class="data-group">
+                                <dt>Client ID</dt>
+                                <dd id="client-id-dd">[Loading...]</dd>
+                            </div>
+                            <div class="data-group full-row">
+                                <dt>Client Name</dt>
+                                <dd id="client-name-dd">[Loading...]</dd>
+                            </div>
+                            <div class="data-group">
+                                <dt>Marital Status</dt>
+                                <dd id="marital-status-dd">[Loading...]</dd>
+                            </div>
+                            <div class="data-group">
+                                <dt>Gender / DOB</dt>
+                                <dd id="gender-dob-dd">[Loading...]</dd>
+                            </div>
+                            <div class="data-group full-row">
+                                <dt>Address</dt>
+                                <dd id="address-dd">[Loading...]</dd>
+                            </div>
+                            <div class="data-group full-row">
+                                <dt>Contact</dt>
+                                <dd id="contact-dd">[Loading...]</dd>
+                            </div>
+                            <div class="data-group full-row">
+                                <dt>Employment / Income</dt>
+                                <dd id="income-collateral-dd">[Loading...]</dd>
+                            </div>
+                            <div class="data-group full-row">
+                                <dt>Collateral</dt>
+                                <dd id="income-collateral-dd-2">[Loading...]</dd>
+                            </div>
+                        </dl>
+                    </section>
+
 
 <section class="form-section">
     <h2 class="section-title">Loan Details</h2>
@@ -97,15 +102,16 @@
         </div>
     </div>
 </section>
+
 <div id="loanDetailModal" class="modal" style="display: none;">
   <div class="modal-content">
-    <span id="closeModalButton" class="close">&times;</span>
     <div class="modal-header">
-      <h2>Loan Details</h2>
+        <h2 id="modalTitle">Loan Detail Summary</h2>
+        <span id="closeModalButton" class="close">&times;</span>
     </div>
     <div id="modalBodyContent" class="modal-body">
-      </div>
-    </div>
+        </div>
+  </div>
 </div>
                 </div>
             </form>
