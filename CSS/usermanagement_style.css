@@ -81,6 +81,37 @@ body {
     background-color: #C53030;
 }
 
+
+/* --- Tools Menu (Sub-navigation) --- */
+.tools-menu {
+    flex-shrink: 0;
+    width: 250px;
+    padding: 0; /* No padding needed here, content will be styled inside */
+    box-sizing: border-box;
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+}
+
+.menu-button {
+    width: 100%; /* Changed from 90% to 100% to fit the container */
+    padding: 10px;
+    background-color: white; /* Changed from E0E0E0 to white */
+    border: 1px solid #d1d5db; /* Lighter border */
+    color: #2D3748;
+    cursor: pointer;
+    text-align: left; /* Aligned left for better flow */
+    font-size: 16px;
+    font-weight: 500;
+    border-radius: 8px; /* Square corners for consistency */
+    transition: background-color 0.2s ease-in-out, border-color 0.2s;
+}
+
+.menu-button:hover {
+    background-color: #e9ecef; 
+    border-color: #48BB78;
+}
+
 /* Main Content */
 .main-content {
     flex-grow: 1;

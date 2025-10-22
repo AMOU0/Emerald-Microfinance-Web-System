@@ -80,7 +80,35 @@ body {
 .logout-button:hover {
     background-color: #C53030;
 }
+/* --- Tools Menu (Sub-navigation) --- */
+.tools-menu {
+    flex-shrink: 0;
+    width: 250px;
+    padding: 0; /* No padding needed here, content will be styled inside */
+    box-sizing: border-box;
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+}
 
+.menu-button {
+    width: 100%; /* Changed from 90% to 100% to fit the container */
+    padding: 10px;
+    background-color: white; /* Changed from E0E0E0 to white */
+    border: 1px solid #d1d5db; /* Lighter border */
+    color: #2D3748;
+    cursor: pointer;
+    text-align: left; /* Aligned left for better flow */
+    font-size: 16px;
+    font-weight: 500;
+    border-radius: 8px; /* Square corners for consistency */
+    transition: background-color 0.2s ease-in-out, border-color 0.2s;
+}
+
+.menu-button:hover {
+    background-color: #e9ecef; 
+    border-color: #48BB78;
+}
 .main-content {
     flex-grow: 1;
     display: flex;
@@ -181,9 +209,11 @@ body {
     border: 1px solid #e2e8f0; /* Added a light border */
 }
 
+/* --- UPDATED GRID STRUCTURE (5 COLUMNS: ID, NAME, USERNAME, ROLE, STATUS) --- */
 .pending-account-table-header {
     display: grid;
-    grid-template-columns: 50px 100px 1fr 150px 100px;
+    /* NEW: USER_ID (100px) NAME (1fr) USERNAME (150px) ROLE (100px) STATUS (100px) */
+    grid-template-columns: 100px 1fr 150px 100px 100px; 
     background-color: #edf2f7;
     color: #4a5568;
     font-weight: 600;
@@ -193,9 +223,16 @@ body {
 
 .table-row {
     display: grid;
-    grid-template-columns: 50px 100px 1fr 150px 100px;
+    /* NEW: USER_ID (100px) NAME (1fr) USERNAME (150px) ROLE (100px) STATUS (100px) */
+    grid-template-columns: 100px 1fr 150px 100px 100px;
     border-bottom: 1px solid #e2e8f0;
+    cursor: pointer; /* Indicates the row is clickable */
 }
+
+.table-row:hover {
+    background-color: #f0f4f8; /* Light highlight on hover */
+}
+/* -------------------------------------------------------------------------- */
 
 .table-header-cell {
     text-align: left;
@@ -213,6 +250,7 @@ body {
     color: #4a5568;
 }
 
+/* This is no longer needed after removing the radio column, but kept for safety if referenced elsewhere */
 .table-cell.small-column {
     padding: 0 16px;
     display: flex;

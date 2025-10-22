@@ -218,89 +218,82 @@ body {
     height: 400px; /* Adjust height as needed */
 }
 
-/* Modal Styling */
-.modal-overlay {
-    position: fixed;
-    top: 0;
-    left: 0;
+/* --- Table and Data Styling for Report Viewer --- */
+
+.report-viewer table {
     width: 100%;
-    height: 100%;
-    background-color: rgba(0, 0, 0, 0.5);
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    z-index: 1000;
-    visibility: hidden;
-    opacity: 0;
-    transition: visibility 0s, opacity 0.3s linear;
+    border-collapse: collapse; /* Removes spaces between borders */
+    margin-top: 20px;
+    font-size: 14px;
+    color: #4A5568; /* Darker text color for report content */
 }
 
-.modal-overlay.is-active {
-    visibility: visible;
-    opacity: 1;
-}
-
-.modal-content-details {
-    background-color: white;
-    padding: 2rem;
-    border-radius: 8px;
-    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
-    width: 90%;
-    max-width: 600px;
-    transform: scale(0.95);
-    transition: transform 0.3s cubic-bezier(0.25, 0.46, 0.45, 0.94);
-}
-
-.modal-content-details.is-active {
-    transform: scale(1);
-}
-
-.modal-header {
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    border-bottom: 1px solid #e5e7eb;
-    padding-bottom: 1rem;
-    margin-bottom: 1rem;
-}
-
-.close-button {
-    background: none;
-    border: none;
-    cursor: pointer;
-}
-.client-table {
-    width: 100%;
+/* Table Header Styling (matching the green/teal from the image) */
+.report-viewer thead th {
+    background-color: #E6F0E6; /* Very light background for the header row */
+    color: #38A169; /* Teal/Green color for the header text */
+    font-weight: 600;
+    padding: 12px 15px;
     text-align: left;
-    border-collapse: collapse; /* This removes the space between cells */
+    border-bottom: 2px solid #A0D3B4; /* Separator line */
+    text-transform: uppercase;
 }
 
-/* Table Header */
-.client-table thead th {
-    padding: 8px 16px; /* py-2 px-4 */
-    border-bottom: 1px solid #e5e7eb; /* border-b border-gray-200 */
-    background-color: #f9fafb; /* bg-gray-50 */
-    font-weight: 600; /* font-semibold */
-    color: #4b5563; /* text-gray-600 */
+/* Table Body Row Styling */
+.report-viewer tbody td {
+    padding: 12px 15px;
+    border-bottom: 1px solid #E2E8F0; /* Light gray line between rows */
 }
 
-/* Table Row and Cells */
-.client-table tbody tr {
-    transition-property: background-color;
-    transition-timing-function: cubic-bezier(0.4, 0, 0.2, 1);
-    transition-duration: 150ms;
+.report-viewer tbody tr:last-child td {
+    border-bottom: none; /* No border for the last row */
 }
 
-.client-table tbody tr:hover {
-    background-color: #f3f4f6; /* hover:bg-gray-100 */
+.report-viewer tbody tr:hover {
+    background-color: #F7FAFC; /* Slight highlight on hover */
 }
 
-.client-table tbody td {
-    padding: 8px 16px; /* py-2 px-4 */
-    border-bottom: 1px solid #e5e7eb; /* border-b border-gray-200 */
+/* Action Release Button Styling */
+.action-release-button {
+    padding: 8px 15px;
+    border: none;
+    border-radius: 6px;
+    background-color: #3182CE; /* A standard blue for action buttons */
+    color: #FFFFFF;
+    font-weight: 500;
+    cursor: pointer;
+    transition: background-color 0.2s ease-in-out;
+    text-transform: uppercase;
+    font-size: 12px;
+}
+
+.action-release-button:hover {
+    background-color: #2C5282; /* Darker blue on hover */
 }
 
 /* --- Search Input Styling --- */
+/* Styling for the container that holds the search input */
+.search-container {
+    margin-bottom: 20px;
+    display: flex; /* Helps center or align the input if needed */
+    justify-content: flex-start; /* Aligns the input to the left */
+}
+
+/* Styling for the actual text input field */
+#report-search {
+    width: 300px; /* Adjust width as necessary */
+    padding: 10px 15px;
+    border: 1px solid #ccc;
+    border-radius: 5px; /* Rounded corners */
+    font-size: 16px;
+    transition: border-color 0.3s ease-in-out, box-shadow 0.3s ease-in-out;
+    background-image: url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="%23888" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="feather feather-search"><circle cx="11" cy="11" r="8"></circle><line x1="21" y1="21" x2="16.65" y2="16.65"></line></svg>');
+    background-repeat: no-repeat;
+    background-position: 10px center;
+    padding-left: 40px; /* Make space for the icon */
+}
+
+/* Style for when the search input is focused */
 
 .search-container {
     /* Ensures the search bar is full width within the report-viewer padding */
@@ -325,5 +318,3 @@ body {
     box-shadow: 0 0 0 3px rgba(72, 187, 120, 0.3); /* Subtle green glow effect */
     outline: none; /* Remove default browser outline */
 }
-
-/* You already have .report-viewer styling, which acts as the main container for this search bar. */

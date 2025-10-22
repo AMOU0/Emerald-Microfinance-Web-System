@@ -1,16 +1,19 @@
 /* General Body and Container Styling */
 body {
     font-family: 'Inter', sans-serif;
-    background-color: #333;
+    /* Changed from #333 to a lighter background */
+    background-color: #f7fafc; 
     margin: 0;
     padding: 0;
     display: flex;
     min-height: 100vh;
-    color: #fff;
+    /* Changed from white text to dark text for light background */
+    color: #333; 
 }
 
 .sidebar {
     width: 280px;
+    /* Kept dark background for sidebar - #2D3748 */
     background-color: #2D3748;
     color: #FFFFFF;
     display: flex;
@@ -53,7 +56,8 @@ body {
 }
 
 .nav-link.active {
-    background-color: #48BB78;
+    /* Emerald Green color for active state */
+    background-color: #48BB78; 
     color: #FFFFFF;
     font-weight: 600;
 }
@@ -66,7 +70,8 @@ body {
 
 .logout-button {
     width: 100%;
-    background-color: #E53E3E;
+    /* Red color for logout */
+    background-color: #E53E3E; 
     color: #FFFFFF;
     padding: 12px 24px;
     border-radius: 8px;
@@ -81,178 +86,144 @@ body {
     background-color: #C53030;
 }
 
-/* Main Content Area */
-main {
-    flex: 1;
-    padding: 1.5rem;
-    overflow-y: auto;
+/* Main Content */
+.main-content {
+  flex: 1;
+  padding: 30px;
+  overflow-y: hidden; /* Prevent scroll */
+  /* Ensure text is dark in main content area */
+  color: #333; 
 }
 
-/* Dashboard Header */
-main > header {
-    background-color: #4CAF50;
-    color: white;
-    font-size: 2.25rem;
-    font-weight: bold;
-    padding: 1rem 1.5rem;
-    border-radius: 8px;
-    margin-bottom: 1.5rem;
-    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+/* Header */
+.main-header {
+  margin-bottom: 30px;
 }
 
-/* Main Content Layout (Client's Due and Info Cards) */
-main > div {
-    display: flex;
-    gap: 1.5rem;
+.header-strip {
+  /* Green color (#48BB78) to match the active state and main-header in other styles */
+  background: #48BB78; 
+  color: white;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 16px 30px; /* Increased vertical padding for prominence */
+  border-radius: 8px; /* Slightly reduced radius for consistency */
+  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1); /* Lighter shadow */
 }
 
-/* Client's Due Section */
-section {
-    flex: 1;
-    background-color: #2d3748;
-    padding: 1.5rem;
-    border-radius: 8px;
-    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+.dashboard-title {
+  font-size: 2rem;
+  font-weight: bold;
 }
 
-/* Client's Due Header and Legend */
-section > div:first-child {
-    display: flex;
-    flex-direction: column;
-    justify-content: space-between;
-    align-items: flex-start;
-    margin-bottom: 1rem;
+.date-box {
+  background: #f7fafc; /* Lighter background for date box */
+  color: #2d3748; /* Darker text for readability */
+  font-size: 1rem;
+  font-weight: 600;
+  padding: 8px 16px;
+  border-radius: 6px;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
 }
 
-section h2 {
-    font-size: 1.25rem;
-    font-weight: 600;
-    color: white;
-    margin-bottom: 0.5rem;
+/* Tiles */
+.tiles-grid {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 20px; /* Slightly increased gap */
 }
 
-section > div:first-child > div {
-    display: flex;
-    flex-direction: column;
-    gap: 0.5rem;
-    font-size: 0.875rem;
-    color: white;
+.tile.large {
+  grid-column: span 2;
 }
 
-section > div:first-child > div > div {
-    display: flex;
-    align-items: center;
+.tile {
+  /* Changed from dark #374151 to white/light to blend with the light theme */
+  background: white; 
+  border-radius: 8px; /* Consistent radius */
+  padding: 0; /* Remove padding as the tile-content will be the main element */
+  transition: transform 0.2s ease-in-out;
+  min-height: 150px;
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.05); /* Lighter default shadow */
+  border: 1px solid #e2e8f0; /* Subtle border */
 }
 
-section > div:first-child span {
-    width: 0.75rem;
-    height: 0.75rem;
-    border-radius: 9999px;
-    margin-right: 0.5rem;
+.tile:hover {
+  transform: scale(1.02); /* Reduced scale for subtle effect */
+  box-shadow: 0 8px 16px rgba(0, 0, 0, 0.1);
 }
 
-/* Specific legend colors */
-section > div:first-child span:nth-child(1) { background-color: #22c55e; }
-section > div:first-child span:nth-child(2) { background-color: #eab308; }
-section > div:first-child span:nth-child(3) { background-color: #ef4444; }
-
-/* Table Styling */
-table {
-    min-width: 100%;
-    background-color: #4a5568;
-    border-radius: 8px;
-    overflow: hidden;
-    color: white;
-    border-collapse: collapse;
+.tile-content {
+  /* Removed inner white background as the tile is now white */
+  background: transparent;
+  border-radius: 8px; /* Consistent radius */
+  padding: 20px;
+  text-align: center;
+  transition: background-color 0.3s ease;
+  min-height: 130px;
 }
 
-table thead tr {
-    background-color: #4a5568;
-    text-align: left;
+.tile-content h3 {
+  /* Dark text for headings */
+  color: #4a5568; 
+  font-weight: 500;
+  font-size: 0.9rem;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
 }
 
-table th,
-table td {
-    padding: 0.75rem 1rem;
-    border-bottom: 1px solid #6b7280;
+.tile-content .value {
+  font-size: 2rem; /* Increased size for impact */
+  color: #2d3748;
+  font-weight: 700;
+  margin: 10px 0;
 }
 
-/* Specific row colors */
-table tbody tr:nth-child(1) { background-color: #166534; }
-table tbody tr:nth-child(2) { background-color: #a16207; }
-table tbody tr:nth-child(3) { background-color: #b91c1c; }
-table tbody tr:not(:nth-child(-n+3)) { background-color: #4a5568; }
-
-/* Right Column (Info Cards) */
-aside:last-of-type {
-    width: 320px;
-    display: flex;
-    flex-direction: column;
-    gap: 1.5rem;
+.view-btn {
+  width: 100%;
+  /* Styled to match primary button colors */
+  background: #f0fff4; 
+  color: #047857;
+  font-weight: 600;
+  padding: 10px;
+  border: none;
+  border-radius: 6px;
+  transition: background-color 0.2s ease;
+  cursor: pointer;
+  margin-top: 10px;
 }
 
-/* Individual Info Card Styling */
-aside:last-of-type > div {
-    background-color: #2d3748;
-    padding: 1.5rem;
-    border-radius: 8px;
-    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
-    color: white;
+.view-btn:hover {
+    background-color: #e6fffa;
 }
 
-aside:last-of-type h3 {
-    font-size: 1.125rem;
-    font-weight: 600;
-    margin-bottom: 0.5rem;
+/* Hover color effects per tile (using light pastels) */
+.tile[data-color="profit"]:hover { background-color: #e0fff3; }
+.tile[data-color="release"]:hover { background-color: #e0f8ff; }
+.tile[data-color="due-today"]:hover { background-color: #effcf5; }
+.tile[data-color="due-week"]:hover { background-color: #fffbe6; }
+.tile[data-color="overdue"]:hover { background-color: #ffeaea; }
+.tile[data-color="pending"]:hover { background-color: #e6f0ff; }
+.tile[data-color="active"]:hover { background-color: #e6fffe; }
+.tile[data-color="paid"]:hover { background-color: #f7e6ff; }
+.tile[data-color="borrowers"]:hover { background-color: #fff0f5; }
+
+/* Resetting the tile-content background on hover to blend with tile background */
+.tile:hover .tile-content { 
+    background-color: transparent; 
 }
 
-aside:last-of-type > div > div {
-    background-color: #4a5568;
-    height: 6rem;
-    border-radius: 6px;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    color: #a0aec0;
-    font-size: 1.25rem;
+.tile:hover .view-btn {
+  background-color: #fff; /* White button on hover for contrast */
 }
 
-/* Custom Scrollbar for aesthetic */
-::-webkit-scrollbar {
-    width: 8px;
+.tiles-grid .tile {
+    cursor: pointer;
 }
-
-::-webkit-scrollbar-track {
-    background: #444;
-    border-radius: 10px;
-}
-
-::-webkit-scrollbar-thumb {
-    background: #888;
-    border-radius: 10px;
-}
-
-::-webkit-scrollbar-thumb:hover {
-    background: #555;
-}
-
-/* Responsive adjustments */
-@media (max-width: 1024px) {
-    main > div {
-        flex-direction: column;
-    }
-
-    aside:last-of-type {
-        width: 100%;
-    }
-}
-
-@media (max-width: 768px) {
-    body {
-        flex-direction: column;
-    }
-
-    main {
-        padding: 1rem;
-    }
+.tiles-grid .tile:hover {
+    box-shadow: 0 8px 16px rgba(0, 0, 0, 0.1);
+    transform: translateY(-2px);
+    transition: all 0.2s ease-in-out;
+    opacity: 1; /* Keep opacity at 1 */
 }

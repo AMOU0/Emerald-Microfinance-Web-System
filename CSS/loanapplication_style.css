@@ -1,17 +1,26 @@
-/* General Body and Container Styling */
+/*
+ * 🟢 COMPLETE & FINAL STYLESHEET 🟢
+ * Theme: Dark Sidebar (#2D3748) and Green Accent (#48BB78)
+ * Layout: Main Form (3-Column Grid) and Two-Panel Amortization Modal.
+ */
+
+/* ========================================================================= */
+/* 1. BASE STYLES & LAYOUT */
+/* ========================================================================= */
 body {
     font-family: 'Inter', sans-serif;
-    background-color: #f7fafc; /* Lighter background color to match the image */
+    background-color: #f7fafc; 
     margin: 0;
     padding: 0;
     display: flex;
     min-height: 100vh;
-    color: #333; /* Darker text for the main content */
+    color: #333;
 }
 
+/* --- Sidebar Styling (Dark Theme) --- */
 .sidebar {
     width: 280px;
-    background-color: #2D3748;
+    background-color: #2D3748; /* Dark Blue/Gray */
     color: #FFFFFF;
     display: flex;
     flex-direction: column;
@@ -40,11 +49,11 @@ body {
     display: block;
     padding: 12px 24px;
     color: #CBD5E0;
-    font-weight: 500;
-    transition: background-color 0.2s ease-in-out;
-    border-radius: 8px;
-    margin: 0 12px 8px;
     text-decoration: none;
+    transition: background-color 0.2s, color 0.2s;
+    font-weight: 500;
+    margin: 0 12px 8px;
+    border-radius: 8px;
 }
 
 .nav-link:hover {
@@ -52,9 +61,8 @@ body {
     color: #FFFFFF;
 }
 
-/* Updated active link for "Client Creation" */
 .nav-link.active {
-    background-color: #48BB78;
+    background-color: #48BB78; /* Green accent */
     color: #FFFFFF;
     font-weight: 600;
 }
@@ -67,20 +75,25 @@ body {
 
 .logout-button {
     width: 100%;
-    background-color: #E53E3E;
-    color: #FFFFFF;
     padding: 12px 24px;
-    border-radius: 8px;
-    font-weight: 600;
-    transition: background-color 0.2s ease-in-out;
-    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+    background-color: #E53E3E;
+    color: white;
     border: none;
+    border-radius: 8px;
     cursor: pointer;
+    font-weight: 600;
+    transition: background-color 0.2s;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
 }
 
 .logout-button:hover {
     background-color: #C53030;
 }
+
+
+/* ========================================================================= */
+/* 2. MAIN CONTENT & HEADER */
+/* ========================================================================= */
 
 .main-content {
     flex-grow: 1;
@@ -91,24 +104,53 @@ body {
 }
 
 .header {
-    background-color: #48BB78; /* Green header to match the image */
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    background-color: #48BB78; /* Primary Green Header */
     color: white;
     padding: 16px 24px;
     border-radius: 8px;
     margin-bottom: 24px;
-    display: flex;
-    align-items: center;
-    justify-content: space-between;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
 }
 
 .header-title {
-    margin: 0;
     font-size: 1.5rem;
     font-weight: 600;
     flex-grow: 1;
+    margin: 0;
 }
 
-.header input {
+.client-info-display {
+    color: white;
+    margin-right: 20px;
+    display: flex;
+    flex-direction: column;
+    align-items: flex-start;
+    font-size: 0.85rem;
+}
+
+.client-info-display label {
+    font-weight: 400;
+    margin-bottom: 2px;
+}
+
+.client-info-display #displayClientName {
+    font-weight: 600;
+    font-size: 1rem;
+    padding: 2px 0;
+}
+
+.header #clientID {
+    background-color: #f0f4f8; 
+    color: #333;
+    border: none;
+    padding: 8px 12px;
+    border-radius: 6px;
+    font-weight: 600;
+    width: 120px;
+    text-align: center;
     margin-right: 12px;
 }
 
@@ -116,128 +158,151 @@ body {
     background-color: #f0f4f8;
     color: #1f2937;
     border: 1px solid #d1d5db;
-    padding: 8px 16px;
+    padding: 10px 15px;
     border-radius: 6px;
     cursor: pointer;
-    font-weight: 500;
+    font-weight: 600;
+    transition: background-color 0.2s;
+}
+
+.search-client-button:hover {
+    background-color: #e2e8f0;
 }
 
 .main-content-form {
+    flex-grow: 1;
     display: flex;
     justify-content: center;
 }
 
 .loan-application-container {
-    background-color: white;
-    padding: 24px;
-    border-radius: 8px;
+    background-color: #FFFFFF;
+    padding: 32px;
+    border-radius: 12px;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.05);
     width: 100%;
     max-width: 900px;
-    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
     box-sizing: border-box;
-    color: #333;
 }
 
+/* ========================================================================= */
+/* 3. FORM INPUTS & SECTIONS (3-Column Grid) */
+/* ========================================================================= */
+
+.form-header h2 {
+    font-size: 24px;
+    font-weight: 700;
+    color: #2D3748;
+    margin-bottom: 20px;
+    border-bottom: 2px solid #E2E8F0;
+    padding-bottom: 10px;
+}
 
 .form-section {
+    margin-bottom: 30px;
     background-color: #f9fafb;
     padding: 24px;
-    margin-bottom: 24px;
     border-radius: 8px;
-    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.05);
     border: 1px solid #e5e7eb;
 }
 
 .section-title {
-    font-size: 1.125rem;
+    font-size: 20px;
     font-weight: 600;
-    color: #1f2937;
-    margin-bottom: 16px;
-    padding-bottom: 8px;
-    border-bottom: 1px solid #e5e7eb;
+    color: #2D3748;
+    border-left: 4px solid #48BB78; /* Green accent line */
+    padding-left: 10px;
+    margin-bottom: 15px;
 }
 
 .grid-container {
     display: grid;
     grid-template-columns: repeat(3, 1fr);
-    gap: 20px; /* Increased gap for better spacing */
+    gap: 20px;
 }
 
-.input-group, .form-group {
+.form-group {
     display: flex;
     flex-direction: column;
 }
 
-.input-group label, .form-label {
-    font-size: 0.875rem;
-    font-weight: 500;
-    color: #374151;
-    margin-bottom: 4px; /* Reduced margin to tighten the label-input pair */
+.form-group.full-width {
+    grid-column: 1 / -1;
 }
 
-.input-group input,
-.input-group select,
-.form-input,
-.form-select {
-    padding: 12px; /* Increased padding for larger input fields */
-    border: 1px solid #d1d5db;
-    border-radius: 6px; /* Slightly larger border-radius */
-    font-size: 0.875rem;
+.form-label {
+    font-size: 14px;
+    font-weight: 600;
+    color: #4A5568;
+    margin-bottom: 6px;
+}
+
+.form-input, .form-select {
+    padding: 10px;
+    border: 1px solid #CBD5E0;
+    border-radius: 6px;
+    font-size: 16px;
+    transition: border-color 0.2s, box-shadow 0.2s;
+    background-color: #FFFFFF;
     color: #1f2937;
-    background-color: #ffffff;
-    box-shadow: inset 0 1px 2px rgba(0, 0, 0, 0.05);
 }
 
-.input-group input:focus,
-.input-group select:focus,
-.form-input:focus,
-.form-select:focus {
+.form-input:focus, .form-select:focus {
+    border-color: #48BB78;
+    box-shadow: 0 0 0 3px rgba(72, 187, 120, 0.3);
     outline: none;
-    border-color: #48BB78; /* Changed focus color to match green theme */
-    box-shadow: 0 0 0 2px rgba(72, 187, 120, 0.2);
 }
 
-/* Adjust select arrow color */
-.form-select {
-    appearance: none;
-    background-image: url("data:image/svg+xml,%3csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 20 20' fill='none'%3e%3cpath d='M7 7l3-3 3 3m0 6l-3 3-3-3' stroke='%234B5563' stroke-width='1.5' stroke-linecap='round' stroke-linejoin='round'/%3e%3c/svg%3e");
-    background-repeat: no-repeat;
-    background-position: right 1rem center;
-    background-size: 1em 1em;
-    padding-right: 3rem;
-}
-
-.full-width {
-    grid-column: span 3;
+.input-error {
+    border-color: #E53E3E !important;
+    box-shadow: 0 0 0 3px rgba(229, 62, 62, 0.3) !important;
 }
 
 .form-actions {
+    padding-top: 20px;
+    border-top: 2px solid #E2E8F0;
+    text-align: right;
     display: flex;
     justify-content: flex-end;
     gap: 12px;
-    margin-top: 24px;
-}
-
-.clear-button,
-.apply-button {
-    padding: 12px 24px;
-    border: none;
-    border-radius: 6px;
-    color: white;
-    font-weight: 600;
-    cursor: pointer;
-    transition: background-color 0.2s;
 }
 
 .clear-button {
-    background-color: #A0AEC0; /* Gray-ish color to match the image's "Clear" button */
+    background-color: #A0AEC0;
+    color: white;
+    padding: 12px 24px;
+    border: none;
+    border-radius: 8px;
+    cursor: pointer;
+    font-weight: 600;
+    transition: background-color 0.2s;
+}
+
+.clear-button:hover {
+    background-color: #718096;
 }
 
 .apply-button {
-    background-color: #48BB78; /* Green color to match the image's "Create" button */
+    background-color: #48BB78;
+    color: white;
+    padding: 12px 25px;
+    border: none;
+    border-radius: 8px;
+    cursor: pointer;
+    font-weight: 700;
+    font-size: 16px;
+    transition: background-color 0.2s;
 }
 
-/* Modal and Message Box Styles */
+.apply-button:hover {
+    background-color: #38A169;
+}
+
+
+/* ========================================================================= */
+/* 4. CLIENT SEARCH MODAL STYLES (Small Modal) */
+/* ========================================================================= */
+
 .modal-overlay {
     position: fixed;
     top: 0;
@@ -251,40 +316,14 @@ body {
     z-index: 1000;
 }
 
-.modal-content {
-    background-color: white;
-    padding: 30px;
-    border-radius: 12px;
-    width: 90%;
+.modal-overlay.hidden {
+    display: none;
+}
+
+/* This targets the Client Search Modal (small size) */
+.modal-content[data-type="search"] {
     max-width: 500px;
-    box-shadow: 0 10px 25px rgba(0, 0, 0, 0.2);
-    transform: scale(0.9);
-    opacity: 0;
-    transition: transform 0.3s ease-out, opacity 0.3s ease-out;
-}
-
-.modal-content.is-active {
-    transform: scale(1);
-    opacity: 1;
-}
-
-.modal-content h2 {
-    font-size: 1.5rem;
-    font-weight: 600;
-    color: #2D3748;
-}
-
-.close-button {
-    background: none;
-    border: none;
-    font-size: 1.5rem;
-    cursor: pointer;
-    color: #A0AEC0;
-    transition: color 0.2s ease-in-out;
-}
-
-.close-button:hover {
-    color: #4A5568;
+    padding: 30px;
 }
 
 .client-list {
@@ -293,6 +332,7 @@ body {
     margin: 0;
     max-height: 400px;
     overflow-y: auto;
+    flex-grow: 1;
 }
 
 .client-list-item {
@@ -301,7 +341,7 @@ body {
     margin-bottom: 8px;
     border-radius: 8px;
     cursor: pointer;
-    transition: background-color 0.15s ease-in-out, transform 0.1s ease-in-out;
+    transition: background-color 0.15s, transform 0.1s;
 }
 
 .client-list-item:hover {
@@ -322,184 +362,385 @@ body {
     margin-top: 4px;
 }
 
-.message-box {
-    z-index: 1050;
-    transition: transform 0.4s ease-out, opacity 0.4s ease-out;
-    transform: translateY(0);
-}
 
-.message-box.translate-y-full {
-    transform: translateY(150px);
-    opacity: 0;
-}
+/* ========================================================================= */
+/* 5. AMORTIZATION/SUMMARY MODAL STYLES (Large, Two-Panel Layout) */
+/* ========================================================================= */
 
-.bg-red-500 {
-    background-color: #E53E3E;
-}
-
-.bg-green-500 {
-    background-color: #48BB78;
-}
-
-/* Tailwind-like utility classes for flexibility */
-.flex { display: flex; }
-.justify-between { justify-content: space-between; }
-.items-center { align-items: center; }
-.pb-4 { padding-bottom: 1rem; }
-.border-b { border-bottom: 1px solid; }
-.border-gray-200 { border-color: #E2E8F0; }
-.mb-4 { margin-bottom: 1rem; }
-.text-xl { font-size: 1.25rem; }
-.font-semibold { font-weight: 600; }
-.close-button { background: none; border: none; }
-.text-gray-400 { color: #A0AEC0; }
-.hover\:text-gray-600:hover { color: #718096; }
-.transition-colors { transition-property: background-color, border-color, color, fill, stroke; transition-timing-function: cubic-bezier(0.4, 0, 0.2, 1); transition-duration: 150ms; }
-.duration-200 { transition-duration: 200ms; }
-.h-6 { height: 1.5rem; }
-.w-6 { width: 1.5rem; }
-.client-list-item { padding: 0.75rem 1rem; }
-.rounded-lg { border-radius: 0.5rem; }
-.hover\:bg-gray-100:hover { background-color: #F7FAFC; }
-.duration-150 { transition-duration: 150ms; }
-.font-medium { font-weight: 500; }
-.text-gray-500 { color: #A0AEC0; }
-.text-sm { font-size: 0.875rem; }
-.block { display: block; }
-/* General Modal Styling */
-.modal-overlay {
-    position: fixed;
-    top: 0;
-    left: 0;
-    width: 100%;
-    height: 100%;
-    background-color: rgba(0, 0, 0, 0.5);
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    z-index: 1000;
-}
-
-.modal-overlay.hidden {
-    display: none;
-}
-
+/* General Modal Content Style (will be overridden by [data-type="search"] for small modal) */
 .modal-content {
-    background-color: #fff;
-    padding: 2rem;
-    border-radius: 8px;
-    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
-    max-width: 800px;
-    width: 90%;
-    max-height: 90vh;
-    overflow-y: auto;
+    background-color: white;
+    border-radius: 12px;
+    box-shadow: 0 8px 16px rgba(0, 0, 0, 0.2);
+    transform: scale(0.9);
+    opacity: 0;
+    transition: transform 0.3s ease-out, opacity 0.3s ease-out;
+    max-height: 95vh;
+    width: 95%;
+    max-width: 1200px; /* Wide for two-panel layout */
     display: flex;
     flex-direction: column;
+}
+
+.modal-content.is-active {
+    transform: scale(1);
+    opacity: 1;
 }
 
 .modal-header {
     display: flex;
     justify-content: space-between;
     align-items: center;
-    border-bottom: 1px solid #ddd;
-    padding-bottom: 1rem;
-    margin-bottom: 1rem;
+    padding: 1rem 1.5rem;
+    border-bottom: 1px solid #E2E8F0;
+    position: sticky;
+    top: 0;
+    background-color: white;
+    z-index: 10;
 }
 
 .modal-header h2 {
     margin: 0;
+    font-size: 1.5rem;
+    color: #2D3748;
 }
 
 .close-modal-btn {
-    font-size: 2rem;
-    font-weight: bold;
-    border: none;
     background: none;
+    border: none;
     cursor: pointer;
+    font-size: 2rem;
+    line-height: 1;
+    color: #A0AEC0;
 }
 
+/* --- Modal Body: Main Two-Column Grid --- */
 .modal-body {
-    flex-grow: 1;
+    padding: 1.5rem;
+    max-height: calc(95vh - 120px);
+    overflow-y: auto;
+    
+    display: grid;
+    grid-template-columns: 2fr 1fr; /* Schedule (left) is 2 parts, Details (right) is 1 part */
+    gap: 20px;
 }
 
-.loan-info {
-    margin-bottom: 2rem;
-    padding-bottom: 1rem;
-    border-bottom: 1px solid #eee;
+/* --- Left Panel: Loan Schedule/Confirmation --- */
+.loan-confirmation-panel {
+    grid-column: 1 / 2;
 }
 
-.loan-info h3 {
-    margin-top: 0;
-    font-size: 1.2rem;
-    color: #333;
-}
-
-.loan-info p {
-    margin: 0.5rem 0;
-    color: #555;
+.loan-confirmation-header {
+    font-size: 1.5rem;
+    font-weight: 700;
+    color: #2D3748;
+    margin-bottom: 20px;
 }
 
 .loan-schedule table {
     width: 100%;
     border-collapse: collapse;
+    margin-top: 15px;
 }
 
-.loan-schedule th, .loan-schedule td {
+.loan-schedule-table th, 
+.loan-schedule-table td {
     border: 1px solid #ddd;
-    padding: 8px;
+    padding: 10px 12px;
     text-align: left;
 }
 
-.loan-schedule th {
+.loan-schedule-table th {
     background-color: #f2f2f2;
     font-weight: bold;
+    color: #2D3748;
 }
 
-.modal-footer {
-    padding-top: 1rem;
+/* Right-align numeric columns */
+.loan-schedule-table th:nth-child(n+3), 
+.loan-schedule-table td:nth-child(n+3) {
     text-align: right;
 }
 
-#printBtn {
+/* --- Right Panel: Details --- */
+.loan-details-panel {
+    grid-column: 2 / 3;
+}
+
+.client-guarantor-box,
+.loan-summary-box {
+    background-color: #ffffff;
+    border: 1px solid #E2E8F0;
+    border-radius: 8px;
+    padding: 15px;
+    margin-bottom: 20px;
+}
+
+.right-box-title {
+    font-size: 1.15rem;
+    font-weight: 700;
+    color: #2D3748;
+    margin-bottom: 10px;
+    border-bottom: 1px solid #E2E8F0;
+    padding-bottom: 5px;
+}
+
+.right-box-detail-group {
+    display: grid;
+    grid-template-columns: 1fr 1.5fr;
+    font-size: 0.95rem;
+    line-height: 1.5;
+    margin-bottom: 5px;
+}
+
+.right-box-label {
+    font-weight: 600;
+    color: #4A5568;
+}
+
+.right-box-value {
+    font-weight: 400;
+    color: #333;
+    white-space: pre-wrap;
+}
+
+.payment-per-period-group {
+    margin-top: 15px;
+    padding-top: 10px;
+    border-top: 1px solid #E2E8F0;
+}
+
+.payment-per-period-group .right-box-value {
+    font-size: 1.1rem;
+    font-weight: 700;
+    color: #38A169;
+}
+
+/* --- Modal Footer & Actions --- */
+.modal-footer {
+    padding-top: 1rem;
+    text-align: right;
+    padding: 1rem 1.5rem;
+    border-top: 1px solid #E2E8F0;
+}
+
+.print-btn {
     background-color: #007BFF;
     color: white;
     padding: 10px 20px;
     border: none;
     border-radius: 5px;
+    font-weight: 600;
     cursor: pointer;
-    font-size: 1rem;
+    transition: background-color 0.2s;
 }
 
-#printBtn:hover {
+.print-btn:hover {
     background-color: #0056b3;
 }
 
-/* Print Styles */
+
+/* ========================================================================= */
+/* 6. MESSAGE BOX & UTILITIES */
+/* ========================================================================= */
+
+.message-box {
+    z-index: 1000;
+    position: fixed;
+    top: 16px;
+    right: 16px;
+    padding: 12px 20px;
+    border-radius: 8px;
+    color: white;
+    font-weight: 600;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+    transition: transform 0.4s ease-out, opacity 0.4s ease-out;
+}
+
+.message-box.bg-green-500 {
+    background-color: #48BB78;
+}
+
+.message-box.bg-red-500 {
+    background-color: #E53E3E;
+}
+
+
+/* --- New Styles for Side-by-Side Summary in Print View --- */
+
+/* Main container for the two side-by-side columns */
+.loan-summary-grid {
+    display: grid;
+    /* Create two equally sized columns */
+    grid-template-columns: 1fr 1fr;
+    gap: 40px; /* Space between the two columns */
+    margin: 20px 0 30px 0; /* Margin above the table */
+    padding: 0 20px;
+}
+
+/* Style for each summary section (Client and Loan) */
+.client-details-summary,
+.loan-details-summary {
+    padding: 0;
+}
+
+.summary-header {
+    font-size: 16pt;
+    font-weight: bold;
+    color: #333;
+    border-bottom: 2px solid #000; 
+    padding-bottom: 5px;
+    margin-bottom: 15px;
+}
+
+/* Style for each data row */
+.summary-item {
+    display: flex;
+    justify-content: space-between;
+    margin-bottom: 8px;
+    font-size: 11pt;
+    line-height: 1.4;
+}
+
+/* Style the labels (e.g., Client ID:) */
+.summary-item .label {
+    font-weight: 500;
+    color: #444;
+    flex-shrink: 0; /* Prevents the label from shrinking */
+    padding-right: 10px;
+}
+
+/* Style the values (e.g., 202500002) */
+.summary-item .value {
+    font-weight: bold;
+    text-align: right;
+    color: #000;
+}
+
+/* Highlight the total payable row */
+.total-payable .label,
+.total-payable .value {
+    font-size: 12pt;
+    font-weight: 700;
+    border-top: 1px solid #000;
+    padding-top: 5px;
+}
+
+/* Specific styling for Payment Per Period breakdown */
+.sub-payment {
+    display: flex;
+    justify-content: flex-end; /* Push content to the right */
+    padding-left: 20px; /* Indent the line */
+    margin-top: -5px; /* Pull it closer to the line above */
+    margin-bottom: 15px;
+    font-size: 10pt;
+    font-weight: normal;
+}
+
+.sub-payment .sub-label {
+    font-weight: normal;
+    color: #666;
+    padding-right: 2px;
+}
+
+.sub-payment .sub-value {
+    font-weight: 500;
+    color: #444;
+}
+
+/* Ensure these styles are maintained in the print block if separate print styles exist */
 @media print {
-    body > :not(.modal-overlay) {
+    .loan-summary-grid {
+        grid-template-columns: 1fr 1fr !important;
+        gap: 30px !important;
+        /* Additional print adjustments */
+    }
+}
+/* ========================================================================= */
+/* 5. PRINT STYLES - Optimized for clean, form-like printout */
+/* ========================================================================= */
+@media print {
+    /* 1. HIDE EVERYTHING EXCEPT THE MODAL OVERLAY AND ITS CONTENT */
+    body > *:not(.modal-overlay) {
         display: none !important;
     }
     
+    /* Ensure the modal overlay and the modal content are visible and take up the page */
     .modal-overlay {
-        position: static;
-        display: block;
-        background: none;
+        display: block !important; /* Make sure the overlay is visible */
+        position: static !important; /* Change to static so it doesn't float above the page */
+        width: 100% !important;
+        height: auto !important;
+        background-color: transparent !important; /* Remove background dimming */
+        box-shadow: none !important;
     }
 
     .modal-content {
-        box-shadow: none;
-        max-width: none;
-        width: 100%;
-        height: auto;
-        overflow: visible;
+        /* Reset content position/size for print */
+        position: static !important;
+        transform: none !important;
+        opacity: 1 !important;
+        max-width: none !important;
+        width: 100% !important;
+        box-shadow: none !important;
+        border-radius: 0 !important;
+        max-height: none !important;
     }
-    
-    .modal-header, .modal-footer {
-        display: none;
+
+    /* 2. HIDE UNWANTED MODAL PARTS (Header, Details Panel, Footer) */
+    .modal-header, 
+    .loan-details-panel, /* The right-hand summary panel */
+    .modal-footer {
+        display: none !important;
     }
-    
-    /* Show the main content of the modal for printing */
+
+    /* 3. LAYOUT AND PAGE RESET FOR AMORTIZATION */
     .modal-body {
-        display: block;
+        padding: 0;
+        /* Force single column layout */
+        grid-template-columns: 1fr !important;
+        max-height: none !important;
+        overflow-y: visible !important;
     }
+
+    .loan-confirmation-panel {
+        grid-column: 1 / -1 !important;
+        padding: 20px;
+    }
+
+    .loan-confirmation-header {
+        font-size: 18pt !important;
+        text-align: center !important;
+        margin-bottom: 20px !important;
+        padding-bottom: 10px;
+        border-bottom: 2px solid #000;
+        color: #000;
+    }
+
+    /* 4. TABLE STYLES FOR CLEAN PRINTING */
+    .loan-schedule table {
+        width: 100%;
+        margin-top: 15px;
+        border: 2px solid #000 !important;
+    }
+
+    .loan-schedule-table th, 
+    .loan-schedule-table td {
+        border: 1px solid #000 !important;
+        padding: 8px 10px !important;
+        font-size: 10pt;
+        /* Ensure print is not grayed out */
+        -webkit-print-color-adjust: exact; 
+        print-color-adjust: exact;
+        color: #000;
+    }
+
+    .loan-schedule-table th {
+        background-color: #e0e0e0 !important;
+        font-weight: bold !important;
+    }
+
+    /* Remove previous loan application form print rules */
+    /* Remove any other print rules that conflict with this objective */
 }
+

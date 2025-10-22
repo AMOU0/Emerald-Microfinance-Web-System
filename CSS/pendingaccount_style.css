@@ -186,6 +186,37 @@ body {
     color: #718096;
 }
 
+/* Style for sortable table headers */
+.table-header-cell.sortable {
+    cursor: pointer;
+    position: relative;
+    padding-right: 20px; 
+}
+
+/* Base sort indicator arrow (hidden by default) */
+.table-header-cell.sortable::after {
+    content: '';
+    position: absolute;
+    right: 5px;
+    top: 50%;
+    transform: translateY(-50%);
+    border: 4px solid transparent;
+    opacity: 0; /* Hide by default */
+    transition: opacity 0.2s;
+}
+
+/* Style for ascending sort (arrow pointing up) */
+.table-header-cell.sortable.asc::after {
+    border-bottom-color: #718096; /* Color of the arrow */
+    opacity: 1;
+}
+
+/* Style for descending sort (arrow pointing down) */
+.table-header-cell.sortable.desc::after {
+    border-top-color: #718096; /* Color of the arrow */
+    opacity: 1;
+}
+
 .pending-account-table-body {
     flex-grow: 1;
     overflow-y: auto;
@@ -198,6 +229,7 @@ body {
     /* FIX: Added a new column for Loan Amount */
     grid-template-columns: 50px 100px minmax(150px, 2fr) minmax(150px, 1fr) minmax(150px, 2fr);
     border-bottom: 1px solid #e2e8f0;
+    cursor: pointer; /* Indicate that the row is clickable */
 }
 
 .table-row:last-child {
@@ -222,4 +254,10 @@ body {
 /* Optional: Alternating row background for better readability */
 .table-row:nth-child(even) {
     background-color: #f7fafc;
+}
+
+/* --- STYLE FOR SELECTED ROW --- */
+.table-row.selected {
+    background-color: #e6fffa; /* A light teal/green for selection */
+    box-shadow: 0 0 5px rgba(72, 187, 120, 0.5) inset; /* Subtle inset shadow for focus */
 }

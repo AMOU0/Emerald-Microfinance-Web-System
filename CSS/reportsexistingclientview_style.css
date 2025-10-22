@@ -76,6 +76,54 @@ body {
     background-color: #C53030;
 }
 
+/* Reports Specific Styling */
+.reports-container {
+    display: flex;
+    gap: 24px;
+}
+
+.reports-sidebar {
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+}
+
+.report-button {
+    width: 180px;
+    padding: 12px 24px;
+    border: 1px solid #4A5568;
+    border-radius: 8px;
+    background-color: #FFFFFF;
+    color: #4A5568;
+    font-weight: 600;
+    cursor: pointer;
+    transition: background-color 0.2s, color 0.2s;
+}
+
+.report-button:hover {
+    background-color: #4A5568;
+    color: #FFFFFF;
+}
+
+.report-button.active {
+    background-color: #4A5568;
+    color: #FFFFFF;
+}
+
+.report-viewer {
+    flex-grow: 1;
+    background-color: #FFFFFF;
+    border-radius: 12px;
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+    padding: 24px;
+}
+
+.report-controls {
+    display: flex;
+    align-items: center;
+    gap: 16px;
+    margin-bottom: 24px;
+}
 /* --- Main Content Styling --- */
 .main-content {
     flex-grow: 1;
@@ -185,7 +233,7 @@ body {
     border: 1px solid #ddd;
     padding: 12px 15px;
     text-align: left;
-    color: #2D3748; /* Ensure text is dark inside the table */
+    color: #2D3748; 
 }
 .loan-details-table th {
     background-color: #f2f2f2;
@@ -211,250 +259,144 @@ body {
 }
 
 /* =========================================
-   4. Modal Styling (Single Loan Details)
+   4. Modal Styling (Single Loan Details) - REVISED FOR DIRECT VIEW
    ========================================= */
 
 /* The Modal Backdrop */
-.modal-overlay {
+.modal {
+    /* Corrected to use flexbox for better centering */
+    display: none; /* Hidden by default - visibility controlled by JS */
     position: fixed;
-    top: 0;
+    z-index: 1000;
     left: 0;
+    top: 0;
     width: 100%;
     height: 100%;
-    background-color: rgba(0, 0, 0, 0.7);
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    z-index: 1000;
-    /* Use 'display: none' in base CSS, JS toggles 'display: block' or a class */
-    display: none; 
+    /* Use flexbox for centering */
+    display: flex; 
+    align-items: center; /* Vertically center */
+    justify-content: center; /* Horizontally center */
+    overflow: auto;
+    background-color: rgba(0,0,0,0.4); 
 }
+
 /* Utility Class to Prevent Body Scroll (Handled by JS) */
 .modal-open {
     overflow: hidden;
+    /* FIX: Add padding to the right to prevent content shift when the scrollbar disappears */
+    padding-right: 17px; 
 }
 
 /* Modal Content/Box */
 .modal-content {
     background-color: #fff;
-    padding: 30px;
+    padding: 20px;
     border-radius: 8px;
-    box-shadow: 0 4px 20px rgba(0, 0, 0, 0.2);
+    box-shadow: 0 8px 30px rgba(0, 0, 0, 0.3); /* Deeper shadow */
     width: 90%;
-    max-width: 900px;
+    max-width: 1000px; /* Wider modal */
     max-height: 90vh;
     overflow-y: auto;
     position: relative;
-    color: #1A202C; /* Default text color inside modal */
+    color: #1A202C;
+    /* Adjusted margin for flex centering - allows for a bit of space */
+    margin: 20px 0;
 }
 
-/* Modal Header and Close Button */
+/* --------------------
+   Modal Header & Close
+   -------------------- */
 .modal-header {
     display: flex;
     justify-content: space-between;
     align-items: center;
-    border-bottom: 1px solid #e5e7eb;
-    padding-bottom: 1rem;
-    margin-bottom: 1rem;
+    border-bottom: 2px solid #D1D5DB; /* Solid gray border */
+    padding-bottom: 10px;
+    margin-bottom: 15px;
 }
-.modal-header h3 { /* Using h3 for modal title consistency */
+
+.modal-header h2 {
     margin: 0;
-    color: #1A202C;
+    font-size: 1.5rem;
+    color: #2D3748;
     font-weight: 700;
-    border-bottom: none; /* Remove blue border from main modal title */
 }
-.close-modal-btn {
+
+/* Close button (X) */
+#closeModalButton {
+    order: 3; /* Position close button after print button */
     background: none;
     border: none;
-    font-size: 30px;
-    color: #aaa;
-    cursor: pointer;
-    transition: color 0.2s ease;
-    padding: 0;
+    font-size: 2rem; 
     line-height: 1;
+    color: #a0aec0;
+    cursor: pointer;
+    padding: 0;
+    margin-left: 15px;
+    transition: color 0.2s ease;
 }
-.close-modal-btn:hover {
-    color: #888;
-}
-
-/* Modal Body Content Styling */
-.modal-body {
-    line-height: 1.6;
-}
-.modal-body h3 { /* Styling for sub-titles within the modal body */
-    border-bottom: 2px solid #007bff; 
-    padding-bottom: 5px;
-    margin-top: 20px;
-    color: #007bff;
-    font-weight: 700;
-}
-.loan-info p {
-    margin: 8px 0;
-    color: #1A202C;
-}
-.loan-info strong {
-    display: inline-block;
-    min-width: 150px;
-}
-.modal-body pre { /* Styling for payment schedule/json output */
-    background-color: #f5f5f5;
-    border: 1px solid #ccc;
-    padding: 10px;
-    border-radius: 4px;
-    white-space: pre-wrap;
-    color: #1A202C;
+#closeModalButton:hover {
+    color: #E53E3E; /* Red on hover */
 }
 
-/* Payment Schedule Table (Loan Schedule) */
-.loan-schedule table {
-    width: 100%;
-    border-collapse: collapse;
-    margin-top: 20px;
-    font-size: 14px;
-}
-.loan-schedule th,
-.loan-schedule td {
-    border: 1px solid #ddd;
-    padding: 10px;
-    text-align: left;
-    color: #1A202C;
-}
-.loan-schedule th {
-    background-color: #f2f2f2;
-    font-weight: bold;
-}
-.modal-footer {
-    text-align: right;
-    border-top: 1px solid #eee;
-    padding-top: 15px;
-    margin-top: 20px;
-}
-.print-btn {
-    padding: 10px 20px;
-    background-color: #007bff;
+
+/* --- Print Button Styling --- */
+.modal-header .print-btn {
+    order: 2; /* Position print button after title */
+    padding: 8px 16px;
+    background-color: #4CAF50; /* Green button for print */
     color: white;
     border: none;
-    border-radius: 5px;
+    border-radius: 4px;
     cursor: pointer;
-    font-size: 16px;
-    transition: background-color 0.2s ease;
-}
-.print-btn:hover {
-    background-color: #0056b3;
-}
-/* Reports Specific Styling */
-.reports-container {
-    display: flex;
-    gap: 24px;
+    font-size: 1rem;
+    font-weight: 500;
+    transition: background-color 0.2s ease-in-out;
 }
 
-.reports-sidebar {
-    /* Styles for the container of report buttons */
-    display: flex;
-    flex-direction: column;
-    gap: 12px; /* Spacing between the buttons */
-    padding: 24px; /* Internal padding for the sidebar container */
-    background-color: #F8F9FA; /* A light background, matching .main-content's general area */
-    border-radius: 12px;
-    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.05); /* Subtle shadow */
-    align-self: flex-start; /* Prevents the sidebar from stretching the full height */
+.modal-header .print-btn:hover {
+    background-color: #45a049;
 }
 
-.report-button {
-    /* Base styles for all report buttons */
-    width: 200px; /* Consistent width for all buttons */
-    padding: 12px 24px;
-    border: 1px solid #CBD5E0; /* Lighter border for non-active state */
-    border-radius: 8px;
-    background-color: #FFFFFF; /* White background for default state */
-    color: #4A5568; /* Darker text color */
-    font-size: 16px;
-    font-weight: 600;
-    text-align: left; /* Align text to the left */
-    cursor: pointer;
-    transition: background-color 0.2s, color 0.2s, border-color 0.2s;
-    outline: none; /* Remove focus outline on click/focus */
+
+/* --------------------
+   Direct Content Structure (Replaces Tabs)
+   -------------------- */
+.modal-body {
+    display: block;
+    padding: 0; 
 }
 
-.report-button:hover:not(.active) {
-    /* Hover effect for non-active buttons */
-    background-color: #EDF2F7; /* Very light gray on hover */
-    color: #2D3748;
-    border-color: #A0AEC0;
+.ledger-content {
+    padding: 0 10px;
 }
 
-.report-button.active {
-    /* Styles for the currently active button */
-    background-color: #4A5568; /* Dark background from the provided sidebar style */
-    color: #FFFFFF;
-    border-color: #4A5568; /* Solid border for active state */
-    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1); /* Slight lift */
+/* Two-column layout for Info boxes */
+.info-section-wrapper {
+    display: flex; 
+    gap: 20px;
+    flex-wrap: wrap;
+    margin-bottom: 25px; /* Space before payment history section */
 }
-/* ------------------------------------------------------------------
- * MODAL STRUCTURE AND GENERAL STYLES (Assuming these are needed)
- * ------------------------------------------------------------------ */
-
-.modal {
-    display: none; /* Hidden by default */
-    position: fixed; /* Stay in place */
-    z-index: 1000; /* Sit on top */
-    left: 0;
-    top: 0;
-    width: 100%;
-    height: 100%;
-    overflow: auto; /* Enable scroll if needed */
-    background-color: rgba(0,0,0,0.4); /* Black w/ opacity */
-}
-
-.modal-content {
-    background-color: #fefefe;
-    margin: 5% auto; /* 5% from the top and centered */
-    padding: 20px;
-    border: 1px solid #888;
-    width: 80%; /* Could be adjusted */
-    max-width: 900px;
-    border-radius: 8px;
-    box-shadow: 0 4px 8px 0 rgba(0,0,0,0.2), 0 6px 20px 0 rgba(0,0,0,0.19);
-}
-
-.modal-open {
-    overflow: hidden; /* Prevents background scrolling when modal is open */
-}
-
-.close-button {
-    color: #aaa;
-    float: right;
-    font-size: 28px;
-    font-weight: bold;
-}
-
-.close-button:hover,
-.close-button:focus {
-    color: #000;
-    text-decoration: none;
-    cursor: pointer;
-}
-
-.loan-detail-header {
-    border-bottom: 2px solid #ccc;
-    padding-bottom: 10px;
-    margin-bottom: 20px;
-}
-
-/* ------------------------------------------------------------------
- * INFORMATION DISPLAY LAYOUT (Guarantor/Loan Details)
- * ------------------------------------------------------------------ */
 
 .info-box {
-    margin-bottom: 30px;
-    padding: 10px;
-    border: 1px solid #ddd;
-    border-radius: 4px;
+    /* Loan & Client Info and Guarantor Info side by side */
+    flex: 1 1 calc(50% - 10px);
+    background-color: #FFFFFF; /* White background */
+    border: 1px solid #E2E8F0;
+    border-radius: 6px;
+    padding: 15px;
+    box-sizing: border-box;
+    min-width: 300px;
+    margin-bottom: 0;
 }
 
 .info-header {
-    border-bottom: 1px dashed #ddd;
-    padding-bottom: 5px;
+    font-size: 1.1rem;
+    font-weight: 700;
+    color: #2D3748;
+    border-bottom: 1px dashed #CBD5E0; /* Dashed line separator */
+    padding-bottom: 8px;
     margin-bottom: 15px;
 }
 
@@ -462,66 +404,248 @@ body {
     display: flex;
     justify-content: space-between;
     flex-wrap: wrap;
-    margin-bottom: 5px;
 }
 
 .info-item {
-    width: 48%; /* Ensures two items fit side-by-side */
-    padding: 5px 0;
-    box-sizing: border-box; /* Includes padding in the width calculation */
+    width: 100%;
+    padding: 8px 0; /* More vertical spacing */
+    box-sizing: border-box;
+}
+@media (min-width: 600px) {
+    .info-item {
+        width: calc(50% - 10px); 
+    }
+}
+/* Guarantor Address (Full width item) */
+.info-item.full-width-item {
+    width: 100%;
 }
 
+
 .info-label {
-    font-weight: bold;
-    color: #555;
+    font-weight: 500;
+    color: #718096;
     display: block;
-    margin-bottom: 2px;
-    font-size: 0.9em;
+    margin-bottom: 0;
+    font-size: 0.85em; 
 }
 
 .info-value {
-    font-weight: bold;
-    color: #333;
+    font-weight: 600;
+    color: #2D3748;
+    font-size: 1em;
 }
 
-/* ------------------------------------------------------------------
- * PAYMENT HISTORY TABLE STYLES
- * ------------------------------------------------------------------ */
+/* --------------------
+   Payment History Section
+   -------------------- */
+.payment-history-section {
+    padding: 0; 
+}
+
+.section-title-payments {
+    font-size: 1.3rem;
+    font-weight: 700;
+    color: #2D3748;
+    border-bottom: 2px solid #9F7AEA; /* Use a color for a nice break */
+    padding-bottom: 5px;
+    margin: 0 0 15px 0;
+}
+
 
 .table-responsive {
-    max-height: 400px;
+    max-height: 55vh; /* Limits height on screen, enabling scrollbar */
     overflow-y: auto;
-    border: 1px solid #ddd; /* Border around the scrollable area */
-    border-radius: 4px;
+    border: 1px solid #E2E8F0;
+    border-radius: 6px;
+    background-color: #ffffff;
 }
 
 .payment-table {
     width: 100%;
     border-collapse: collapse;
-    margin-bottom: 0; /* Important since it's inside a responsive div */
 }
 
 .payment-table th, .payment-table td {
-    padding: 10px;
-    border: 1px solid #ddd;
-    text-align: left; /* Default alignment */
+    padding: 12px 15px;
+    border: none; 
+    border-right: 1px solid #E2E8F0; /* Only right border for vertical lines */
+    text-align: left;
+    color: #2D3748;
+}
+.payment-table td:last-child,
+.payment-table th:last-child {
+    border-right: none;
 }
 
 .payment-table thead tr {
-    background-color: #4CAF50;
-    color: white;
-    /* Sticky header for scrollable table */
+    background-color: #EDF2F7; /* Light grey header (like the image) */
+    color: #2D3748;
     position: sticky; 
     top: 0;
     z-index: 10;
-    box-shadow: 0 2px 2px -1px rgba(0, 0, 0, 0.4);
+    box-shadow: 0 2px 2px -1px rgba(0, 0, 0, 0.1);
+    border-bottom: 2px solid #E2E8F0;
+}
+
+.payment-table tbody tr {
+    border-bottom: 1px solid #E2E8F0;
 }
 
 .payment-table tbody tr:nth-child(even) {
-    background-color: #f9f9f9; /* Zebra striping */
+    background-color: #F7FAFC; /* Lighter zebra striping */
 }
+.payment-table tbody tr:hover {
+    background-color: #EBF4FF; 
+}
+
 
 /* Align financial columns to the right */
 .payment-table .amount-column {
     text-align: right;
+    font-weight: 500;
 }
+
+
+/* ========================================= */
+/* 5. Print Styles for Loan Detail Modal (The crucial part for printing) */
+/* ========================================= */
+
+@media print {
+    /* 1. Hide everything on the page when printing is active */
+ body * {
+        visibility: hidden;
+    }
+
+    /* 2. Show the modal itself and its content only when the 'print-modal-active' class is present */
+    body.print-modal-active #loanDetailModal {
+        visibility: visible !important;
+        position: static !important; /* Makes the modal print like normal page content */
+        display: block !important;
+        opacity: 1 !important;
+        width: 100%;
+        height: auto; /* <--- This forces auto-height */
+        padding: 0;
+        margin: 0;
+        overflow: visible;
+        background: none; /* Remove modal background overlay */
+        z-index: auto;
+    }
+
+    /* 3. Style the content inside the modal for printing */
+    body.print-modal-active #loanDetailModal .modal-content {
+        visibility: visible !important;
+        position: static !important;
+        transform: none !important;
+        margin: 0;
+        padding: 0 10px; 
+        border: none;
+        box-shadow: none;
+        max-width: 100%;
+        /* Fixes for screen dimensions - CRUCIAL FOR AUTO-HEIGHT */
+        max-height: none !important; 
+        overflow-y: visible !important;
+    }
+
+    /* 4. Hide interactive/non-essential elements within the printed modal */
+    /* Target the class 'print-hide' added to the footer, and the close button */
+    body.print-modal-active #loanDetailModal .modal-footer,
+    body.print-modal-active #loanDetailModal .print-hide {
+        display: none !important;
+    }
+    /* 5. Force the two-column info summary to stack for a cleaner print flow */
+    .info-section-wrapper {
+        display: block !important;
+        gap: 0;
+        margin-bottom: 15px;
+    }
+    .info-box {
+        width: 100% !important; /* Force full width */
+        flex: none !important;
+        margin-bottom: 15px; 
+        page-break-inside: avoid; /* Prevents breaking this summary box across pages */
+        border: 1px solid #ccc; 
+    }
+    .info-columns {
+        display: block !important; /* Stack items inside the summary box */
+    }
+    .info-item {
+        width: 100% !important;
+        padding: 5px 0;
+        border-bottom: 1px dashed #eee;
+    }
+    .info-item:last-child {
+        border-bottom: none;
+    }
+
+    /* 6. Fix table printing: remove screen scrolling and force table headers/footers */
+    .table-responsive {
+        max-height: none !important;
+        overflow-y: visible !important;
+        border: 1px solid #000; 
+        border-radius: 0; 
+    }
+    
+    .payment-table thead,
+    .loan-details-table thead {
+        display: table-header-group; /* Repeats table header on new pages */
+    }
+    .payment-table tr,
+    .loan-details-table tr {
+        page-break-inside: avoid;
+        page-break-after: auto;
+    }
+    .payment-table thead tr {
+        position: static; /* Unstick header */
+        box-shadow: none;
+        background-color: #f0f0f0 !important;
+        -webkit-print-color-adjust: exact;
+        print-color-adjust: exact;
+        border-bottom: 2px solid #000;
+    }
+
+    /* 7. Ensure table cell borders are visible for print legibility */
+    .payment-table th, 
+    .payment-table td {
+        border: 1px solid #000 !important; /* Solid black borders for all cells */
+        padding: 8px 10px;
+        color: #000 !important;
+    }
+    
+    /* 8. Text/Background clarity */
+    .modal-content, .info-box, .payment-table th, .payment-table td {
+        color: #000 !important;
+        background-color: #fff !important;
+    }
+
+}
+
+/* ========================================= */
+/* Other Styles (Reports, Return Button) */
+/* ========================================= */
+.reports-header button {
+    padding: 8px 16px;
+    margin-left: auto;
+    background-color: #007bff;
+    color: white;
+    border: none;
+    border-radius: 4px;
+    cursor: pointer;
+    font-size: 16px;
+    font-weight: 500;
+    align-self: center; 
+}
+.reports-header button:hover {
+    background-color: #0056b3;
+}
+.reports-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 10px 20px;
+    border-bottom: 1px solid #ccc;
+}
+.header-title {
+    margin: 0;
+}
+

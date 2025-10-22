@@ -81,11 +81,53 @@ body {
     background-color: #C53030;
 }
 
+/* --- Tools Menu (Sub-navigation) --- */
+/* This is styled as the second main column */
+.tools-menu {
+    flex-shrink: 0;
+    width: 250px;
+    padding: 24px; /* Changed padding to match other panels */
+    box-sizing: border-box;
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+    /* Styles for the new column look */
+    background-color: white; 
+    border-radius: 8px;
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+}
+
+.menu-button {
+    width: 100%;
+    padding: 10px;
+    background-color: white;
+    border: 1px solid #d1d5db;
+    color: #2D3748;
+    cursor: pointer;
+    text-align: left;
+    font-size: 16px;
+    font-weight: 500;
+    border-radius: 8px;
+    transition: background-color 0.2s ease-in-out, border-color 0.2s;
+}
+
+.menu-button:hover {
+    background-color: #e9ecef; 
+    border-color: #48BB78;
+}
+
+.menu-button.active {
+    background-color: #48BB78;
+    color: #FFFFFF;
+    border-color: #48BB78;
+    font-weight: 600;
+}
+
 /* Main Content */
 .main-content {
     flex-grow: 1;
     display: flex;
-    flex-direction: column;
+    flex-direction: column; /* Stack header and content row vertically */
     background-color: #f7fafc;
     padding: 24px;
 }
@@ -96,6 +138,7 @@ body {
     padding: 16px 24px;
     border-radius: 8px;
     margin-bottom: 24px;
+    flex-shrink: 0;
 }
 
 .main-header h1 {
@@ -104,16 +147,92 @@ body {
     font-weight: 600;
 }
 
-.content-panel {
+/* New Flex Container for the Tools Menu and Content Panel to line up horizontally */
+.main-content > .tools-menu + .content-panel {
     display: flex;
     flex-grow: 1;
     gap: 24px;
+    /* The .tools-menu element is the adjacent sibling of .content-panel in the HTML */
 }
 
-/* User Management Menu */
+/* We also need to style the tools menu itself, as it's a direct child of .main-content */
+.main-content > .tools-menu {
+    margin-bottom: 24px; /* Temporarily moved to create a new row */
+    /* OVERRIDE: We will use a more specific selector below to put it in a row with content-panel */
+}
+
+/* Correct positioning of tools-menu and content-panel side-by-side using the sibling selector.
+   This relies heavily on the HTML order: <header> <div>.tools-menu</div> <div>.content-panel</div> */
+.main-content {
+    flex-grow: 1;
+    display: flex;
+    flex-direction: column; /* Stacks header on top */
+    background-color: #f7fafc;
+    padding: 24px;
+}
+
+/* The element that is the adjacent sibling to the header (which is the tools-menu) 
+   and the content-panel that follows it are essentially the same horizontal row,
+   but since we can't wrap them, we have to create the row flow from the parent. */
+/* This is a tricky workaround for fixing the HTML structure without touching the HTML. 
+   We will treat the whole area after the header as a continuous horizontal flow */
+
+/* A helper class, which is not allowed, so we stick to the original structure and use hacks */
+
+/* Reworking .main-content to force flow */
+.main-content {
+    flex-grow: 1;
+    display: block; /* Go back to block flow for the header */
+    background-color: #f7fafc;
+    padding: 24px;
+}
+
+.main-content::after {
+    content: "";
+    display: table;
+    clear: both;
+}
+
+/* Tools Menu (Column 2) */
+.tools-menu {
+    float: left; /* Use float to put it next to the content */
+    width: 250px;
+    padding: 24px;
+    box-sizing: border-box;
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+    background-color: white; 
+    border-radius: 8px;
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+    margin-right: 24px; /* Separator gap */
+}
+
+
+.content-panel {
+    /* The remaining space will be used for the content-panel */
+    display: flex;
+    flex-grow: 1;
+    gap: 24px;
+    overflow: hidden; /* Contains floats */
+}
+
+/* User Management Menu (Column 3) */
 .user-management-menu {
     max-width: 280px;
-    background-color: #2D3748; /* Changed to white */
+    min-width: 200px; /* Fixed width */
+    background-color: #2D3748;
+    display: flex;
+    flex-direction: column;
+    padding: 24px;
+    border-radius: 8px;
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+    flex-shrink: 0;
+}
+
+.user-management-menu {
+    max-width: 280px;
+    background-color: #2D3748;
     display: flex;
     flex-direction: column;
     padding: 24px;
@@ -148,7 +267,7 @@ body {
     box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
 }
 
-/* Account Creation Form Panel */
+/* Account Creation Form Panel (Column 4) */
 .account-creation-form-panel {
     flex-grow: 1;
     background-color: white;
@@ -191,7 +310,7 @@ body {
     border-radius: 0.5rem;
     box-shadow: 0 1px 2px 0 rgba(0, 0, 0, 0.05);
     box-sizing: border-box;
-    color: #333; /* Ensure input text is visible */
+    color: #333;
 }
 
 .form-input:focus,
@@ -211,7 +330,7 @@ body {
     border-radius: 0.5rem;
     box-shadow: 0 1px 2px 0 rgba(0, 0, 0, 0.05);
     box-sizing: border-box;
-    color: #333; /* Ensure select text is visible */
+    color: #333;
 }
 
 .form-actions {
