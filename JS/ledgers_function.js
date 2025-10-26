@@ -1,5 +1,73 @@
 document.addEventListener('DOMContentLoaded', function() {
-            enforceRoleAccess(['admin','Manager','Loan Officer']); 
+    // 1. Define Access Rules
+    // Map of menu item names to an array of roles that have access.
+    // Ensure the keys here match the text content of your <a> tags exactly.
+    const accessRules = {
+        'Dashboard': ['Admin', 'Manager', 'Loan_Officer'],
+        'Client Creation': ['Admin', 'Loan_Officer'],
+        'Loan Application': ['Admin', 'Loan_Officer'],
+        'Pending Accounts': ['Admin', 'Manager'],
+        'Payment Collection': ['Admin', 'Manager'],
+        'Ledger': ['Admin', 'Manager', 'Loan_Officer'],
+        'Reports': ['Admin', 'Manager', 'Loan_Officer'],
+        'Tools': ['Admin', 'Manager', 'Loan_Officer']
+    };
+
+    // 2. Fetch the current user's role
+    fetch('PHP/check_session.php')
+        .then(response => {
+            // Check if the response is successful (HTTP 200)
+            if (!response.ok) {
+                throw new Error('Network response was not ok');
+            }
+            return response.json();
+        })
+        .then(data => {
+            // Ensure the session is active and a role is returned
+            if (data.status === 'active' && data.role) {
+                const userRole = data.role;
+                applyAccessControl(userRole);
+            } else {
+                // If not logged in, you might want to hide everything or redirect
+                // For now, we'll assume the 'none' role has no access, which the loop handles.
+                applyAccessControl('none');
+            }
+        })
+        .catch(error => {
+            console.error('Error fetching user session:', error);
+            // Optionally hide all nav links on severe error
+            // document.querySelector('.sidebar-nav ul').style.display = 'none';
+        });
+
+    // 3. Apply Access Control
+    function applyAccessControl(userRole) {
+        // Select all navigation links within the sidebar
+        const navLinks = document.querySelectorAll('.sidebar-nav ul li a');
+
+        navLinks.forEach(link => {
+            const linkName = link.textContent.trim();
+            const parentListItem = link.parentElement; // The <li> element
+
+            // Check if the link name exists in the access rules
+            if (accessRules.hasOwnProperty(linkName)) {
+                const allowedRoles = accessRules[linkName];
+
+                // Check if the current user's role is in the list of allowed roles
+                if (!allowedRoles.includes(userRole)) {
+                    // Hide the entire list item (<li>) if the user role is NOT authorized
+                    parentListItem.style.display = 'none';
+                }
+            } else {
+                // Optional: Hide links that are not defined in the accessRules for safety
+                // parentListItem.style.display = 'none';
+                console.warn(`No access rule defined for: ${linkName}`);
+            }
+        });
+    }
+});
+//==============================================================================================================================================
+document.addEventListener('DOMContentLoaded', function() {
+            enforceRoleAccess(['admin','Manager','Loan_Officer']); 
         });
 /*=============================================================================*/
 
@@ -307,7 +375,9 @@ document.addEventListener('DOMContentLoaded', () => {
             dataToDisplay = allClientData.filter(item => {
                 const fullName = getFullName(item).toLowerCase(); // Use helper function
                 const clientId = String(item.client_ID).toLowerCase();
-                const loanId = String(item.loan_ID).toLowerCase(); 
+                // NOTE: loan_ID is not present in the current PHP output, 
+                // but the search logic remains for future proofing.
+                const loanId = String(item.loan_application_id || '').toLowerCase(); 
 
                 // Search by Client ID, Loan ID, or Name
                 return clientId.includes(searchTerm) || 
@@ -350,7 +420,7 @@ document.addEventListener('DOMContentLoaded', () => {
                 dataToDisplay = allClientData.filter(item => {
                     const fullName = getFullName(item).toLowerCase();
                     const clientId = String(item.client_ID).toLowerCase();
-                    const loanId = String(item.loan_ID).toLowerCase(); 
+                    const loanId = String(item.loan_application_id || '').toLowerCase(); 
 
                     return clientId.includes(searchTerm) || 
                            loanId.includes(searchTerm) ||
@@ -379,7 +449,8 @@ document.addEventListener('DOMContentLoaded', () => {
             if (!Array.isArray(data)) {
                 allClientData = [];
             } else {
-                allClientData = data; // Store the fetched data
+                // 🌟 Filter out clients with a balance of 0.01 or less 🌟
+                allClientData = data.filter(item => (item.balance ?? 0) > 0.01);
             }
 
             // Initial render (no sorting applied yet, or apply default sort if desired)

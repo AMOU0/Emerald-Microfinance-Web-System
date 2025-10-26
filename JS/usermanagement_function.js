@@ -1,5 +1,117 @@
 document.addEventListener('DOMContentLoaded', function() {
-            enforceRoleAccess(['admin','Manager','Loan Officer']); 
+    // 1. Define Access Rules
+    // Map of menu item names to an array of roles that have access.
+    const accessRules = {
+        // --- Main Navigation Links ---
+        'Dashboard': ['Admin', 'Manager', 'Loan_Officer'],
+        'Client Creation': ['Admin', 'Loan_Officer'],
+        'Loan Application': ['Admin', 'Loan_Officer'],
+        'Pending Accounts': ['Admin', 'Manager'],
+        'Payment Collection': ['Admin', 'Manager'],
+        'Ledger': ['Admin', 'Manager', 'Loan_Officer'],
+        'Reports': ['Admin', 'Manager', 'Loan_Officer'],
+        'Tools': ['Admin', 'Manager', 'Loan_Officer'], // Main 'Tools' link access
+
+        // --- Tools Submenu Buttons ---
+        'Backup And Restore': ['Admin'],
+        'Interest Amount': ['Admin'],
+        'User Management': ['Admin', 'Manager', 'Loan_Officer'],
+        
+        // 🚨 NEW ACCESS RULES FOR USER MANAGEMENT SUBMENU 🚨
+        'Password Change': ['Admin', 'Manager', 'Loan_Officer'],
+        'Username Change': ['Admin', 'Manager', 'Loan_Officer'],
+        'Create User': ['Admin'],
+        'Existing Accounts': ['Admin']
+    };
+
+    // 2. Fetch the current user's role
+    fetch('PHP/check_session.php')
+        .then(response => {
+            if (!response.ok) {
+                throw new Error('Network response was not ok');
+            }
+            return response.json();
+        })
+        .then(data => {
+            if (data.status === 'active' && data.role) {
+                const userRole = data.role;
+                applyAccessControl(userRole);
+            } else {
+                // If not logged in, apply 'none' role.
+                applyAccessControl('none');
+            }
+        })
+        .catch(error => {
+            console.error('Error fetching user session:', error);
+        });
+
+    // 3. Apply Access Control
+    function applyAccessControl(userRole) {
+        // --- Logic for Main Navigation Links (a tags in sidebar-nav) ---
+        const navLinks = document.querySelectorAll('.sidebar-nav ul li a');
+
+        navLinks.forEach(link => {
+            const linkName = link.textContent.trim();
+            const parentListItem = link.parentElement; // The <li> element
+
+            if (accessRules.hasOwnProperty(linkName)) {
+                const allowedRoles = accessRules[linkName];
+
+                if (!allowedRoles.includes(userRole)) {
+                    // Hide the entire list item (<li>)
+                    parentListItem.style.display = 'none';
+                }
+            } else {
+                console.warn(`No main navigation access rule defined for: ${linkName}`);
+            }
+        });
+
+        // ----------------------------------------------------------------
+
+        // --- Logic for Tools Submenu Buttons (.tools-menu) ---
+        const toolsButtons = document.querySelectorAll('.tools-menu .menu-button');
+
+        toolsButtons.forEach(button => {
+            const buttonName = button.textContent.trim();
+
+            if (accessRules.hasOwnProperty(buttonName)) {
+                const allowedRoles = accessRules[buttonName];
+
+                if (!allowedRoles.includes(userRole)) {
+                    // Hide the button
+                    button.style.display = 'none';
+                }
+            } else {
+                console.warn(`No tools submenu access rule defined for: ${buttonName}`);
+            }
+        });
+
+        // ----------------------------------------------------------------
+        
+        // 🚨 NEW LOGIC for User Management Submenu Buttons (.user-management-menu) 🚨
+        const userManagementButtons = document.querySelectorAll('.user-management-menu .user-management-menu-button');
+
+        userManagementButtons.forEach(button => {
+            const buttonName = button.textContent.trim();
+
+            if (accessRules.hasOwnProperty(buttonName)) {
+                const allowedRoles = accessRules[buttonName];
+
+                if (!allowedRoles.includes(userRole)) {
+                    // Hide the button
+                    button.style.display = 'none';
+                }
+            } else {
+                console.warn(`No user management submenu access rule defined for: ${buttonName}`);
+            }
+        });
+        // ----------------------------------------------------------------
+
+    }
+});
+//==============================================================================================================================================
+document.addEventListener('DOMContentLoaded', function() {
+            enforceRoleAccess(['admin','Manager','Loan_Officer']); 
         });
 /*=============================================================================*/
 
@@ -58,7 +170,7 @@ const toolsUrlMapping = {
 const userManagementUrlMapping = {
       'passwordchange': 'UserPasswordChange.html',
       'usernamechange': 'UserUsernameChange.html',
-      'accountcreation': 'UserCreation.html',
+      'createuser': 'UserCreation.html',
       'existingaccounts': 'UserExisting.html'
 };
 // --- Main Sidebar Navigation Handler (Existing Logic) ---

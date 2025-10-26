@@ -1,5 +1,79 @@
 document.addEventListener('DOMContentLoaded', function() {
-            enforceRoleAccess(['admin','Loan Officer']); 
+    // 1. Define Access Rules
+    // Map of menu item names to an array of roles that have access.
+    // Ensure the keys here match the text content of your <a> tags exactly.
+    const accessRules = {
+        'Dashboard': ['Admin', 'Manager', 'Loan_Officer'],
+        'Client Creation': ['Admin', 'Loan_Officer'],
+        'Loan Application': ['Admin', 'Loan_Officer'],
+        'Pending Accounts': ['Admin', 'Manager'],
+        'Payment Collection': ['Admin', 'Manager'],
+        'Ledger': ['Admin', 'Manager', 'Loan_Officer'],
+        'Reports': ['Admin', 'Manager', 'Loan_Officer'],
+        'Tools': ['Admin', 'Manager', 'Loan_Officer']
+    };
+
+// This block is inside your existing fetch chain in loanapplication_function.js:
+
+window.currentUserName = 'System User'; 
+
+    // 2. Fetch the current user's role
+    fetch('PHP/check_session.php')
+        .then(response => {
+            if (!response.ok) {
+                throw new Error('Network response was not ok');
+            }
+            return response.json();
+        })
+        .then(data => {
+            if (data.status === 'active' && data.role) {
+                const userRole = data.role;
+                applyAccessControl(userRole);
+                
+                // ⭐ CRITICAL: Store the user name globally for use in modal
+                const userName = data.user_name || 'System User';
+                window.currentUserName = userName; 
+                
+            } else {
+                // If not logged in, set default name globally
+                const defaultName = data.user_name || 'Guest';
+                window.currentUserName = defaultName;
+                applyAccessControl('none');
+            }
+        })
+        .catch(error => {
+            console.error('There was a problem with the fetch operation:', error);
+            window.currentUserName = 'Error User';
+        });
+
+    // 3. Apply Access Control
+    function applyAccessControl(userRole) {
+        // Select all navigation links within the sidebar
+        const navLinks = document.querySelectorAll('.sidebar-nav ul li a');
+
+        navLinks.forEach(link => {
+            const linkName = link.textContent.trim();
+            const parentListItem = link.parentElement; // The <li> element
+
+            // Check if the link name exists in the access rules
+            if (accessRules.hasOwnProperty(linkName)) {
+                const allowedRoles = accessRules[linkName];
+
+                // Check if the current user's role is in the list of allowed roles
+                if (!allowedRoles.includes(userRole)) {
+                    // Hide the entire list item (<li>) if the user role is NOT authorized
+                    parentListItem.style.display = 'none';
+                }
+            } else {
+                // Optional: Hide links that are not defined in the accessRules for safety
+                // parentListItem.style.display = 'none';
+                console.warn(`No access rule defined for: ${linkName}`);
+            }
+        });
+    }
+});
+document.addEventListener('DOMContentLoaded', function() {
+            enforceRoleAccess(['admin','Loan_Officer']); 
         });
 /*=============================================================================*/
 
@@ -429,6 +503,7 @@ document.addEventListener('DOMContentLoaded', function() {
 
     /**
      * Handles the asynchronous submission of the loan application data.
+     * This function is only called AFTER all client-side and pending loan checks pass.
      */
     async function handleLoanApplicationSubmission() {
         const colateralInput = document.getElementById('colateral');
@@ -474,6 +549,7 @@ document.addEventListener('DOMContentLoaded', function() {
                 loanApplicationForm.reset();
                 
                 // Reset loan options back to full list after successful submission
+                // Re-running this will check if the client has now moved from first-loan status (for safety)
                 checkFirstLoanAndApplyFilter(data.clientID); 
 
                 data.loanID = result.loan_application_id;
@@ -503,10 +579,69 @@ document.addEventListener('DOMContentLoaded', function() {
             if (typeof logUserAction === 'function') logUserAction('CREATED', `Fetch error during loan submission: ${error.message}`); 
         }
     }
+    
+    /**
+     * **[NEW FUNCTION]** Checks if the client has any pending or active loans.
+     * Only proceeds to handleLoanApplicationSubmission() if validation passes.
+     */
+    async function checkPendingOrActiveLoans() {
+        const clientID = clientIDInput.value.trim();
+        const applyButton = loanApplicationForm.querySelector('button[type="submit"]');
+
+        if (!clientID) {
+            console.error("Client ID is missing for pending loan check.");
+            return;
+        }
+
+        const originalButtonText = applyButton ? applyButton.textContent : 'Apply';
+        if (applyButton) {
+            applyButton.disabled = true; // Disable button during check
+            applyButton.textContent = 'Checking Loans...';
+        }
+        
+        // **NOTE: Assumes you have created 'PHP/loanapplicationcheckpendingloan_handler.php'**
+        try {
+            const response = await fetch(`PHP/loanapplicationcheckpendingloan_handler.php?clientID=${clientID}`);
+            const data = await response.json();
+            
+            if (applyButton) {
+                applyButton.disabled = false;
+                applyButton.textContent = originalButtonText;
+            }
+
+            if (data.status === 'success' && data.has_pending_loan) {
+                // Validation failed: Client has a pending or active loan
+                const errorMessage = 'Validation Failed: This client already has an active or pending loan application (not rejected and not fully paid). Cannot submit a new application.';
+                showMessageBox(errorMessage, 'error');
+                if (typeof logUserAction === 'function') logUserAction('CREATED', `Loan submission blocked: Client ID ${clientID} has pending loan.`);
+                return false; // STOP SUBMISSION
+            } else if (data.status === 'success') {
+                // Validation passed: Proceed with the original loan submission logic
+                console.log('Pending loan check passed. Proceeding with loan application submission...');
+                // Call the main submission handler
+                handleLoanApplicationSubmission(); 
+            } else {
+                // Error from the handler
+                const errorMessage = `Error during pending loan check: ${data.message}`;
+                showMessageBox(errorMessage, 'error');
+                if (typeof logUserAction === 'function') logUserAction('CREATED', `Loan submission failed due to pending loan check error: ${data.message}`);
+            }
+        } catch (error) {
+            console.error('There was a problem with the fetch operation during pending loan check:', error);
+            if (applyButton) {
+                applyButton.disabled = false;
+                applyButton.textContent = originalButtonText;
+            }
+            showMessageBox('A network error occurred while checking for existing loans. Please try again.', 'error');
+        }
+    }
+
 
     if (loanApplicationForm) {
         loanApplicationForm.addEventListener('submit', async (e) => {
             e.preventDefault();
+
+            // --- 1. Client-Side Validation Checks ---
 
             if (!clientIDInput.value.trim()) {
                 showInputError(e, clientIDInput, 'Error: Client ID is required. Please use the "Search client" button.');
@@ -548,21 +683,16 @@ document.addEventListener('DOMContentLoaded', function() {
                 showInputError(e, loanAmountSelect, 'Error: Please select a valid loan amount greater than zero.');
                 return;
             }
-            // --- START: NEW CLIENT-SIDE VALIDATION (Final Check before sending) ---
+            // --- START: FIRST LOAN CLIENT-SIDE VALIDATION (Final Check before sending) ---
             const loanAmountValue = parseFloat(loanAmount);
-            // We check the loan count on modal open, but we check the selected value now
-            // The options are already filtered, but this is a final fail-safe.
-            
-            // Re-check if the client ID has an existing loan record
-            // NOTE: A full second fetch here is redundant if the filtering was correct. 
-            // We rely on the options being filtered, but we check the value against the limit for added safety if options were manipulated.
+            // This is a final fail-safe for the first-loan limit.
             const isOptionFiltered = Array.from(loanAmountSelect.options).some(opt => parseFloat(opt.value) > maxFirstLoanAmount);
 
             if (!isOptionFiltered && loanAmountValue > maxFirstLoanAmount) {
                  showInputError(e, loanAmountSelect, `Error: Loan amount ₱${loanAmountValue.toLocaleString()} exceeds the maximum limit of ₱${maxFirstLoanAmount.toLocaleString()} for first-time clients.`);
                  return;
             }
-            // --- END: NEW CLIENT-SIDE VALIDATION ---
+            // --- END: FIRST LOAN CLIENT-SIDE VALIDATION ---
 
 
             if (!paymentFrequency) {
@@ -578,6 +708,7 @@ document.addEventListener('DOMContentLoaded', function() {
                 return;
             }
             
+            // --- 2. Call Audit Log (Attempting Submission) ---
             const logTargetTable = 'loan_applications';
             const logTargetID = clientIDInput.value.trim();
 
@@ -589,8 +720,11 @@ document.addEventListener('DOMContentLoaded', function() {
                     logTargetID
                 );
             }
-
-            handleLoanApplicationSubmission();
+            
+            // --- 3. **[CRITICAL NEW STEP]** Run Pending/Active Loan Validation ---
+            checkPendingOrActiveLoans(); 
+            // Note: handleLoanApplicationSubmission() is now called from *inside* checkPendingOrActiveLoans() 
+            // only if the check passes.
         });
     }
 
@@ -664,6 +798,10 @@ document.addEventListener('DOMContentLoaded', function() {
 
         // --- START MODAL CONTENT HTML STRUCTURE ---
         modalContent.innerHTML = `
+        <div class="print-header">
+    <div class="print-business-name">Emerald Microfinance</div>
+    <div class="print-address">Northern Hill Phase 2, San Rafael, Tarlac City</div>
+</div>
             <div class="modal-header flex justify-between items-center p-4 border-b">
                 <h2 class="text-2xl font-bold">Loan Confirmation & Schedule</h2>
                 <button class="close-modal-btn text-3xl leading-none text-gray-500 hover:text-gray-800">&times;</button>
@@ -750,6 +888,9 @@ document.addEventListener('DOMContentLoaded', function() {
                 <div class="loan-schedule">
                     ${scheduleTableHTML}
                 </div>
+<div class="footer">
+    <div class="value">Prepared by: <span class="prepared-by-user-name">${window.currentUserName}</span></div>
+</div>
             </div>
             <div class="modal-footer p-4 border-t flex justify-end">
                 <button class="print-btn bg-blue-500 text-white px-4 py-2 rounded hover:bg-blue-600 transition-colors apply-button">Print</button>

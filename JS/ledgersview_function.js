@@ -1,5 +1,80 @@
 document.addEventListener('DOMContentLoaded', function() {
-            enforceRoleAccess(['admin','Manager','Loan Officer']); 
+    // 1. Define Access Rules
+    // Map of menu item names to an array of roles that have access.
+    // Ensure the keys here match the text content of your <a> tags exactly.
+    const accessRules = {
+        'Dashboard': ['Admin', 'Manager', 'Loan_Officer'],
+        'Client Creation': ['Admin', 'Loan_Officer'],
+        'Loan Application': ['Admin', 'Loan_Officer'],
+        'Pending Accounts': ['Admin', 'Manager'],
+        'Payment Collection': ['Admin', 'Manager'],
+        'Ledger': ['Admin', 'Manager', 'Loan_Officer'],
+        'Reports': ['Admin', 'Manager', 'Loan_Officer'],
+        'Tools': ['Admin', 'Manager', 'Loan_Officer']
+    };
+
+// This block is inside your existing fetch chain in loanapplication_function.js:
+
+window.currentUserName = 'System User'; 
+
+    // 2. Fetch the current user's role
+    fetch('PHP/check_session.php')
+        .then(response => {
+            if (!response.ok) {
+                throw new Error('Network response was not ok');
+            }
+            return response.json();
+        })
+        .then(data => {
+            if (data.status === 'active' && data.role) {
+                const userRole = data.role;
+                applyAccessControl(userRole);
+                
+                // ⭐ CRITICAL: Store the user name globally for use in modal
+                const userName = data.user_name || 'System User';
+                window.currentUserName = userName; 
+                
+            } else {
+                // If not logged in, set default name globally
+                const defaultName = data.user_name || 'Guest';
+                window.currentUserName = defaultName;
+                applyAccessControl('none');
+            }
+        })
+        .catch(error => {
+            console.error('There was a problem with the fetch operation:', error);
+            window.currentUserName = 'Error User';
+        });
+
+    // 3. Apply Access Control
+    function applyAccessControl(userRole) {
+        // Select all navigation links within the sidebar
+        const navLinks = document.querySelectorAll('.sidebar-nav ul li a');
+
+        navLinks.forEach(link => {
+            const linkName = link.textContent.trim();
+            const parentListItem = link.parentElement; // The <li> element
+
+            // Check if the link name exists in the access rules
+            if (accessRules.hasOwnProperty(linkName)) {
+                const allowedRoles = accessRules[linkName];
+
+                // Check if the current user's role is in the list of allowed roles
+                if (!allowedRoles.includes(userRole)) {
+                    // Hide the entire list item (<li>) if the user role is NOT authorized
+                    parentListItem.style.display = 'none';
+                }
+            } else {
+                // Optional: Hide links that are not defined in the accessRules for safety
+                // parentListItem.style.display = 'none';
+                console.warn(`No access rule defined for: ${linkName}`);
+            }
+        });
+    }
+});
+//==============================================================================================================================================
+document.addEventListener('DOMContentLoaded', function() {
+            enforceRoleAccess(['admin','Manager','Loan_Officer']); 
         });
 /*=============================================================================*/
 
@@ -422,17 +497,18 @@ function showLoanDetailsModal(loanId) {
                   // 4. Render the combined view
                   modalContent.innerHTML = `
                         <div class="ledger-content">
-                              
+<h1 class="print-header">Emerald Microfinance</h4>
+<p class="print-header">Northern Hill Phase 2, San Rafael, Tarlac City</p>
                               <div class="info-box simplified-summary">
                                     <h4 class="info-header">Loan Summary</h4>
                                     
                                     <div class="summary-section">
-                                          <h5>Loan Summary</h5>
                                           <div class="info-columns">
                                                 <div class="info-item">
                                                       <span class="info-label">Original Principal:</span>
                                                       <strong class="info-value">PHP ${standardSchedule['Loan_Amount'] || 'N/A'}</strong>
                                                 </div>
+                                                <div class="info-item"></div>
                                                 <div class="info-item">
                                                       <span class="info-label">Annual Interest Rate:</span>
                                                       <strong class="info-value">${standardSchedule['Interest_Rate'] || 'N/A'}%</strong>
@@ -460,10 +536,12 @@ function showLoanDetailsModal(loanId) {
                               ${reconstructionPaymentsHTML}
                     
                   <div class="modal-footer p-4 border-t flex justify-end space-x-2 print-hide">
-                <button class="bg-blue-500 text-white px-4 py-2 rounded hover:bg-blue-600 transition-colors" onclick="printLoanDetails()">Print Ledger</button>
-                        <button class="bg-gray-500 text-white px-4 py-2 rounded hover:bg-gray-600 transition-colors" onclick="closeModal()">Close</button>
+                <button class="bg-blue-500 text-white px-4 py-2 rounded hover:bg-blue-600 transition-colors" onclick="printLoanDetails()">Print</button>
                   </div>
                         </div>
+                        <div class="footer">
+    <div class="value">Prepared by: <span class="prepared-by-user-name">${window.currentUserName}</span></div>
+</div>
                   `;
             })
             .catch(error => {
@@ -515,10 +593,6 @@ function createPaymentsTable(payments, type) {
         </div>
     `;
 }
-/*===============================================================================================================*/
-/* REMOVED MODAL PRINT FUNCTION (CSS @media print implementation) */
-/*===============================================================================================================*/
-
 
 /*===============================================================================================================*/
 /* OTHER MODAL FUNCTIONS */
@@ -595,6 +669,7 @@ function printLoanDetails() {
     printWindow.document.write('<style>');
     printWindow.document.write(`
         body { font-family: Arial, sans-serif; margin: 20px; }
+        
         .ledger-content { max-width: 800px; margin: 0 auto; }
         h4, h5 { color: #333; border-bottom: 1px solid #ccc; padding-bottom: 5px; margin-top: 20px; }
         .info-box { border: 1px solid #ddd; padding: 15px; margin-bottom: 20px; border-radius: 4px; }

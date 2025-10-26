@@ -1,5 +1,96 @@
 document.addEventListener('DOMContentLoaded', function() {
-            enforceRoleAccess(['admin','Manager','Loan Officer']); 
+    // 1. Define Access Rules
+    // Map of menu item names to an array of roles that have access.
+    // Ensure the keys here match the text content of your <a> tags or the new button text exactly.
+    const accessRules = {
+        'Dashboard': ['Admin', 'Manager', 'Loan_Officer'],
+        'Client Creation': ['Admin', 'Loan_Officer'],
+        'Loan Application': ['Admin', 'Loan_Officer'],
+        'Pending Accounts': ['Admin', 'Manager'],
+        'Payment Collection': ['Admin', 'Manager'],
+        'Ledger': ['Admin', 'Manager', 'Loan_Officer'],
+        'Reports': ['Admin', 'Manager', 'Loan_Officer'],
+        'Tools': ['Admin', 'Manager', 'Loan_Officer'], // Main 'Tools' link access
+        
+        // 🚨 NEW ACCESS RULES FOR SUBMENU BUTTONS 🚨
+        'Backup And Restore': ['Admin'],
+        'Interest Amount': ['Admin'],
+        // Note: The role in the new button rule should be 'Loan_Officer' to match your existing roles.
+        'User Management': ['Admin', 'Manager', 'Loan_Officer']
+    };
+
+    // 2. Fetch the current user's role
+    fetch('PHP/check_session.php')
+        .then(response => {
+            // Check if the response is successful (HTTP 200)
+            if (!response.ok) {
+                throw new Error('Network response was not ok');
+            }
+            return response.json();
+        })
+        .then(data => {
+            // Ensure the session is active and a role is returned
+            if (data.status === 'active' && data.role) {
+                const userRole = data.role;
+                applyAccessControl(userRole);
+            } else {
+                // If not logged in, apply 'none' role.
+                applyAccessControl('none');
+            }
+        })
+        .catch(error => {
+            console.error('Error fetching user session:', error);
+            // Optionally hide all nav links on severe error
+            // document.querySelector('.sidebar-nav ul').style.display = 'none';
+        });
+
+    // 3. Apply Access Control
+    function applyAccessControl(userRole) {
+        // --- Access Control for Main Navigation Links (a tags) ---
+        const navLinks = document.querySelectorAll('.sidebar-nav ul li a');
+
+        navLinks.forEach(link => {
+            const linkName = link.textContent.trim();
+            const parentListItem = link.parentElement; // The <li> element
+
+            // Check if the link name exists in the access rules
+            if (accessRules.hasOwnProperty(linkName)) {
+                const allowedRoles = accessRules[linkName];
+
+                // Check if the current user's role is in the list of allowed roles
+                if (!allowedRoles.includes(userRole)) {
+                    // Hide the entire list item (<li>) if the user role is NOT authorized
+                    parentListItem.style.display = 'none';
+                }
+            } else {
+                console.warn(`No main navigation access rule defined for: ${linkName}`);
+            }
+        });
+
+        // --- Access Control for Tools Submenu Buttons (new logic) ---
+        const toolsButtons = document.querySelectorAll('.tools-menu .menu-button');
+
+        toolsButtons.forEach(button => {
+            const buttonName = button.textContent.trim();
+
+            // Check if the button name exists in the access rules
+            if (accessRules.hasOwnProperty(buttonName)) {
+                const allowedRoles = accessRules[buttonName];
+
+                // Check if the current user's role is in the list of allowed roles
+                if (!allowedRoles.includes(userRole)) {
+                    // Hide the button if the user role is NOT authorized
+                    button.style.display = 'none';
+                }
+            } else {
+                console.warn(`No tools submenu access rule defined for: ${buttonName}`);
+            }
+        });
+    }
+});
+//==============================================================================================================================================
+document.addEventListener('DOMContentLoaded', function() {
+            enforceRoleAccess(['admin','Manager','Loan_Officer']); 
         });
 /*=============================================================================*/
 

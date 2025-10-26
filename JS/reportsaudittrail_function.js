@@ -1,4 +1,102 @@
 document.addEventListener('DOMContentLoaded', function() {
+    
+    // 1. Define ALL Access Rules
+    // The role 'loan officer' has been changed to 'loan_officer' everywhere.
+    // All roles are stored in lowercase for robust, case-insensitive matching.
+    const accessRules = {
+        // Main Navigation Links (.sidebar-nav ul li a)
+        'Dashboard': ['admin', 'manager', 'loan_officer'],
+        'Client Creation': ['admin', 'loan_officer'],
+        'Loan Application': ['admin', 'loan_officer'],
+        'Pending Accounts': ['admin', 'manager'],
+        'Payment Collection': ['admin', 'manager'],
+        'Ledger': ['admin', 'manager', 'loan_officer'],
+        'Reports': ['admin', 'manager', 'loan_officer'],
+        'Tools': ['admin', 'manager', 'loan_officer'],
+        
+        // Report Sidebar Buttons (.reports-sidebar .report-button)
+        'Existing Clients': ['admin', 'manager', 'loan_officer'],
+        'Overdue': ['admin', 'manager', 'loan_officer'],
+        'Due Payments': ['admin', 'manager'],
+        'Audit Trail': ['admin'],
+        'Reports Release': ['admin', 'manager', 'loan_officer']
+    };
+
+    // 2. Fetch the current user's role
+    fetch('PHP/check_session.php')
+        .then(response => {
+            if (!response.ok) {
+                throw new Error('Network response was not ok');
+            }
+            return response.json();
+        })
+        .then(data => {
+            if (data.status === 'active' && data.role) {
+                // IMPORTANT: Normalize the role here to ensure it matches the rules.
+                // Replace any spaces with an underscore and convert to lowercase.
+                const userRole = data.role.toLowerCase().replace(' ', '_');
+                
+                // Pass the normalized role to the single control function
+                applyAccessControl(userRole);
+            } else {
+                // Treat inactive session as having a 'none' role (hides everything)
+                applyAccessControl('none');
+            }
+        })
+        .catch(error => {
+            console.error('Error fetching user session:', error);
+            // Fallback: If fetch fails, hide everything for security/clarity
+            applyAccessControl('none'); 
+        });
+
+    // 3. Apply Access Control to all elements
+    function applyAccessControl(userRole) {
+        // Log the role we are checking against.
+        console.log(`User Role (normalized): ${userRole}`);
+        
+        // --- 3a. Process Main Navigation Links (Hides the parent <li>) ---
+        const navLinks = document.querySelectorAll('.sidebar-nav ul li a');
+        navLinks.forEach(link => {
+            processElement(link, 'li'); 
+        });
+
+        // --- 3b. Process Report Sidebar Buttons (Hides the button itself) ---
+        const reportButtons = document.querySelectorAll('.reports-sidebar .report-button');
+        reportButtons.forEach(button => {
+            processElement(button, 'self'); 
+        });
+
+        // Helper function to handle the logic for both types of elements
+        function processElement(element, hideTarget) {
+            const linkName = element.textContent.trim();
+            let elementToHide = element;
+
+            if (hideTarget === 'li') {
+                elementToHide = element.parentElement; // Hide the parent <li> for navigation
+            }
+            
+            // Check if the link name exists in the access rules
+            if (accessRules.hasOwnProperty(linkName)) {
+                const allowedRoles = accessRules[linkName];
+
+                // Check if the normalized user role is in the array of allowed roles
+                if (!allowedRoles.includes(userRole)) {
+                    // Hide the target element
+                    elementToHide.style.display = 'none';
+                    // console.log(`Hiding: ${linkName}. Allowed Roles: ${allowedRoles.join(', ')}`);
+                } else {
+                    // console.log(`Showing: ${linkName}`);
+                }
+            } else {
+                // If an element is in the HTML but not in the rules, we hide it by default
+                elementToHide.style.display = 'none';
+                console.warn(`Hiding: ${linkName}. No access rule defined.`);
+            }
+        }
+    }
+});
+//==============================================================================================================================================
+document.addEventListener('DOMContentLoaded', function() {
             enforceRoleAccess(['admin']); 
         });
 /*=============================================================================*/

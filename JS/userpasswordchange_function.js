@@ -111,7 +111,7 @@ document.addEventListener('DOMContentLoaded', function() {
 });
 //==============================================================================================================================================
 document.addEventListener('DOMContentLoaded', function() {
-            enforceRoleAccess(['admin']); 
+            enforceRoleAccess(['admin','Manager','Loan_Officer']); 
         });
 /*=============================================================================*/
 
@@ -285,161 +285,155 @@ if (logoutButton) {
 }
 
 
-/*================================= */
-// JS/usercreation_function.js
+/*=======================================================================================================================================================*/
 
-// Add an event listener to the form element using its class name.
-document.querySelector('.account-creation-form').addEventListener('submit', async function(event) {
-    event.preventDefault(); // Prevent the default form submission behavior
 
-    // Get a reference to the form element itself.
-    const form = event.target;
-    // Get references to the status message area and the submit button.
-    const statusMessage = document.getElementById('status-message');
-    const submitButton = document.querySelector('.create-account-button');
+// JS/userpassowordchange_function.js
 
-    // --- Client-side Validation ---
-    // Retrieve and trim the values from all form fields.
-    const name = form.elements['name'].value.trim();
-    const email = form.elements['email'].value.trim();
-    const username = form.elements['username'].value.trim();
-    const password = form.elements['password'].value;
-    const confirmPassword = form.elements['confirm-password'].value;
-    const role = form.elements['role'].value;
+document.addEventListener('DOMContentLoaded', function() {
+    const form = document.querySelector('.account-creation-form');
+    const oldPasswordInput = document.getElementById('old-password');
+    const newPasswordInput = document.getElementById('new-password');
+    const confirmPasswordInput = document.getElementById('confirm-password');
+    const messageBox = document.getElementById('message-box');
 
-    // Clear any previous status messages.
-    statusMessage.textContent = '';
-    // Hide the status message div initially.
-    statusMessage.style.display = 'none';
+    // =======================================================
+    // NEW CODE: Modal HTML Injection
+    // =======================================================
+    const modalHtml = `
+        <div id="confirmation-modal" style="display:none; position:fixed; z-index:1000; left:0; top:0; width:100%; height:100%; overflow:auto; background-color:rgba(0,0,0,0.4);">
+            <div style="background-color:#fefefe; margin: 15% auto; padding: 20px; border: 1px solid #888; width: 80%; max-width: 400px; border-radius: 8px; box-shadow: 0 4px 8px 0 rgba(0,0,0,0.2), 0 6px 20px 0 rgba(0,0,0,0.19);">
+                <h2>Confirm Password Change</h2>
+                <p>Are you sure you want to change your password?</p>
+                <div style="display: flex; justify-content: flex-end; gap: 10px; margin-top: 20px;">
+                    <button id="modal-cancel-btn" style="padding: 10px 20px; border: none; border-radius: 4px; cursor: pointer; background-color: #ccc; font-weight: bold;">Cancel</button>
+                    <button id="modal-confirm-btn" style="padding: 10px 20px; border: none; border-radius: 4px; cursor: pointer; background-color: #007bff; color: white; font-weight: bold;">Confirm Change</button>
+                </div>
+            </div>
+        </div>
+    `;
+    document.body.insertAdjacentHTML('beforeend', modalHtml);
 
-    // Check if any fields are empty.
-    if (!name || !email || !username || !password || !confirmPassword || !role) {
-        statusMessage.textContent = 'Please fill out all fields.';
-        statusMessage.style.display = 'block';
-        statusMessage.style.color = 'red';
-        return;
-    }
+    const confirmationModal = document.getElementById('confirmation-modal');
+    const modalConfirmBtn = document.getElementById('modal-confirm-btn');
+    const modalCancelBtn = document.getElementById('modal-cancel-btn');
+    // =======================================================
 
-    // Check if the passwords match.
-    if (password !== confirmPassword) {
-        statusMessage.textContent = 'Passwords do not match.';
-        statusMessage.style.display = 'block';
-        statusMessage.style.color = 'red';
-        return;
-    }
-
-    // Simple password length validation.
-    if (password.length < 8) {
-        statusMessage.textContent = 'Password must be at least 8 characters long.';
-        statusMessage.style.display = 'block';
-        statusMessage.style.color = 'red';
-        return;
-    }
-
-    // --- Form Submission via Fetch API ---
-    // Disable the button and change its text to provide user feedback.
-    submitButton.disabled = true;
-    submitButton.textContent = 'Creating Account...';
-    // Display a processing message.
-    statusMessage.textContent = 'Processing...';
-    statusMessage.style.display = 'block';
-    statusMessage.style.color = 'blue';
-    
-    // Create a FormData object from the form to easily handle form data.
-    const formData = new FormData(form);
-    // Do not send the confirm password to the server.
-    formData.delete('confirm-password');
-
-    // NOTE: logUserAction is defined in the outer DOMContentLoaded scope.
-    // Re-defining a local reference for clarity and guaranteed access (closure scope)
-    const logUserAction = (actionType, description, targetTable = null, targetId = null) => {
-        const bodyData = new URLSearchParams();
-        bodyData.append('action', actionType); 
-        bodyData.append('description', description); 
-
-        if (targetTable) {
-            bodyData.append('target_table', targetTable);
-        }
-        if (targetId) {
-            bodyData.append('target_id', targetId);
-        }
+    // Function to display messages in the message box
+    function showMessage(message, isSuccess = true) {
+        messageBox.textContent = message;
+        // The success/error styles should be defined in your CSS/userpassowordchange_style.css
+        messageBox.classList.remove('hidden', 'success', 'error');
+        messageBox.classList.add(isSuccess ? 'success' : 'error');
+        messageBox.style.display = 'block'; 
         
-        fetch('PHP/log_action.php', {
+        setTimeout(() => {
+            messageBox.classList.add('hidden');
+            messageBox.style.display = 'none';
+        }, 5000); 
+    }
+
+    // Function to hide the message box
+    function hideMessage() {
+        messageBox.classList.add('hidden');
+        messageBox.style.display = 'none';
+        messageBox.textContent = '';
+    }
+
+    /**
+     * Handles the actual API call to change the password
+     */
+    function handlePasswordChange(oldPassword, newPassword) {
+        hideMessage(); // Clear previous messages
+        
+        const formData = new FormData();
+        formData.append('old_password', oldPassword);
+        formData.append('new_password', newPassword);
+
+        fetch('PHP/userpasswordchange_function.php', {
             method: 'POST',
-            headers: {
-                'Content-Type': 'application/x-www-form-urlencoded',
-            },
-            body: bodyData.toString()
+            body: formData 
         })
         .then(response => {
-            if (!response.ok) {
-                console.warn('Audit log failed to record (Form Handler):', actionType, description);
+            const contentType = response.headers.get("content-type");
+            if (contentType && contentType.indexOf("application/json") !== -1) {
+                return response.json();
+            } else {
+                throw new Error('Server returned a non-JSON response.');
+            }
+        })
+        .then(data => {
+            if (data.success) {
+                showMessage(data.message, true);
+                form.reset(); 
+                // In a real application, you would add logic here to force a logout or redirect
+            } else {
+                showMessage(data.message, false);
             }
         })
         .catch(error => {
-            console.error('Audit log fetch error (Form Handler):', error);
+            console.error('Fetch error:', error);
+            showMessage("An error occurred during the password change request.", false);
         });
-    };
-
-    try {
-        // Send the form data to the PHP script.
-        const response = await fetch('PHP/usercreation_handler.php', {
-            method: 'POST',
-            body: formData
-        });
-
-        // Check if the network response was successful.
-        if (!response.ok) {
-            throw new Error('Network response was not ok');
-        }
-
-        // Parse the JSON response from the server.
-        // ASSUMPTION: The PHP handler now returns the new user's ID as 'user_id'
-        const result = await response.json();
-        const newUserId = result.user_id || null; // Safely get the ID
-
-        // Check the 'success' property of the server response.
-        if (result.success) {
-            statusMessage.textContent = result.message;
-            statusMessage.style.color = 'green';
-            form.reset(); // Clear the form on successful Create User.
-            
-            // --- LOG SUCCESSFUL USER CREATION ---
-            // MODIFIED: Added targetTable ('users') and targetId (newUserId)
-            logUserAction(
-                'CREATED', 
-                `New user created successfully: Username: ${username}, Role: ${role}, Name: ${name}`,
-                'users',
-                newUserId
-            );
-
-        } else {
-            statusMessage.textContent = result.message;
-            statusMessage.style.color = 'red';
-
-            // --- LOG FAILED USER CREATION (Server-side) ---
-            // MODIFIED: Called logUserAction without targetTable/targetId
-            logUserAction(
-                'CREATED', 
-                `Failed to create user: Username: ${username}, Role: ${role}, Message: ${result.message}`
-            );
-        }
-    } catch (error) {
-        // Handle any errors that occurred during the fetch request.
-        statusMessage.textContent = 'An error occurred. Please try again.';
-        statusMessage.style.color = 'red';
-        console.error('Submission error:', error);
-        
-        // --- LOG USER CREATION ERROR (Network/Exception) ---
-        // MODIFIED: Called logUserAction without targetTable/targetId
-        logUserAction(
-            'CREATED', 
-            `Error during user creation attempt for Username: ${username}, Details: ${error.message}`
-        );
-
-    } finally {
-        // Re-enable the button and reset its text, regardless of success or failure.
-        submitButton.disabled = false;
-        submitButton.textContent = 'Create';
     }
+
+    form.addEventListener('submit', function(event) {
+        event.preventDefault(); 
+        hideMessage();
+
+        const oldPassword = oldPasswordInput.value.trim();
+        const newPassword = newPasswordInput.value.trim();
+        const confirmPassword = confirmPasswordInput.value.trim();
+
+        // 1. Client-side Validation
+        if (!oldPassword || !newPassword || !confirmPassword) {
+            showMessage("All fields are required.", false);
+            return;
+        }
+        if (newPassword !== confirmPassword) {
+            showMessage("New password and confirmation password do not match.", false);
+            return;
+        }
+        if (newPassword.length < 6) {
+            showMessage("New password must be at least 6 characters long.", false);
+            return;
+        }
+        
+        // 2. Show the custom confirmation modal
+        confirmationModal.style.display = 'block';
+
+        // Store current passwords in a temporary state for the modal's confirmation
+        confirmationModal.dataset.oldPass = oldPassword;
+        confirmationModal.dataset.newPass = newPassword;
+    });
+
+    // =======================================================
+    // NEW CODE: Modal Button Handlers
+    // =======================================================
+    modalCancelBtn.addEventListener('click', () => {
+        confirmationModal.style.display = 'none';
+        showMessage("Password change cancelled.", false);
+    });
+
+    modalConfirmBtn.addEventListener('click', () => {
+        confirmationModal.style.display = 'none';
+        
+        // Retrieve the stored passwords and execute the change
+        const oldPass = confirmationModal.dataset.oldPass;
+        const newPass = confirmationModal.dataset.newPass;
+
+        if (oldPass && newPass) {
+            handlePasswordChange(oldPass, newPass);
+        } else {
+            showMessage("Error retrieving password data for submission.", false);
+        }
+    });
+
+    // Close the modal if the user clicks outside of it
+    window.addEventListener('click', (event) => {
+        if (event.target === confirmationModal) {
+            confirmationModal.style.display = 'none';
+        }
+    });
+    // =======================================================
 });

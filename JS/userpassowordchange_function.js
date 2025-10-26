@@ -58,7 +58,7 @@ const toolsUrlMapping = {
 const userManagementUrlMapping = {
       'passwordchange': 'UserPasswordChange.html',
       'usernamechange': 'UserUsernameChange.html',
-      'accountcreation': 'UserCreation.html',
+      'createuser': 'UserCreation.html',
       'existingaccounts': 'UserExisting.html'
 };
 // --- Main Sidebar Navigation Handler (Existing Logic) ---

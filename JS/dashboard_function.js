@@ -1,5 +1,142 @@
 document.addEventListener('DOMContentLoaded', function() {
-            enforceRoleAccess(['admin','Manager','Loan Officer']); 
+    // 1. Define Access Rules
+    // Map of menu item names to an array of roles that have access.
+    // Ensure the keys here match the text content of your <a> tags exactly.
+    const accessRules = {
+        'Dashboard': ['Admin', 'Manager', 'Loan_Officer'],
+        'Client Creation': ['Admin', 'Loan_Officer'],
+        'Loan Application': ['Admin', 'Loan_Officer'],
+        'Pending Accounts': ['Admin', 'Manager'],
+        'Payment Collection': ['Admin', 'Manager'],
+        'Ledger': ['Admin', 'Manager', 'Loan_Officer'],
+        'Reports': ['Admin', 'Manager', 'Loan_Officer'],
+        'Tools': ['Admin', 'Manager', 'Loan_Officer']
+    };
+
+    // 2. Fetch the current user's role
+    fetch('PHP/check_session.php')
+        .then(response => {
+            // Check if the response is successful (HTTP 200)
+            if (!response.ok) {
+                throw new Error('Network response was not ok');
+            }
+            return response.json();
+        })
+        .then(data => {
+            // Ensure the session is active and a role is returned
+            if (data.status === 'active' && data.role) {
+                const userRole = data.role;
+                applyAccessControl(userRole);
+            } else {
+                // If not logged in, you might want to hide everything or redirect
+                // For now, we'll assume the 'none' role has no access, which the loop handles.
+                applyAccessControl('none');
+            }
+        })
+        .catch(error => {
+            console.error('Error fetching user session:', error);
+            // Optionally hide all nav links on severe error
+            // document.querySelector('.sidebar-nav ul').style.display = 'none';
+        });
+
+    // 3. Apply Access Control
+    function applyAccessControl(userRole) {
+        // Select all navigation links within the sidebar
+        const navLinks = document.querySelectorAll('.sidebar-nav ul li a');
+
+        navLinks.forEach(link => {
+            const linkName = link.textContent.trim();
+            const parentListItem = link.parentElement; // The <li> element
+
+            // Check if the link name exists in the access rules
+            if (accessRules.hasOwnProperty(linkName)) {
+                const allowedRoles = accessRules[linkName];
+
+                // Check if the current user's role is in the list of allowed roles
+                if (!allowedRoles.includes(userRole)) {
+                    // Hide the entire list item (<li>) if the user role is NOT authorized
+                    parentListItem.style.display = 'none';
+                }
+            } else {
+                // Optional: Hide links that are not defined in the accessRules for safety
+                // parentListItem.style.display = 'none';
+                console.warn(`No access rule defined for: ${linkName}`);
+            }
+        });
+    }
+});
+//==============================================================================================================================================
+document.addEventListener('DOMContentLoaded', function() {
+    // 1. Define Access Rules
+    // Map of menu item names to an array of roles that have access.
+    // Ensure the keys here match the text content of your <a> tags exactly.
+    const accessRules = {
+        'Dashboard': ['Admin', 'Manager', 'Loan_Officer'],
+        'Client Creation': ['Admin', 'Loan_Officer'],
+        'Loan Application': ['Admin', 'Loan_Officer'],
+        'Pending Accounts': ['Admin', 'Manager'],
+        'Payment Collection': ['Admin', 'Manager'],
+        'Ledger': ['Admin', 'Manager', 'Loan_Officer'],
+        'Reports': ['Admin', 'Manager', 'Loan_Officer'],
+        'Tools': ['Admin', 'Manager', 'Loan_Officer']
+    };
+
+    // 2. Fetch the current user's role
+    fetch('PHP/check_session.php')
+        .then(response => {
+            // Check if the response is successful (HTTP 200)
+            if (!response.ok) {
+                throw new Error('Network response was not ok');
+            }
+            return response.json();
+        })
+        .then(data => {
+            // Ensure the session is active and a role is returned
+            if (data.status === 'active' && data.role) {
+                const userRole = data.role;
+                applyAccessControl(userRole);
+            } else {
+                // If not logged in, you might want to hide everything or redirect
+                // For now, we'll assume the 'none' role has no access, which the loop handles.
+                applyAccessControl('none');
+            }
+        })
+        .catch(error => {
+            console.error('Error fetching user session:', error);
+            // Optionally hide all nav links on severe error
+            // document.querySelector('.sidebar-nav ul').style.display = 'none';
+        });
+
+    // 3. Apply Access Control
+    function applyAccessControl(userRole) {
+        // Select all navigation links within the sidebar
+        const navLinks = document.querySelectorAll('.sidebar-nav ul li a');
+
+        navLinks.forEach(link => {
+            const linkName = link.textContent.trim();
+            const parentListItem = link.parentElement; // The <li> element
+
+            // Check if the link name exists in the access rules
+            if (accessRules.hasOwnProperty(linkName)) {
+                const allowedRoles = accessRules[linkName];
+
+                // Check if the current user's role is in the list of allowed roles
+                if (!allowedRoles.includes(userRole)) {
+                    // Hide the entire list item (<li>) if the user role is NOT authorized
+                    parentListItem.style.display = 'none';
+                }
+            } else {
+                // Optional: Hide links that are not defined in the accessRules for safety
+                // parentListItem.style.display = 'none';
+                console.warn(`No access rule defined for: ${linkName}`);
+            }
+        });
+    }
+});
+//==============================================================================================================================================
+
+document.addEventListener('DOMContentLoaded', function() {
+            enforceRoleAccess(['admin','Manager','Loan_Officer']); 
         });
 /*=============================================================================*/
 
@@ -233,11 +370,33 @@ document.addEventListener('DOMContentLoaded', fetchTotalClients);
 function setCurrentDate() {
     const dateElement = document.getElementById('current-date');
     if (dateElement) {
-        const today = new Date();
-        // Format: M/D/YYYY
-        dateElement.textContent = `${today.getMonth() + 1}/${today.getDate()}/${today.getFullYear()}`;
+        // Date options for M/D/YYYY format
+        const dateOptions = {
+            timeZone: 'Asia/Manila',
+            year: 'numeric',
+            month: 'numeric',
+            day: 'numeric'
+        };
+        const dateOnlyInPH = new Date().toLocaleString('en-US', dateOptions);
+
+        // Time options for live display
+        const timeOptions = {
+            timeZone: 'Asia/Manila',
+            hour: '2-digit',
+            minute: '2-digit',
+            second: '2-digit',
+            hour12: true 
+        };
+        const timeOnlyInPH = new Date().toLocaleTimeString('en-US', timeOptions);
+
+        // Update the element text
+        dateElement.textContent = `${dateOnlyInPH} - ${timeOnlyInPH}`;
     }
 }
+
+// Start the clock: call once immediately, then repeat every second
+setCurrentDate();
+setInterval(setCurrentDate, 1000);
 /*=====================================================================================================================================*/
 // Function to update the existing "For Release" tile 
 async function updateReleaseTile() {
