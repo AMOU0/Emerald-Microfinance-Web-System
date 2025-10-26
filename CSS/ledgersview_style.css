@@ -458,7 +458,12 @@ body {
     font-weight: 500;
 }
 
-
+/* ------------------------------------- */
+/* NEW: Hide the print header by default */
+/* ------------------------------------- */
+.print-header {
+    display: none;
+}
 /* ========================================= */
 /* 5. Print Styles for Loan Detail Modal (The crucial part for printing) */
 /* ========================================= */
@@ -476,7 +481,7 @@ body {
         display: block !important;
         opacity: 1 !important;
         width: 100%;
-        height: auto; /* <--- This forces auto-height */
+        height: auto; 
         padding: 0;
         margin: 0;
         overflow: visible;
@@ -500,11 +505,41 @@ body {
     }
 
     /* 4. Hide interactive/non-essential elements within the printed modal */
-    /* Target the class 'print-hide' added to the footer, and the close button */
+    /* Target the class 'print-hide' added to the footer, and the close button */ 
     body.print-modal-active #loanDetailModal .modal-footer,
     body.print-modal-active #loanDetailModal .print-hide {
         display: none !important;
     }
+    
+    /* ------------------------------------- */
+    /* NEW: Show and Style the Printed Header */
+    /* ------------------------------------- */
+    .ledger-content .print-header {
+        visibility: visible !important;
+        display: block !important;
+        text-align: center;
+        color: #000 !important;
+        background-color: #fff !important; 
+        -webkit-print-color-adjust: exact; 
+        print-color-adjust: exact;
+    }
+
+    .ledger-content h4.print-header {
+        font-size: 1.5em;
+        font-weight: 700 !important;
+        text-align: center;
+    }
+
+    .ledger-content span.print-header.address {
+        display: block;
+        font-size: 1em;
+        font-weight: normal !important;
+        color: #555 !important;
+        text-align: center;
+    }
+
+    /* ------------------------------------- */
+    
     /* 5. Force the two-column info summary to stack for a cleaner print flow */
     .info-section-wrapper {
         display: block !important;
@@ -600,4 +635,3 @@ body {
 .header-title {
     margin: 0;
 }
-

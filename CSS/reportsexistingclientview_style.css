@@ -8,7 +8,7 @@ body {
     padding: 0;
     display: flex;
     min-height: 100vh;
-    color: #fff; /* Default text color for body, overridden by main-content */
+    color: #fff; /* Default text color for body, overridden by main-content */ 
 }
 
 /* --- Sidebar Styling --- */
@@ -280,13 +280,6 @@ body {
     background-color: rgba(0,0,0,0.4); 
 }
 
-/* Utility Class to Prevent Body Scroll (Handled by JS) */
-.modal-open {
-    overflow: hidden;
-    /* FIX: Add padding to the right to prevent content shift when the scrollbar disappears */
-    padding-right: 17px; 
-}
-
 /* Modal Content/Box */
 .modal-content {
     background-color: #fff;
@@ -324,7 +317,6 @@ body {
 
 /* Close button (X) */
 #closeModalButton {
-    order: 3; /* Position close button after print button */
     background: none;
     border: none;
     font-size: 2rem; 
@@ -337,25 +329,6 @@ body {
 }
 #closeModalButton:hover {
     color: #E53E3E; /* Red on hover */
-}
-
-
-/* --- Print Button Styling --- */
-.modal-header .print-btn {
-    order: 2; /* Position print button after title */
-    padding: 8px 16px;
-    background-color: #4CAF50; /* Green button for print */
-    color: white;
-    border: none;
-    border-radius: 4px;
-    cursor: pointer;
-    font-size: 1rem;
-    font-weight: 500;
-    transition: background-color 0.2s ease-in-out;
-}
-
-.modal-header .print-btn:hover {
-    background-color: #45a049;
 }
 
 
@@ -506,7 +479,138 @@ body {
     font-weight: 500;
 }
 
+/* ========================================= */
+/* Other Styles (Reports, Return Button) */
+/* ========================================= */
+.reports-header button {
+    padding: 8px 16px;
+    margin-left: auto;
+    background-color: #007bff;
+    color: white;
+    border: none;
+    border-radius: 4px;
+    cursor: pointer;
+    font-size: 16px;
+    font-weight: 500;
+    align-self: center; 
+}
+.reports-header button:hover {
+    background-color: #0056b3;
+}
+.reports-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 10px 20px;
+    border-bottom: 1px solid #ccc;
+}
+.header-title {
+    margin: 0;
+}
 
+
+
+@media (min-width: 600px) {
+    .info-item {
+        width: calc(50% - 10px); 
+    }
+}
+/* Guarantor Address (Full width item) */
+.info-item.full-width-item {
+    width: 100%;
+}
+
+
+.info-label {
+    font-weight: 500;
+    color: #718096;
+    display: block;
+    margin-bottom: 0;
+    font-size: 0.85em; 
+}
+
+.info-value {
+    font-weight: 600;
+    color: #2D3748;
+    font-size: 1em;
+}
+
+/* --------------------
+   Payment History Section
+   -------------------- */
+.payment-history-section {
+    padding: 0; 
+}
+
+.section-title-payments {
+    font-size: 1.3rem;
+    font-weight: 700;
+    color: #2D3748;
+    border-bottom: 2px solid #9F7AEA; /* Use a color for a nice break */
+    padding-bottom: 5px;
+    margin: 0 0 15px 0;
+}
+
+
+.table-responsive {
+    max-height: 55vh; /* Limits height on screen, enabling scrollbar */
+    overflow-y: auto;
+    border: 1px solid #E2E8F0;
+    border-radius: 6px;
+    background-color: #ffffff;
+}
+
+.payment-table {
+    width: 100%;
+    border-collapse: collapse;
+}
+
+.payment-table th, .payment-table td {
+    padding: 12px 15px;
+    border: none; 
+    border-right: 1px solid #E2E8F0; /* Only right border for vertical lines */
+    text-align: left;
+    color: #2D3748;
+}
+.payment-table td:last-child,
+.payment-table th:last-child {
+    border-right: none;
+}
+
+.payment-table thead tr {
+    background-color: #EDF2F7; /* Light grey header (like the image) */
+    color: #2D3748;
+    position: sticky; 
+    top: 0;
+    z-index: 10;
+    box-shadow: 0 2px 2px -1px rgba(0, 0, 0, 0.1);
+    border-bottom: 2px solid #E2E8F0;
+}
+
+.payment-table tbody tr {
+    border-bottom: 1px solid #E2E8F0;
+}
+
+.payment-table tbody tr:nth-child(even) {
+    background-color: #F7FAFC; /* Lighter zebra striping */
+}
+.payment-table tbody tr:hover {
+    background-color: #EBF4FF; 
+}
+
+
+/* Align financial columns to the right */
+.payment-table .amount-column {
+    text-align: right;
+    font-weight: 500;
+}
+
+/* ------------------------------------- */
+/* NEW: Hide the print header by default */
+/* ------------------------------------- */
+.print-header {
+    display: none;
+}
 /* ========================================= */
 /* 5. Print Styles for Loan Detail Modal (The crucial part for printing) */
 /* ========================================= */
@@ -524,7 +628,7 @@ body {
         display: block !important;
         opacity: 1 !important;
         width: 100%;
-        height: auto; /* <--- This forces auto-height */
+        height: auto; 
         padding: 0;
         margin: 0;
         overflow: visible;
@@ -548,11 +652,41 @@ body {
     }
 
     /* 4. Hide interactive/non-essential elements within the printed modal */
-    /* Target the class 'print-hide' added to the footer, and the close button */
+    /* Target the class 'print-hide' added to the footer, and the close button */ 
     body.print-modal-active #loanDetailModal .modal-footer,
     body.print-modal-active #loanDetailModal .print-hide {
         display: none !important;
     }
+    
+    /* ------------------------------------- */
+    /* NEW: Show and Style the Printed Header */
+    /* ------------------------------------- */
+    .ledger-content .print-header {
+        visibility: visible !important;
+        display: block !important;
+        text-align: center;
+        color: #000 !important;
+        background-color: #fff !important; 
+        -webkit-print-color-adjust: exact; 
+        print-color-adjust: exact;
+    }
+
+    .ledger-content h4.print-header {
+        font-size: 1.5em;
+        font-weight: 700 !important;
+        text-align: center;
+    }
+
+    .ledger-content span.print-header.address {
+        display: block;
+        font-size: 1em;
+        font-weight: normal !important;
+        color: #555 !important;
+        text-align: center;
+    }
+
+    /* ------------------------------------- */
+    
     /* 5. Force the two-column info summary to stack for a cleaner print flow */
     .info-section-wrapper {
         display: block !important;
@@ -619,33 +753,3 @@ body {
     }
 
 }
-
-/* ========================================= */
-/* Other Styles (Reports, Return Button) */
-/* ========================================= */
-.reports-header button {
-    padding: 8px 16px;
-    margin-left: auto;
-    background-color: #007bff;
-    color: white;
-    border: none;
-    border-radius: 4px;
-    cursor: pointer;
-    font-size: 16px;
-    font-weight: 500;
-    align-self: center; 
-}
-.reports-header button:hover {
-    background-color: #0056b3;
-}
-.reports-header {
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    padding: 10px 20px;
-    border-bottom: 1px solid #ccc;
-}
-.header-title {
-    margin: 0;
-}
-
