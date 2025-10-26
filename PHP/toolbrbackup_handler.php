@@ -8,7 +8,7 @@ require_once 'aadb_connect_handler.php';
 // CRITICAL FIX 1: Define the explicit path to the mysqldump executable.
 // The executable's name is usually 'mysqldump.exe'.
 // You may need to verify this path is correct for your XAMPP installation.
-$mysqldump_path = 'E:\APPLICATIONS\xampp\mysql\bin\mysqldump.exe'; 
+$mysqldump_path = 'C:\xampp\mysql\bin\mysqldump.exe'; 
 // ===================================================================
 
 // Set headers for file download (Uses the DB_NAME constant)

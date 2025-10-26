@@ -33,7 +33,7 @@ try {
     $role = $_POST['role'];
 
     // Validate role against allowed ENUM values
-    $allowed_roles = ['Admin', 'Cashier', 'Collector'];
+    $allowed_roles = ['Admin', 'Manager', 'Loan_Officer'];
     if (!in_array($role, $allowed_roles)) {
         echo json_encode(['success' => false, 'message' => 'Invalid role selected.']);
         exit();
@@ -65,7 +65,7 @@ try {
     $hashed_password = password_hash($password, PASSWORD_DEFAULT);
     
     // Set the default status for a newly created account
-    $status = 'active'; 
+    $status = 'Active'; 
 
     // --- 4. SQL Insertion with Prepared Statements ---
     // Added 'status' to the columns and a placeholder '?' for its value.

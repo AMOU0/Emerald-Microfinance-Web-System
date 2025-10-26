@@ -47,9 +47,43 @@ try {
     $guarantorPhoneNumber = $data['guarantorPhoneNumber'];
 
     // --- START: NEW Loan History Check and Max Loan Logic (Security Layer) ---
-    $maxFirstLoanAmount = 5000.00; // Define the max limit
+    $maxFirstLoanAmount = 5000.00; // Max limit for first loan
+    $maxOutstandingBalance = 2000.00; // NEW: Max outstanding balance limit (₱2,000)
 
-    // 1. Query the database to count existing loans for the client
+    // 1. Check for Existing Net Outstanding Balance (Principal + Interest - Payments)
+    // The query calculates the total obligation minus total payments for all active loans.
+    $sql_outstanding_balance = "
+        SELECT
+            COALESCE(SUM(
+                -- Total Obligation (Principal + Interest)
+                la.loan_amount * (1 + (la.interest_rate / 100))
+                -- Minus Total Payments for this loan
+                - COALESCE(p_summary.total_paid, 0)
+            ), 0) AS net_outstanding_balance
+        FROM
+            loan_applications la
+        LEFT JOIN
+            (SELECT loan_application_id, SUM(amount_paid) AS total_paid FROM payment GROUP BY loan_application_id) p_summary 
+            ON la.loan_application_id = p_summary.loan_application_id
+        WHERE
+            la.client_ID = :clientID 
+            -- MODIFIED: Only count the balance if the loan is Approved, Released/forrelease, and Unpaid.
+            AND la.status = 'Approved' 
+            AND la.release_status IN ('Released', 'forrelease')
+            AND la.paid = 'Unpaid'";
+    
+    $stmt_balance = $pdo->prepare($sql_outstanding_balance);
+    $stmt_balance->bindParam(":clientID", $clientID);
+    $stmt_balance->execute();
+    $balance_history = $stmt_balance->fetch(PDO::FETCH_ASSOC);
+    $total_outstanding_balance = (float)$balance_history['net_outstanding_balance'];
+
+    if ($total_outstanding_balance > $maxOutstandingBalance) {
+        // Throw an exception to stop the transaction
+        throw new Exception("The client has an existing net outstanding loan balance of " . number_format($total_outstanding_balance, 2) . ". The maximum allowed outstanding balance is " . number_format($maxOutstandingBalance, 2) . ".");
+    }
+    
+    // 2. Query the database to count existing loans for the client (Original First Loan Check)
     $sql_loan_count = "SELECT COUNT(*) as loan_count FROM loan_applications WHERE client_ID = :clientID";
     $stmt_count = $pdo->prepare($sql_loan_count);
     $stmt_count->bindParam(":clientID", $clientID);
@@ -57,7 +91,7 @@ try {
     $loan_history = $stmt_count->fetch(PDO::FETCH_ASSOC);
     $loan_count = (int)$loan_history['loan_count'];
 
-    // 2. Check if this is the client's first loan AND if the requested amount exceeds the limit
+    // 3. Check if this is the client's first loan AND if the requested amount exceeds the limit
     if ($loan_count === 0) {
         if ($loan_amount > $maxFirstLoanAmount) {
             // Throw an exception to stop the transaction

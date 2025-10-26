@@ -23,7 +23,7 @@ if ($file['error'] !== UPLOAD_ERR_OK) {
 
 // ===================================================================
 // Path to the MySQL client executable (same as your original definition)
-$mysql_path = 'E:/APPLICATIONS/XAMPP/mysql/bin/mysql.exe'; 
+$mysql_path = 'C:\xampp\mysql\bin\mysql.exe'; 
 // ===================================================================
 
 $temp_file = $file['tmp_name'];

@@ -14,6 +14,9 @@ require_once 'aadb_connect_handler.php'; // Include the file with connectDB()
 try {
     $pdo = connectDB();
 } catch (\PDOException $e) {
+    // Log the error and exit
+    error_log('Database connection failed: ' . $e->getMessage());
+    echo json_encode(['success' => false, 'message' => 'Database connection failed.']);
     exit;
 }
 
@@ -28,8 +31,8 @@ if (empty($user_username) || empty($user_password)) {
     exit();
 }
 
-// ⭐ MODIFIED: Select the 'status' AND 'role' column from the database
-$stmt = $pdo->prepare("SELECT id, username, password_hash, status, role FROM user_accounts WHERE username = :username");
+// ⭐ MODIFIED: Select id, name, username, password_hash, status, and role
+$stmt = $pdo->prepare("SELECT id, name, username, password_hash, status, role FROM user_accounts WHERE username = :username");
 $stmt->bindParam(':username', $user_username);
 $stmt->execute();
 $row = $stmt->fetch(PDO::FETCH_ASSOC); 
@@ -37,27 +40,25 @@ $row = $stmt->fetch(PDO::FETCH_ASSOC);
 if ($row) {
     $db_hashed_password = $row['password_hash'];
     $user_id = $row['id'];
+    $user_role = $row['role'];
+    $user_name = $row['name']; // ⭐ NEW: Get the user's full name
+    $user_status = $row['status'];
     $username_logged_in = $row['username'];
-    $account_status = $row['status']; // Get the account status
-    $user_role = $row['role']; // ⭐ NEW: Get the user role
-
-    // ⭐ NEW: Check if the account is deactivated
-    if (strtolower($account_status) === 'deactive') {
-        log_audit_trail($pdo, $user_id, "Failed login attempt (Account Deactivated) for user: " . $user_username);
-        // Do not disclose the specific reason to the user for security
-        echo json_encode(['success' => false, 'message' => 'Your account is currently inactive. Please contact support.']);
-        exit();
-    }
-
-    // SECURITY: VERIFY THE PASSWORD AGAINST THE HASH
+    
+    // Check if the provided password matches the hashed password
     if (password_verify($user_password, $db_hashed_password)) {
-        // Success! Password and status are both valid.
-        
-        // Securely store user data in the session
+        if ($user_status !== 'Active') {
+            // LOG FAILED LOGIN - INACTIVE USER
+            log_audit_trail($pdo, $user_id, "Failed login attempt (Inactive Account) for user: " . $user_username);
+            echo json_encode(['success' => false, 'message' => 'Account is inactive. Please contact your administrator.']);
+            exit;
+        }
+
+        // 1. SET SESSION VARIABLES
         $_SESSION['user_id'] = $user_id;
-        $_SESSION['username'] = $username_logged_in;
         $_SESSION['logged_in'] = true;
-        $_SESSION['role'] = $user_role; // ⭐ NEW: Store the user role
+        $_SESSION['role'] = $user_role;
+        $_SESSION['name'] = $user_name; // ⭐ CRITICAL FIX: Store the user's name
 
         // 2. LOG SUCCESSFUL LOGIN
         log_audit_trail($pdo, $user_id, "User logged in successfully: " . $username_logged_in . " with role: " . $user_role);
@@ -66,12 +67,8 @@ if ($row) {
         $redirect_page = '';
         switch (strtolower($user_role)) {
             case 'admin':
-                $redirect_page = 'DashBoard.html';
-                break;
             case 'manager':
-                $redirect_page = 'DashBoard.html';
-                break;
-            case 'loan officer':
+            case 'loan_officer':
                 $redirect_page = 'DashBoard.html';
                 break;
             default:

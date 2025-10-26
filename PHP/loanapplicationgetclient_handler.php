@@ -7,7 +7,7 @@ error_reporting(E_ALL);
 // Set content type to JSON
 header('Content-Type: application/json');
 
-// --- Include Database Connection Handler and Connect --- 
+// --- Include Database Connection Handler and Connect ---  
 require_once 'aadb_connect_handler.php';
 try {
     $pdo = connectDB(); // Get the PDO connection object

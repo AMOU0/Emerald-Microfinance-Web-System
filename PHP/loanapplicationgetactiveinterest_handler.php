@@ -7,7 +7,7 @@ $pdo = null;
 
 try {
     // Establish database connection 
-    $pdo = connectDB(); // Get the PDO connection object
+    $pdo = connectDB(); // Get the PDO connection object 
 
     // Fetch the active interest rate from the 'interest_pecent' table
     $sql = "SELECT Interest_Pecent FROM interest_pecent WHERE status = 'activated'";
