@@ -45,7 +45,7 @@
             <div class="user-management-menu">
                 <button id="password-change-btn" class="user-management-menu-button">Password Change</button>
                 <button id="username-change-btn" class="user-management-menu-button">Username Change</button>
-                <button id="account-creation-btn" class="user-management-menu-button">Account Creation</button>
+                <button id="account-creation-btn" class="user-management-menu-button">Create User</button>
                 <button id="existing-accounts-btn" class="user-management-menu-button active">Existing Accounts</button>
             </div>
             <div class="account-creation-form-panel">
@@ -65,27 +65,34 @@
                         <input type="text" id="account-username" name="username" class="form-input">
                     </div>
     <div id="password-fields-container" class="form-field-group">
-    <button type="button" id="reset-password-toggle" class="create-account-button" style="background-color: #f6ad55; margin-bottom: 1rem; display: none;">
-        Reset User Password
-    </button>
+        <button type="button" id="reset-password-toggle" class="create-account-button" style="background-color: #f6ad55; margin-bottom: 1rem; display: none;">
+            Reset User Password
+        </button>
+
+        <div id="password-reset-fields" style="display: none;">
+            <div class="form-field">
+                <label for="new-password" class="form-label">New Password</label>
+                <input type="password" id="new-password" name="new-password" class="form-input" disabled>
+            </div>
+            <div class="form-field">
+                <label for="account-confirm-password" class="form-label">Confirm New Password</label>
+                <input type="password" id="account-confirm-password" name="confirm-new-password" class="form-input" disabled>
+            </div>
+        </div>
+    </div>
     
     <div class="form-field">
-        <label for="account-password" class="form-label">New Password</label>
-        <input type="password" id="account-password" name="password" class="form-input" disabled>
+        <label for="account-status" class="form-label">Status</label>
+        <select id="account-status" name="status" class="form-select" disabled> 
+            <option value="Active">Active</option>
+            <option value="Deactivated">Deactivated</option>
+        </select>
     </div>
-    <div class="form-field">
-        <label for="account-confirm-password" class="form-label">Confirm New Password</label>
-        <input type="password" id="account-confirm-password" name="confirm-password" class="form-input" disabled>
-    </div>
-</div>
-
+    
 <div class="form-field">
     <label for="account-role" class="form-label">Role</label>
     <select id="account-role" name="role" class="form-select" disabled> 
         <option value="" disabled selected>Select a role</option>
-        <option value="Admin">Admin</option>
-        <option value="loan-officer">Loan Officer</option>
-        <option value="Recruiter">Recruiter</option>
     </select>
 </div>
 <div class="form-actions">

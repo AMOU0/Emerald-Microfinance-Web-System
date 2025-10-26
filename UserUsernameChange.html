@@ -3,9 +3,10 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Emerald Microfinance</title>
+    <title>Emerald Microfinance - Change Username</title>
             <script src="JS/enforce_login.js"></script>
     <link rel="stylesheet" href="CSS/userusernamechange_style.css">
+    <!-- Assuming userusernamechange_style.css provides the necessary styling -->
 </head>
 <body>
      <aside class="sidebar">
@@ -45,31 +46,36 @@
             <div class="user-management-menu">
                 <button id="password-change-btn" class="user-management-menu-button">Password Change</button>
                 <button id="username-change-btn" class="user-management-menu-button active">Username Change</button>
-                <button id="account-creation-btn" class="user-management-menu-button">Account Creation</button>
+                <button id="account-creation-btn" class="user-management-menu-button">Create User</button>
                 <button id="existing-accounts-btn" class="user-management-menu-button">Existing Accounts</button>
             </div>
             <div class="account-creation-form-panel">
-                <h2>Change Password</h2>
-                    <form class="account-creation-form">
+                <h2>Change Username</h2>
+                <!-- Message area for feedback -->
+                <div id="feedback-message" style="margin-bottom: 20px; padding: 10px; border-radius: 4px; display: none;"></div>
+                
+                    <form class="account-creation-form" id="username-change-form">
                         <div class="form-field">
-                            <label for="old-password" class="form-label">Old Username</label>
-                            <input type="password" id="old-password" name="old-password" class="form-input">
+                            <label for="old-username" class="form-label">Current Username</label>
+                            <!-- Updated: Added value="Loading..." and class for JS targeting -->
+                            <input type="text" id="old-username" name="old_username" class="form-input current-username-input" value="Loading..." readonly required>
                         </div>
                         <div class="form-field">
-                            <label for="new-password" class="form-label">New Username</label>
-                            <input type="password" id="new-password" name="new-password" class="form-input">
+                            <label for="new-username" class="form-label">New Username</label>
+                            <input type="text" id="new-username" name="new_username" class="form-input" required>
                         </div>
                         <div class="form-field">
-                            <label for="confirm-password" class="form-label">Confirm New Username</label>
-                            <input type="password" id="confirm-password" name="confirm-password" class="form-input">
+                            <label for="confirm-new-username" class="form-label">Confirm New Username</label>
+                            <input type="text" id="confirm-new-username" name="confirm_new_username" class="form-input" required>
                         </div>
                         <div class="form-actions">
-                            <button type="submit" class="create-account-button">SAVE</button>
+                            <button type="submit" class="create-account-button" id="save-button">SAVE</button>
                         </div>
                     </form>
             </div>
         </div>
     </main>
+    <!-- The JavaScript file that handles the form submission -->
     <script src="JS/userusernamechange_function.js"></script>
 </body>
 </html>
