@@ -114,6 +114,13 @@ document.addEventListener('DOMContentLoaded', function() {
     interestRateInput.setAttribute('name', 'interest-rate');
     loanApplicationForm.appendChild(interestRateInput); // Append it to the form
 
+    // ⭐ MODIFICATION 1: Create a hidden input for calculated number of payment periods (terms)
+    const periodsInput = document.createElement('input'); 
+    periodsInput.setAttribute('type', 'hidden');
+    periodsInput.setAttribute('id', 'duration-in-periods');
+    periodsInput.setAttribute('name', 'duration-in-periods');
+    loanApplicationForm.appendChild(periodsInput); // Append it to the form
+
     const nameInputs = [guarantorLastNameInput, guarantorFirstNameInput, guarantorMiddleNameInput];
 
     let clientName = '';
@@ -490,10 +497,14 @@ document.addEventListener('DOMContentLoaded', function() {
                 const formattedEndDate = endDate.toISOString().split('T')[0];
 
                 endDateInput.value = formattedEndDate;
-                durationInput.value = `${periods} ${label} (${days} days)`; 
+                // ⭐ MODIFICATION 2a: Set duration display to strictly "100 days"
+                durationInput.value = `100 days`; 
+                // ⭐ MODIFICATION 2b: Store the calculated payment periods in the hidden field
+                periodsInput.value = periods;
             } else if (endDateInput && durationInput) {
                 endDateInput.value = '';
                 durationInput.value = '';
+                periodsInput.value = 0; // Reset periods input as well
             }
         });
     }
@@ -509,6 +520,9 @@ document.addEventListener('DOMContentLoaded', function() {
         const colateralInput = document.getElementById('colateral');
         const guarantorStreetAddressInput = document.getElementById('guarantorStreetAddress');
         const paymentFrequencySelect = document.getElementById('payment-frequency');
+        // ⭐ MODIFICATION 3a: Get the calculated periods input
+        const periodsInput = document.getElementById('duration-in-periods');
+
 
         const data = {
             clientID: clientIDInput.value.trim(),
@@ -523,6 +537,7 @@ document.addEventListener('DOMContentLoaded', function() {
             'payment-frequency': paymentFrequencySelect ? paymentFrequencySelect.value : '',
             'date-start': startDateInput.value,
             'duration-of-loan': durationInput.value,
+            'duration-in-periods': periodsInput.value, // ⭐ MODIFICATION 3b: NEW DATA FIELD ADDED
             'date-end': endDateInput.value,
             'interest-rate': globalInterestRate
         };
@@ -741,14 +756,15 @@ document.addEventListener('DOMContentLoaded', function() {
         const modalContent = document.createElement('div');
         modalContent.className = 'modal-content modal-content-transition bg-white p-6 rounded-lg shadow-xl w-full max-w-4xl mx-auto';
 
-        const durationMatch = data['duration-of-loan'].match(/^(\d+)/);
-        const durationInPeriods = durationMatch ? parseInt(durationMatch[1], 10) : 1;
+        // ⭐ MODIFICATION 4: Use the explicitly passed number of periods (terms) for calculation
+        // This ensures the schedule is based on the payment frequency terms (e.g., 4, 15, or 100)
+        const durationInPeriods = parseInt(data['duration-in-periods'], 10) || 1; 
         
         const { schedule, totalInterest, totalPayable } = generateLoanSchedule(
             data['loan-amount'],
             data['payment-frequency'],
             data['date-start'],
-            durationInPeriods,
+            durationInPeriods, 
             data['interest-rate']
         );
         
@@ -863,7 +879,7 @@ document.addEventListener('DOMContentLoaded', function() {
                         </div>
                         <div class="summary-item">
                             <span class="label">Term/Duration:</span>
-                            <span class="value">${data['duration-of-loan']}</span>
+                            <span class="value">${data['duration-of-loan']} (${durationInPeriods} payments)</span>
                         </div>
                         <div class="summary-item">
                             <span class="label">Start Date:</span>

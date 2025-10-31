@@ -50,7 +50,7 @@ document.addEventListener('DOMContentLoaded', function() {
         'Overdue': ['admin', 'manager', 'loan_officer'],
         'Due Payments': ['admin', 'manager'],
         'Audit Trail': ['admin'],
-        'Reports Release': ['admin', 'manager', 'loan_officer']
+        'For Release': ['admin', 'manager', 'loan_officer']
     };
 
     // 2. Fetch the current user's role
@@ -162,7 +162,7 @@ document.addEventListener('DOMContentLoaded', function() {
         'duepayments': 'ReportsDuePayments.html',
         'overdue': 'ReportsDelinquentAccounts.html',
         'audittrail': 'ReportsAuditTrail.html',
-        'reportsrelease': 'ReportsRelease.html'
+        'forrelease': 'ReportsRelease.html'
     };
 
     navLinks.forEach(link => {

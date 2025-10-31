@@ -1,3 +1,4 @@
+/* ledgers_function.js remains unchanged */
 document.addEventListener('DOMContentLoaded', function() {
     // 1. Define Access Rules
     // Map of menu item names to an array of roles that have access.
