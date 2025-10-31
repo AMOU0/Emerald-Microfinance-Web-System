@@ -30,9 +30,13 @@ WITH LatestActiveLoan AS (
     FROM
         loan_applications la
     LEFT JOIN
+        -- Only consider 'active' reconstructions
         loan_reconstruct lr ON la.loan_application_id = lr.loan_application_id AND lr.status = 'active'
     WHERE
-        la.status IN ('approved', 'Unpaid')
+        -- 💡 UPDATED STATUS CHECK: Only include actively managed applications
+        la.status IN ('Approved', 'Released', 'Unpaid') 
+        -- 💡 CRITICAL FIX: Explicitly exclude any loan application marked as 'Paid'
+        AND (la.paid IS NULL OR la.paid != 'Paid')
 )
 SELECT
     c.client_ID,
@@ -103,11 +107,11 @@ if ($result) {
         $interest_rate = $row['applicable_interest_rate'] ?? 0;
         
         // Calculation: (Principal * (1 + Rate)) - Payments
-        // The total debt for one active loan (reconstructed or not).
+        // Formula: (Effective Principal * (1 + Effective Rate/100)) - Total Payments
         $total_debt = $total_principal * (1 + ($interest_rate / 100));
         $balance = $total_debt - $amount_paid;
 
-        // **FINAL BALANCE LOGIC:**
+        // **FINAL BALANCE LOGIC:** The JS file will filter out zero balances.
         if ($total_principal > 0 && $balance > 0.01) {
             // Active Loan: Display formatted balance
             $row['balance_display'] = "PHP " . number_format($balance, 2);

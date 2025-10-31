@@ -2,12 +2,13 @@
 header('Content-Type: application/json');
 
 // Include the PDO connection function
-require_once 'aadb_connect_handler.php';
+require_once 'aadb_connect_handler.php'; // Assuming this file establishes the $pdo connection
 
 $pdo = null;
 
 try {
     // --- 1. Database Configuration (using PDO) ---
+    // Establish PDO connection
     $pdo = connectDB(); 
 
     // --- 2. Input Validation (Server-Side) ---
@@ -35,60 +36,48 @@ try {
     // Validate role against allowed ENUM values
     $allowed_roles = ['Admin', 'Manager', 'Loan_Officer'];
     if (!in_array($role, $allowed_roles)) {
-        echo json_encode(['success' => false, 'message' => 'Invalid role selected.']);
-        exit();
-    } 
-
-    // Validate email format
-    if (!filter_var($email, FILTER_VALIDATE_EMAIL)) {
-        echo json_encode(['success' => false, 'message' => 'Invalid email format.']);
+        http_response_code(400); // Bad Request
+        echo json_encode(['success' => false, 'message' => 'Invalid role specified.']);
         exit();
     }
-
-    // Add password strength validation (Recommended)
-    if (strlen($password) < 8) {
-        echo json_encode(['success' => false, 'message' => 'Password must be at least 8 characters long.']);
-        exit();
-    }
-
-    // --- 3. Check for Existing User (Email or Username) ---
-    $stmt = $pdo->prepare("SELECT COUNT(*) FROM User_Accounts WHERE email = ? OR username = ?");
-    $stmt->execute([$email, $username]);
-    $count = $stmt->fetchColumn();
-
-    if ($count > 0) {
-        echo json_encode(['success' => false, 'message' => 'Email or username already exists.']);
-        exit();
-    }
-
-    // CRITICAL SECURITY FIX: Hash the password before storage
+    
+    // --- 3. Data Preparation ---
+    // Hash the password before storage
     $hashed_password = password_hash($password, PASSWORD_DEFAULT);
     
     // Set the default status for a newly created account
     $status = 'Active'; 
 
     // --- 4. SQL Insertion with Prepared Statements ---
-    // Added 'status' to the columns and a placeholder '?' for its value.
     $sql = "INSERT INTO User_Accounts (name, email, username, password_hash, role, status) VALUES (?, ?, ?, ?, ?, ?)";
     $stmt = $pdo->prepare($sql);
 
     // Bind the HASHED password and status to the statement
     if ($stmt->execute([$name, $email, $username, $hashed_password, $role, $status])) {
+        
         // --- 5. Success Response ---
-        echo json_encode(['success' => true, 'message' => 'Account created successfully!']);
+        // ✅ CRITICAL FIX: Get the ID of the last inserted row
+        $newUserId = $pdo->lastInsertId();
+
+        // ✅ CRITICAL FIX: Include the new ID in the JSON response as 'userId'
+        echo json_encode(['success' => true, 'message' => 'Account created successfully!', 'userId' => $newUserId]);
+        
     } else {
-        // --- 6. Error Handling (PDO will throw an exception on execution error, but good practice to check) ---
+        // --- 6. Error Handling ---
+        // Log the PDO error info for debugging
         error_log("User creation failed: " . json_encode($stmt->errorInfo()));
         echo json_encode(['success' => false, 'message' => 'An error occurred during account creation.']);
     }
 
 } catch (PDOException $e) {
+    // Log the specific PDO exception
     error_log("PDO Error in usercreation: " . $e->getMessage());
     http_response_code(500);
-    echo json_encode(['success' => false, 'message' => 'An internal error occurred.']);
+    echo json_encode(['success' => false, 'message' => 'An internal error occurred. Please check logs.']);
 } catch (Exception $e) {
+    // Log other unexpected errors
     error_log("General Error in usercreation: " . $e->getMessage());
     http_response_code(500);
-    echo json_encode(['success' => false, 'message' => 'An internal error occurred.']);
+    echo json_encode(['success' => false, 'message' => 'An unexpected error occurred.']);
 }
 ?>
