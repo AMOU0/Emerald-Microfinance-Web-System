@@ -546,7 +546,7 @@ hr {
 .file-label {
     /* Styles for the custom file input button/label */
     display: block;
-    width: 100%;
+    width: 90%;
     text-align: center;
     background-color: #f3f4f6;
     color: #374151;

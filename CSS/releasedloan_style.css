@@ -1,0 +1,100 @@
+/* --- Page Header for Collection/Reports --- */
+
+/* Note: The 'main-content' class from your dashboard CSS already applies padding. */
+
+.page-header {
+    /* Uses the same background as the main-header: #48BB78 (Emerald Green) */
+    background: #48BB78;
+    color: white;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 16px 30px;
+    border-radius: 8px;
+    margin-bottom: 20px;
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+}
+
+.page-title {
+    font-size: 1.5rem; /* Slightly smaller than the dashboard title */
+    font-weight: bold;
+    margin: 0;
+}
+
+/* Date Box style is reused from the existing 'date-box' in dashboard_style.css */
+
+
+/* --- Total Display Section --- */
+
+.total-display {
+    padding: 10px 0;
+    margin-bottom: 20px;
+    font-size: 1.1rem;
+    font-weight: 500;
+    color: #4A5568; /* Darker gray for the label */
+}
+
+.total-label {
+    margin: 0;
+    font-size: 1.2rem;
+    font-weight: 600;
+}
+
+.total-value {
+    color: #2D3748; /* Very dark text for the value */
+    font-weight: 700;
+    font-size: 1.5rem;
+}
+
+/* --- Data Table Styling --- */
+
+.data-table-container {
+    /* White card-like container for the table */
+    background-color: white;
+    border-radius: 8px;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.05);
+    overflow: hidden; /* Ensures borders/shadows are contained */
+    border: 1px solid #e2e8f0;
+}
+
+.data-table {
+    width: 100%;
+    border-collapse: collapse;
+    table-layout: fixed; /* Helps in distributing column width evenly/as specified */
+}
+
+.data-table th, .data-table td {
+    padding: 12px 15px;
+    text-align: left;
+    border-bottom: 1px solid #edf2f7; /* Light divider line */
+    color: #4A5568;
+    font-size: 0.95rem;
+}
+
+/* Table Header Row Styling (Green) */
+.data-table thead tr {
+    /* Uses a slightly lighter shade of green for the header */
+    background-color: #68D391; 
+    color: #2D3748; /* Darker text for readability */
+    font-weight: 600;
+    text-transform: uppercase;
+}
+
+.table-header {
+    font-weight: 700;
+}
+
+/* Table Body Row Styling */
+.data-table tbody tr {
+    background-color: white;
+    transition: background-color 0.15s ease;
+}
+
+.data-table tbody tr:hover {
+    background-color: #f7fafc; /* Light hover effect */
+}
+
+/* Style for the last row's cells to remove the bottom border if needed */
+.data-table tbody tr:last-child td {
+    border-bottom: none;
+}
