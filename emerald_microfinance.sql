@@ -3,7 +3,7 @@
 -- https://www.phpmyadmin.net/
 --
 -- Host: 127.0.0.1
--- Generation Time: Oct 26, 2025 at 11:02 PM
+-- Generation Time: Nov 07, 2025 at 06:14 PM
 -- Server version: 10.4.32-MariaDB
 -- PHP Version: 8.2.12
 
@@ -170,7 +170,7 @@ INSERT INTO `interest_pecent` (`interest_ID`, `Interest_Pecent`, `status`, `date
 ('I20250008', 12, 'deactivated', '2025-10-14'),
 ('I20250009', 20, 'deactivated', '2025-10-14'),
 ('I20250010', 2, 'deactivated', '2025-10-16'),
-('I20250011', 20, 'activated', '2025-10-16'),
+('I20250011', 20, 'deactivated', '2025-10-16'),
 ('I20250001', 20, 'deactivated', '2025-10-06'),
 ('I20250002', 21, 'deactivated', '2025-10-06'),
 ('I20250003', 2, 'deactivated', '2025-10-06'),
@@ -185,7 +185,7 @@ INSERT INTO `interest_pecent` (`interest_ID`, `Interest_Pecent`, `status`, `date
 ('I20250008', 12, 'deactivated', '2025-10-14'),
 ('I20250009', 20, 'deactivated', '2025-10-14'),
 ('I20250010', 2, 'deactivated', '2025-10-16'),
-('I20250011', 20, 'activated', '2025-10-16'),
+('I20250011', 20, 'deactivated', '2025-10-16'),
 ('I20250001', 20, 'deactivated', '2025-10-06'),
 ('I20250002', 21, 'deactivated', '2025-10-06'),
 ('I20250003', 2, 'deactivated', '2025-10-06'),
@@ -200,7 +200,9 @@ INSERT INTO `interest_pecent` (`interest_ID`, `Interest_Pecent`, `status`, `date
 ('I20250008', 12, 'deactivated', '2025-10-14'),
 ('I20250009', 20, 'deactivated', '2025-10-14'),
 ('I20250010', 2, 'deactivated', '2025-10-16'),
-('I20250011', 20, 'activated', '2025-10-16');
+('I20250011', 20, 'deactivated', '2025-10-16'),
+('I20250012', 10, 'deactivated', '2025-10-28'),
+('I20250013', 20, 'activated', '2025-11-02');
 
 -- --------------------------------------------------------
 
@@ -422,6 +424,19 @@ INSERT INTO `philippine_valid_ids` (`id`, `id_name`, `description`) VALUES
 -- --------------------------------------------------------
 
 --
+-- Table structure for table `released`
+--
+
+CREATE TABLE `released` (
+  `release_id` bigint(20) NOT NULL,
+  `client_ID` bigint(20) NOT NULL,
+  `loan_application_id` bigint(20) NOT NULL,
+  `created_at` date NOT NULL DEFAULT current_timestamp()
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
+
+-- --------------------------------------------------------
+
+--
 -- Table structure for table `user_accounts`
 --
 
@@ -441,7 +456,9 @@ CREATE TABLE `user_accounts` (
 --
 
 INSERT INTO `user_accounts` (`id`, `name`, `email`, `username`, `password_hash`, `role`, `status`, `created_at`) VALUES
-(1, 'Angel Laurence Paras Mallari', 'laurence030703@gmail.com', 'admin', '$2y$10$LIliztEFwp.cFJA9AuSub.7NnwfL/IqRcwvMjGx2kSGzUI1IoKLs6', 'Admin', 'Active', '2025-10-16 10:43:36');
+(1, 'Angel Laurence Paras Mallari', 'laurence030703@gmail.com', 'admin', '$2y$10$LIliztEFwp.cFJA9AuSub.7NnwfL/IqRcwvMjGx2kSGzUI1IoKLs6', 'Admin', 'Active', '2025-10-16 10:43:36'),
+(22, 'Kerby Reyes', 'laurence0307s03@gmail.com', 'Kerby', '$2y$10$ic7WNirPhuVwKvUV8tyiI.wr9fTYRcIzy3/fnYMYE2XeV6YTyBKqq', 'Manager', 'Active', '2025-10-23 17:11:58'),
+(23, 'Akol Joseph', 'asdasdasd@gmail.com', 'Akol', '$2y$10$Alq77WDN7/6ti4MRf9aFwO/fsn/QR0s2g7OnRMOqokZ.G86emCAJq', 'Loan_Officer', 'Active', '2025-10-23 17:12:26');
 
 --
 -- Indexes for dumped tables
@@ -479,7 +496,8 @@ ALTER TABLE `genders`
 ALTER TABLE `guarantor`
   ADD PRIMARY KEY (`guarantor_id`),
   ADD KEY `loan_application_id` (`loan_application_id`),
-  ADD KEY `fk_guarantor_client_id` (`client_ID`);
+  ADD KEY `fk_guarantor_client_id` (`client_ID`),
+  ADD KEY `loan_application_id_2` (`loan_application_id`);
 
 --
 -- Indexes for table `income_salaries`
@@ -538,6 +556,14 @@ ALTER TABLE `philippine_cities`
 ALTER TABLE `philippine_valid_ids`
   ADD PRIMARY KEY (`id`),
   ADD UNIQUE KEY `id_name` (`id_name`);
+
+--
+-- Indexes for table `released`
+--
+ALTER TABLE `released`
+  ADD PRIMARY KEY (`release_id`),
+  ADD KEY `fk_released_client_id` (`client_ID`),
+  ADD KEY `fk_released_loan_application` (`loan_application_id`);
 
 --
 -- Indexes for table `user_accounts`
@@ -606,6 +632,12 @@ ALTER TABLE `philippine_valid_ids`
   MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=11;
 
 --
+-- AUTO_INCREMENT for table `released`
+--
+ALTER TABLE `released`
+  MODIFY `release_id` bigint(20) NOT NULL AUTO_INCREMENT;
+
+--
 -- AUTO_INCREMENT for table `user_accounts`
 --
 ALTER TABLE `user_accounts`
@@ -631,7 +663,8 @@ ALTER TABLE `client_requirements`
 -- Constraints for table `guarantor`
 --
 ALTER TABLE `guarantor`
-  ADD CONSTRAINT `fk_guarantor_client_id` FOREIGN KEY (`client_ID`) REFERENCES `clients` (`client_ID`);
+  ADD CONSTRAINT `fk_guarantor_client_id` FOREIGN KEY (`client_ID`) REFERENCES `clients` (`client_ID`),
+  ADD CONSTRAINT `fk_guarantor_loan_application` FOREIGN KEY (`loan_application_id`) REFERENCES `loan_applications` (`loan_application_id`) ON DELETE CASCADE ON UPDATE CASCADE;
 
 --
 -- Constraints for table `loan_applications`
@@ -652,6 +685,13 @@ ALTER TABLE `payment`
   ADD CONSTRAINT `fk_payment_loan_reconstruct` FOREIGN KEY (`loan_reconstruct_id`) REFERENCES `loan_reconstruct` (`loan_reconstruct_id`) ON DELETE NO ACTION ON UPDATE CASCADE,
   ADD CONSTRAINT `payment_ibfk_1` FOREIGN KEY (`loan_application_id`) REFERENCES `loan_applications` (`loan_application_id`),
   ADD CONSTRAINT `payment_ibfk_2` FOREIGN KEY (`client_id`) REFERENCES `clients` (`client_ID`);
+
+--
+-- Constraints for table `released`
+--
+ALTER TABLE `released`
+  ADD CONSTRAINT `fk_released_client_id` FOREIGN KEY (`client_ID`) REFERENCES `clients` (`client_ID`) ON DELETE NO ACTION ON UPDATE CASCADE,
+  ADD CONSTRAINT `fk_released_loan_application` FOREIGN KEY (`loan_application_id`) REFERENCES `loan_applications` (`loan_application_id`) ON DELETE CASCADE ON UPDATE CASCADE;
 COMMIT;
 
 /*!40101 SET CHARACTER_SET_CLIENT=@OLD_CHARACTER_SET_CLIENT */;

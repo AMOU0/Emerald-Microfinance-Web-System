@@ -1,0 +1,66 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Emerald Microfinance | Released Loan</title>
+    <link rel="stylesheet" href="CSS/dashboard_sytle.css">
+    <link rel="stylesheet" href="CSS/releasedloan_style.css">
+</head>
+<body>
+    <aside class="sidebar">
+        <div class="sidebar-header">
+            Emerald Microfinance
+        </div>
+        <nav class="sidebar-nav">
+            <ul>
+                <li><a href="#" class="nav-link">Dashboard</a></li>
+                <li><a href="#" class="nav-link">Client Creation</a></li>
+                <li><a href="#" class="nav-link">Loan Application</a></li>
+                <li><a href="#" class="nav-link">Pending Accounts</a></li>
+                <li><a href="#" class="nav-link">Payment Collection</a></li>
+                <li><a href="#" class="nav-link">Ledger</a></li>
+                <li><a href="#" class="nav-link active">Reports</a></li>
+                <li><a href="#" class="nav-link">Tools</a></li>
+            </ul>
+        </nav>
+        <div class="sidebar-footer">
+            <button class="logout-button">
+                Logout
+            </button>
+        </div>
+    </aside>
+
+    <main class="main-content">
+        <header class="page-header released-header">
+            <h1 class="page-title">RELEASED LOAN</h1>
+            <div class="date-box">Date: 11/3/2025</div>
+        </header>
+
+        <section class="total-display">
+            <h2 class="total-label">TOTAL AMOUNT RELEASED: <span class="total-value">PHP 0.00</span></h2>
+        </section>
+        
+        <div class="data-table-container">
+            <table class="data-table">
+                <thead>
+<tr>
+            <th class="table-header">Client ID</th>
+            <th class="table-header">Loan ID</th>
+            <th class="table-header">Name</th>
+            <th class="table-header">Principal Amount</th>
+            <th class="table-header">Interest Amount</th>
+            <th class="table-header">Loan Amount</th> 
+            <th class="table-header">Released Amount</th> 
+            <th class="table-header">Date Released</th>
+        </tr>
+                </thead>
+                <tbody id="auditLogTableBody">
+
+                    </tbody>
+            </table>
+        </div>
+    </main>
+        <script src="JS/releasedloan_function.js"></script>
+</body> 
+</html>
