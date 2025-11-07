@@ -33,413 +33,198 @@ document.addEventListener('DOMContentLoaded', function() {
             return response.json();
         })
         .then(data => {
-            if (data.status === 'active' && data.role) {
-                const userRole = data.role;
-                applyAccessControl(userRole);
-            } else {
-                // If not logged in, apply 'none' role.
-                applyAccessControl('none');
-            }
+            const userRole = data.role;
+            // The logic to enforce navigation access should be in enforce_login.js, 
+            // but the role is stored here for direct use if needed.
+            // This script's primary focus is the user creation form.
         })
         .catch(error => {
-            console.error('Error fetching user session:', error);
+            console.error("Error fetching user session data:", error);
+            // Optionally redirect to login or show an error
+            // window.location.href = 'Login.html';
         });
 
-    // 3. Apply Access Control
-    function applyAccessControl(userRole) {
-        // --- Logic for Main Navigation Links (a tags in sidebar-nav) ---
-        const navLinks = document.querySelectorAll('.sidebar-nav ul li a');
-
-        navLinks.forEach(link => {
-            const linkName = link.textContent.trim();
-            const parentListItem = link.parentElement; // The <li> element
-
-            if (accessRules.hasOwnProperty(linkName)) {
-                const allowedRoles = accessRules[linkName];
-
-                if (!allowedRoles.includes(userRole)) {
-                    // Hide the entire list item (<li>)
-                    parentListItem.style.display = 'none';
-                }
-            } else {
-                console.warn(`No main navigation access rule defined for: ${linkName}`);
-            }
-        });
-
-        // ----------------------------------------------------------------
-
-        // --- Logic for Tools Submenu Buttons (.tools-menu) ---
-        const toolsButtons = document.querySelectorAll('.tools-menu .menu-button');
-
-        toolsButtons.forEach(button => {
-            const buttonName = button.textContent.trim();
-
-            if (accessRules.hasOwnProperty(buttonName)) {
-                const allowedRoles = accessRules[buttonName];
-
-                if (!allowedRoles.includes(userRole)) {
-                    // Hide the button
-                    button.style.display = 'none';
-                }
-            } else {
-                console.warn(`No tools submenu access rule defined for: ${buttonName}`);
-            }
-        });
-
-        // ----------------------------------------------------------------
-        
-        // 🚨 NEW LOGIC for User Management Submenu Buttons (.user-management-menu) 🚨
-        const userManagementButtons = document.querySelectorAll('.user-management-menu .user-management-menu-button');
-
-        userManagementButtons.forEach(button => {
-            const buttonName = button.textContent.trim();
-
-            if (accessRules.hasOwnProperty(buttonName)) {
-                const allowedRoles = accessRules[buttonName];
-
-                if (!allowedRoles.includes(userRole)) {
-                    // Hide the button
-                    button.style.display = 'none';
-                }
-            } else {
-                console.warn(`No user management submenu access rule defined for: ${buttonName}`);
-            }
-        });
-        // ----------------------------------------------------------------
-
-    }
-});
-//==============================================================================================================================================
-document.addEventListener('DOMContentLoaded', function() {
-            enforceRoleAccess(['admin']); 
-        });
-/*=============================================================================*/
-
-// --- Global Logging Function (Updated to accept two parameters) ---
-function logUserAction(actionType, description) {
-  // Note: The PHP script (PHP/log_action.php) must be updated 
-  // to handle both 'action' (the type) and 'description' (the detail).
-  
-  // Use URLSearchParams to easily format the POST body
-  const bodyData = new URLSearchParams();
-  bodyData.append('action', actionType); 
-  bodyData.append('description', description); 
-
-  fetch('PHP/log_action.php', {
-    method: 'POST',
-    headers: {
-      'Content-Type': 'application/x-www-form-urlencoded',
-    },
-    body: bodyData.toString()
-  })
-  .then(response => {
-    if (!response.ok) {
-      console.warn('Audit log failed to record:', actionType, description);
-    }
-  })
-  .catch(error => {
-    console.error('Audit log fetch error:', error);
-  });
-}
-// --------------------------------------------------------
-
-const navLinks = document.querySelectorAll('.nav-link');
-const logoutButton = document.querySelector('.logout-button');
-// NEW: Select the buttons in the Tools menu
-const toolsMenuButtons = document.querySelectorAll('.menu-button'); //
-
-// EXISTING: Mapping for the main sidebar navigation links
-const urlMapping = {
-  'dashboard': 'DashBoard.html',
-  'clientcreation': 'ClientCreationForm.html',
-  'loanapplication': 'LoanApplication.html',
-  'pendingaccounts': 'PendingAccount.html',
-  'paymentcollection': 'AccountsReceivable.html',
-  'ledger': 'Ledgers.html',
-  'reports': 'Reports.html',
-  'tools': 'Tools.html'
-};
-
-// NEW: Mapping for the sub-menu buttons inside Tools.html
-const toolsUrlMapping = {
-  'backupandrestore': 'ToolsBR.html', //
-  'interestamount': 'ToolsInterest.html', // 
-  'usermanagement': 'UserManagement.html'
-};
-
-const userManagementUrlMapping = {
-      'passwordchange': 'UserPasswordChange.html',
-      'usernamechange': 'UserUsernameChange.html',
-      'createuser': 'UserCreation.html',
-      'existingaccounts': 'UserExisting.html'
-};
-// --- Main Sidebar Navigation Handler (Existing Logic) ---
-navLinks.forEach(link => {
-  link.addEventListener('click', function(event) {
-    event.preventDefault(); 
-    navLinks.forEach(nav => nav.classList.remove('active'));
-    this.classList.add('active');
-
-    // Normalize the link text for mapping lookup
-    const linkText = this.textContent.toLowerCase().replace(/\s/g, ''); 
-    const targetPage = urlMapping[linkText];
-      
-    if (targetPage) {
-      const actionType = 'NAVIGATION';
-      const description = `Clicked "${this.textContent}" link, redirecting to ${targetPage}`;
-
-      logUserAction(actionType, description);
-      window.location.href = targetPage;
-    } else {
-      console.error('No page defined for this link:', linkText);
-      
-      const actionType = 'NAVIGATION';
-      const description = `FAILED: Clicked link "${this.textContent}" with no mapped page.`;
-      logUserAction(actionType, description);
-    }
-  });
-});
-
-// --- Tools Menu Button Handler (NEW Logic) ---
-toolsMenuButtons.forEach(button => {
-  button.addEventListener('click', function(event) {
-      event.preventDefault();
-
-      // Normalize the button text for mapping lookup
-      // Note: For 'City/ Barangays', the map key uses a '/' which is retained
-      // The normalization must match the key in toolsUrlMapping
-      let buttonText = this.textContent.toLowerCase().replace(/\s/g, '');
-
-      // Special handling for the 'City/ Barangays' key if it doesn't match the normalized string
-      if (buttonText === 'city/barangays') {
-          buttonText = 'city/barangays';
-      } else {
-           // For the other buttons, remove the '/' or any other non-standard chars if present
-           buttonText = buttonText.replace(/[^a-z0-9]/g, '');
-      }
-
-      const targetPage = toolsUrlMapping[buttonText];
-
-      if (targetPage) {
-          const actionType = 'NAVIGATION'; // New action type for tool usage
-          const description = `Accessed tool "${this.textContent}", loading page ${targetPage}`;
-
-          // Log the action before redirect
-          logUserAction(actionType, description);
-
-          // Perform the page redirect
-          window.location.href = targetPage;
-      } else {
-          console.error('No page defined for this tool button:', this.textContent);
-          
-          // Log the failed attempt
-          const actionType = 'NAVIGATION';
-          const description = `FAILED: Clicked tool "${this.textContent}" with no mapped page.`;
-          logUserAction(actionType, description);
-      }
-  });
-});
-// ---------------------------------------------
-
-// --- User Management Menu Button Handler (NEW Logic) ---
-const userManagementButtons = document.querySelectorAll('.user-management-menu-button');
-
-userManagementButtons.forEach(button => {
-  button.addEventListener('click', function(event) {
-      event.preventDefault();
-
-      // Normalize the button text for mapping lookup
-      let buttonText = this.textContent.toLowerCase().replace(/\s/g, '');
-
-      // Remove any non-alphanumeric characters to match the keys in userManagementUrlMapping
-      buttonText = buttonText.replace(/[^a-z0-9]/g, '');
-
-      const targetPage = userManagementUrlMapping[buttonText];
-
-      if (targetPage) {
-          const actionType = 'NAVIGATION'; // Action type for user management navigation
-          const description = `Accessed user management option "${this.textContent}", loading page ${targetPage}`;
-
-          // Log the action before redirect
-          logUserAction(actionType, description);
-
-          // Perform the page redirect
-          window.location.href = targetPage;
-      } else {
-          console.error('No page defined for this user management button:', this.textContent);
-          
-          // Log the failed attempt
-          const actionType = 'NAVIGATION';
-          const description = `FAILED: Clicked user management option "${this.textContent}" with no mapped page.`;
-          logUserAction(actionType, description);
-      }
-  });
-});
-// ---------------------------------------------
- 
-// Handle the logout button securely (Existing Logic)
-if (logoutButton) {
-  logoutButton.addEventListener('click', function() {
-    window.location.href = 'PHP/check_logout.php'; 
-  });
-}
-
-
-/*================================= */
-// JS/usercreation_function.js
-
-// Add an event listener to the form element using its class name.
-document.querySelector('.account-creation-form').addEventListener('submit', async function(event) {
-    event.preventDefault(); // Prevent the default form submission behavior
-
-    // Get a reference to the form element itself.
-    const form = event.target;
-    // Get references to the status message area and the submit button.
+    // 3. User Creation Form Logic
+    const form = document.getElementById('user-creation-form');
     const statusMessage = document.getElementById('status-message');
-    const submitButton = document.querySelector('.create-account-button');
+    const submitButton = form.querySelector('.create-account-button');
 
-    // --- Client-side Validation ---
-    // Retrieve and trim the values from all form fields.
-    const name = form.elements['name'].value.trim();
-    const email = form.elements['email'].value.trim();
-    const username = form.elements['username'].value.trim();
-    const password = form.elements['password'].value;
-    const confirmPassword = form.elements['confirm-password'].value;
-    const role = form.elements['role'].value;
+    // 4. Client-side Validation (for immediate user feedback)
+    function validateForm(formData) {
+        const name = formData.get('name').trim();
+        const email = formData.get('email').trim();
+        const username = formData.get('username').trim();
+        const password = formData.get('password');
+        const confirmPassword = formData.get('confirm-password');
+        const role = formData.get('role');
 
-    // Clear any previous status messages.
-    statusMessage.textContent = '';
-    // Hide the status message div initially.
-    statusMessage.style.display = 'none';
-
-    // Check if any fields are empty.
-    if (!name || !email || !username || !password || !confirmPassword || !role) {
-        statusMessage.textContent = 'Please fill out all fields.';
-        statusMessage.style.display = 'block';
-        statusMessage.style.color = 'red';
-        return;
-    }
-
-    // Check if the passwords match.
-    if (password !== confirmPassword) {
-        statusMessage.textContent = 'Passwords do not match.';
-        statusMessage.style.display = 'block';
-        statusMessage.style.color = 'red';
-        return;
-    }
-
-    // Simple password length validation.
-    if (password.length < 8) {
-        statusMessage.textContent = 'Password must be at least 8 characters long.';
-        statusMessage.style.display = 'block';
-        statusMessage.style.color = 'red';
-        return;
-    }
-
-    // --- Form Submission via Fetch API ---
-    // Disable the button and change its text to provide user feedback.
-    submitButton.disabled = true;
-    submitButton.textContent = 'Creating Account...';
-    // Display a processing message.
-    statusMessage.textContent = 'Processing...';
-    statusMessage.style.display = 'block';
-    statusMessage.style.color = 'blue';
-    
-    // Create a FormData object from the form to easily handle form data.
-    const formData = new FormData(form);
-    // Do not send the confirm password to the server.
-    formData.delete('confirm-password');
-
-    // NOTE: logUserAction is defined in the outer DOMContentLoaded scope.
-    // Re-defining a local reference for clarity and guaranteed access (closure scope)
-    const logUserAction = (actionType, description, targetTable = null, targetId = null) => {
-        const bodyData = new URLSearchParams();
-        bodyData.append('action', actionType); 
-        bodyData.append('description', description); 
-
-        if (targetTable) {
-            bodyData.append('target_table', targetTable);
+        if (!name || !email || !username || !password || !confirmPassword || !role) {
+            return { valid: false, message: 'All fields are required.' };
         }
-        if (targetId) {
-            bodyData.append('target_id', targetId);
+
+        if (password.length < 8) {
+            return { valid: false, message: 'Password must be at least 8 characters long.' };
         }
-        
+
+        if (password !== confirmPassword) {
+            return { valid: false, message: 'Password and Confirm Password do not match.' };
+        }
+
+        const emailPattern = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+        if (!emailPattern.test(email)) {
+            return { valid: false, message: 'Please enter a valid email address.' };
+        }
+
+        // Additional: Check if role is one of the allowed values
+        const allowedRoles = ['Admin', 'Manager', 'Loan_Officer'];
+        if (!allowedRoles.includes(role)) {
+            return { valid: false, message: 'Invalid role selected.' };
+        }
+
+        return { valid: true };
+    }
+
+
+    // 5. User Action Logging Function
+    /**
+     * Sends an action log to the server.
+     * @param {string} action - The type of action (e.g., 'CREATED', 'UPDATED', 'DELETED', 'LOGIN').
+     * @param {string} description - Detailed description of the action.
+     * @param {string} [targetTable=''] - The database table affected (e.g., 'users', 'loans').
+     * @param {number|string} [targetId=0] - The ID of the row affected.
+     */
+    function logUserAction(action, description, targetTable = '', targetId = 0) {
+        // NOTE: This assumes an existing log_action.php handler is in the PHP directory
         fetch('PHP/log_action.php', {
             method: 'POST',
             headers: {
                 'Content-Type': 'application/x-www-form-urlencoded',
             },
-            body: bodyData.toString()
+            body: new URLSearchParams({
+                action: action,
+                description: description,
+                target_table: targetTable,
+                target_id: targetId
+            })
         })
         .then(response => {
             if (!response.ok) {
-                console.warn('Audit log failed to record (Form Handler):', actionType, description);
+                console.error("Failed to log action. Server response not OK.");
             }
+            return response.text(); // Use .text() as log handlers often don't return JSON
+        })
+        .then(logResponseText => {
+            // console.log("Action log recorded:", logResponseText);
         })
         .catch(error => {
-            console.error('Audit log fetch error (Form Handler):', error);
+            console.error("Error sending action log:", error);
         });
-    };
+    }
 
-    try {
-        // Send the form data to the PHP script.
-        const response = await fetch('PHP/usercreation_handler.php', {
-            method: 'POST',
-            body: formData
-        });
+    // 6. Handle Form Submission
+    form.addEventListener('submit', async function(event) {
+        event.preventDefault(); // Stop the default form submission
 
-        // Check if the network response was successful.
-        if (!response.ok) {
-            throw new Error('Network response was not ok');
+        const formData = new FormData(form);
+        const name = formData.get('name');
+        const username = formData.get('username');
+        const role = formData.get('role');
+        
+        // Disable the button and show loading state
+        submitButton.disabled = true;
+        submitButton.textContent = 'Creating...';
+        statusMessage.textContent = ''; // Clear previous message
+        
+        // Client-side validation
+        const validation = validateForm(formData);
+        if (!validation.valid) {
+            statusMessage.textContent = validation.message;
+            statusMessage.style.color = 'red';
+            submitButton.disabled = false;
+            submitButton.textContent = 'Create';
+            return;
         }
 
-        // Parse the JSON response from the server.
-        // ASSUMPTION: The PHP handler now returns the new user's ID as 'user_id'
-        const result = await response.json();
-        const newUserId = result.user_id || null; // Safely get the ID
+        try {
+            // Send the data to the PHP handler
+            const response = await fetch('PHP/usercreation_handler.php', {
+                method: 'POST',
+                body: formData
+            });
 
-        // Check the 'success' property of the server response.
-        if (result.success) {
-            statusMessage.textContent = result.message;
-            statusMessage.style.color = 'green';
-            form.reset(); // Clear the form on successful Create User.
-            
-            // --- LOG SUCCESSFUL USER CREATION ---
-            // MODIFIED: Added targetTable ('users') and targetId (newUserId)
-            logUserAction(
-                'CREATED', 
-                `New user created successfully: Username: ${username}, Role: ${role}, Name: ${name}`,
-                'users',
-                newUserId
-            );
+            // Check for network or HTTP error (e.g., 500 server error)
+            if (!response.ok) {
+                throw new Error(`HTTP error! status: ${response.status}`);
+            }
 
-        } else {
-            statusMessage.textContent = result.message;
+            const result = await response.json();
+
+            // Check if the server response indicates success
+            if (result.success) {
+                statusMessage.textContent = result.message;
+                statusMessage.style.color = 'green';
+                form.reset(); // Clear the form on success
+                
+                // ✅ FIX: Get the actual ID from the server response
+                const newUserId = result.userId; 
+                
+                // --- LOG SUCCESSFUL USER CREATION ---
+                // MODIFIED: Added targetTable ('users') and now correctly using newUserId
+                logUserAction(
+                    'CREATED', 
+                    `New user created successfully: Username: ${username}, Role: ${role}, Name: ${name}`,
+                    'users',
+                    newUserId 
+                );
+
+            } else {
+                statusMessage.textContent = result.message;
+                statusMessage.style.color = 'red';
+
+                // --- LOG FAILED USER CREATION (Server-side) ---
+                // MODIFIED: Called logUserAction without targetTable/targetId
+                logUserAction(
+                    'CREATED', 
+                    `Failed to create user: Username: ${username}, Role: ${role}, Message: ${result.message}`
+                );
+            }
+        } catch (error) {
+            // Handle any errors that occurred during the fetch request.
+            statusMessage.textContent = 'An error occurred. Please try again.';
             statusMessage.style.color = 'red';
-
-            // --- LOG FAILED USER CREATION (Server-side) ---
+            console.error('Submission error:', error);
+            
+            // --- LOG USER CREATION ERROR (Network/Exception) ---
             // MODIFIED: Called logUserAction without targetTable/targetId
             logUserAction(
                 'CREATED', 
-                `Failed to create user: Username: ${username}, Role: ${role}, Message: ${result.message}`
+                `Error during user creation attempt for Username: ${username}, Details: ${error.message}`
             );
-        }
-    } catch (error) {
-        // Handle any errors that occurred during the fetch request.
-        statusMessage.textContent = 'An error occurred. Please try again.';
-        statusMessage.style.color = 'red';
-        console.error('Submission error:', error);
-        
-        // --- LOG USER CREATION ERROR (Network/Exception) ---
-        // MODIFIED: Called logUserAction without targetTable/targetId
-        logUserAction(
-            'CREATED', 
-            `Error during user creation attempt for Username: ${username}, Details: ${error.message}`
-        );
 
-    } finally {
-        // Re-enable the button and reset its text, regardless of success or failure.
-        submitButton.disabled = false;
-        submitButton.textContent = 'Create';
+        } finally {
+            // Re-enable the button and reset its text, regardless of success or failure.
+            submitButton.disabled = false;
+            submitButton.textContent = 'Create';
+        }
+    });
+
+    // Logout Functionality (using the existing button)
+    const logoutButton = document.querySelector('.logout-button');
+    if (logoutButton) {
+        logoutButton.addEventListener('click', function() {
+            logUserAction('LOGOUT', 'User logged out successfully.');
+            // This fetch assumes a handler in 'PHP/logout.php'
+            fetch('PHP/logout.php', { method: 'POST' })
+                .then(() => {
+                    // Redirect to login page after server-side session destruction
+                    window.location.href = 'Login.html';
+                })
+                .catch(error => {
+                    console.error('Logout error:', error);
+                    alert('Could not log out properly. Please close your browser.');
+                    // Redirect anyway as a fallback
+                    window.location.href = 'Login.html';
+                });
+        });
     }
 });

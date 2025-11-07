@@ -239,8 +239,8 @@ document.addEventListener('DOMContentLoaded', function() {
         document.addEventListener('DOMContentLoaded', () => {
             // 1. Define the mapping of tile keys (from HTML) to their respective URLs
             const tileUrlMap = {
-                'tile-1': 'AccountsReceivable.html', 
-                'tile-2': 'ReportsRelease.html', 
+                'tile-1': 'CollectionToday.html', 
+                'tile-2': 'ReleasedLoan.html', 
                 'tile-3': 'ReportsDuePayments.html', // Due Today (Report)
                 'tile-5': 'ReportsDelinquentAccounts.html', 
                 'tile-6': 'PendingAccount.html', 

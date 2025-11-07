@@ -344,7 +344,7 @@ document.addEventListener('DOMContentLoaded', function() {
 
         const idList = loanApplicationIds.join(',');
 
-        const actionType = 'BATCH_UPDATE'; // Still using batch name, but operation is single-item
+        const actionType = 'UPDATE'; // Still using  name, but operation is single-item
         const description = `Loan Application Status changed to '${status.toUpperCase()}' for ID: ${idList}`;
 
         fetch('PHP/pendingaccountupdateloanstatus_handler.php', {

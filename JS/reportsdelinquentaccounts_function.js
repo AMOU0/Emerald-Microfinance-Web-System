@@ -250,16 +250,34 @@ document.addEventListener('DOMContentLoaded', () => {
         return d;
     }
     
+    /**
+     * Calculates the number of days between two dates.
+     * @param {string} dateStartString 
+     * @param {string} dateEndString 
+     * @returns {number} total days
+     */
+    function calculateTotalDays(dateStartString, dateEndString) {
+        const start = new Date(dateStartString);
+        const end = new Date(dateEndString);
+        
+        // Calculate the difference in milliseconds
+        const diffTime = Math.abs(end.getTime() - start.getTime());
+        // Convert to days (1000 ms/s * 60 s/min * 60 min/hr * 24 hr/day)
+        // Using Math.ceil for approximation to PHP's interval days calculation
+        const diffDays = Math.ceil(diffTime / (1000 * 60 * 60 * 24)); 
+        
+        return diffDays; 
+    }
+
     // -------------------------------------------------------------------------
     // --- CORE CALCULATION LOGIC ---
     // -------------------------------------------------------------------------
 
     /**
      * Calculates the number of payments due between the start date and today based on frequency.
-     * Corrected to use date arithmetic for better accuracy and stop at the actual number of installments (maxIterations) 
-     * which should be calculated from loan duration, not an arbitrary 10 years.
+     * FIX: Now calculates the first payment due AFTER the first period, matching the PHP schedule.
      */
-    function calculateExpectedPaymentsDue(startDateString, frequency, today) {
+    function calculateExpectedPaymentsDue(startDateString, frequency, today, totalInstallments) { 
         const startDate = resetTimeToMidnight(startDateString);
         const todayMidnight = resetTimeToMidnight(today);
 
@@ -268,77 +286,85 @@ document.addEventListener('DOMContentLoaded', () => {
         }
 
         let count = 0;
-        let currentDate = new Date(startDate);
-        
-        // Loop up to 500 payments max to prevent infinite loops (arbitrary safety limit)
         const maxIterations = 500; 
         let iteration = 0;
         
         const freqLower = frequency.toLowerCase();
         
-        // Start counting from the first scheduled payment date (startDate is assumed to be the first payment date)
-        while (currentDate <= todayMidnight && iteration < maxIterations) {
-            count++;
-            iteration++;
+        // Create the FIRST due date by adding the interval to the start date (matching PHP schedule logic)
+        let nextDueDate = new Date(startDate);
+        
+        if (freqLower.includes('weekly')) {
+            nextDueDate.setDate(nextDueDate.getDate() + 7);
+        } else if (freqLower.includes('monthly')) {
+            nextDueDate.setMonth(nextDueDate.getMonth() + 1);
+        } else if (freqLower.includes('daily')) {
+            nextDueDate.setDate(nextDueDate.getDate() + 1);
+        } else {
+            nextDueDate.setMonth(nextDueDate.getMonth() + 1); 
+        }
+
+        nextDueDate = resetTimeToMidnight(nextDueDate); 
+        
+        // Loop from the first due date forward
+        while (nextDueDate <= todayMidnight && iteration < maxIterations) {
             
-            // Advance the date based on frequency
-            if (freqLower.includes('weekly')) {
-                currentDate.setDate(currentDate.getDate() + 7);
-            } else if (freqLower.includes('monthly')) {
-                // Use setMonth to correctly handle month boundaries (e.g., Jan 31 -> Feb 28/29)
-                currentDate.setMonth(currentDate.getMonth() + 1);
-            } else if (freqLower.includes('daily')) {
-                currentDate.setDate(currentDate.getDate() + 1);
-            } else {
-                // Default to Monthly if frequency is unknown
-                currentDate.setMonth(currentDate.getMonth() + 1); 
+            if (count >= totalInstallments) {
+                 break;
             }
             
-            // Re-normalize time after date manipulation
-            currentDate = resetTimeToMidnight(currentDate); 
+            count++; 
+            iteration++;
+            
+            // Advance the date for the NEXT payment
+            if (freqLower.includes('weekly')) {
+                nextDueDate.setDate(nextDueDate.getDate() + 7);
+            } else if (freqLower.includes('monthly')) {
+                nextDueDate.setMonth(nextDueDate.getMonth() + 1);
+            } else if (freqLower.includes('daily')) {
+                nextDueDate.setDate(nextDueDate.getDate() + 1);
+            } else {
+                nextDueDate.setMonth(nextDueDate.getMonth() + 1); 
+            }
+            
+            nextDueDate = resetTimeToMidnight(nextDueDate); 
         }
         
         return count; 
     }
     
     /**
-     * Calculates the required installment amount for the loan.
-     * Refined installment calculation to be more accurate based on the provided parameters.
+     * Calculates the required installment amount for the loan, matching the PHP logic.
      */
     function calculateAmortizationDetails(principal_amount, interest_rate, date_start, date_end, payment_frequency) {
         const principal = parseFloat(principal_amount);
-        const rate = parseFloat(interest_rate);
+        const rate = parseFloat(interest_rate); 
         
-        // Use time difference for more accurate duration calculation
-        const durationMs = new Date(date_end) - new Date(date_start);
-        const totalDurationDays = durationMs / (1000 * 3600 * 24);
-        
-        // This is a Simple Interest calculation, assuming the rate is Annual Percentage Rate (APR)
-        const totalInterest = principal * (rate / 100) * (totalDurationDays / 365.25);
+        // --- ADD-ON INTEREST LOGIC: Principal + (Rate/100) Add-on Interest ---
+        const interestMultiplier = rate / 100;
+        const totalInterest = principal * interestMultiplier;
         const totalLoanAmount = principal + totalInterest;
         
+        // --- PERIODS LOGIC (Matching PHP) ---
+        const total_days = calculateTotalDays(date_start, date_end);
         let totalInstallments = 0;
         const freqLower = payment_frequency.toLowerCase();
         
-        if (totalDurationDays < 1) { // Handle very short loans, or invalid dates
-             totalInstallments = 1;
+        let freq_days = 30; // Default to monthly
+        if (freqLower.includes('daily')) {
+            freq_days = 1;
         } else if (freqLower.includes('weekly')) {
-            totalInstallments = Math.round(totalDurationDays / 7);
-            // Ensure at least 1 installment if loan is active
-            if (totalInstallments < 1) totalInstallments = 1;
-        } else if (freqLower.includes('monthly')) {
-            const durationMonths = totalDurationDays / 30.4375; // Average days in a month
-            totalInstallments = Math.round(durationMonths);
-            if (totalInstallments < 1) totalInstallments = 1;
-        } else if (freqLower.includes('daily')) {
-            totalInstallments = Math.round(totalDurationDays);
-        } else {
-            totalInstallments = 1; // Default to single payment if frequency is unknown
-        }
+            freq_days = 7;
+        } 
+        // For monthly, freq_days remains 30, matching the PHP's fixed 30-day assumption.
 
+        // num_payments = max(1, floor(total_days / freq_days)) - EXACT PHP LOGIC
+        totalInstallments = Math.max(1, Math.floor(total_days / freq_days));
+        
+        // Calculate installment amount
         const installmentAmount = totalInstallments > 0 ? totalLoanAmount / totalInstallments : totalLoanAmount;
 
-        return { installment_amount: installmentAmount };
+        return { installment_amount: installmentAmount, totalInstallments: totalInstallments };
     }
 
 
@@ -361,20 +387,20 @@ document.addEventListener('DOMContentLoaded', () => {
             
             const totalPaid = parseFloat(loan.total_amount_paid) || 0; // Default to 0 if null/invalid
             
-            // Calculate amortization and installment amount
+            // Calculate amortization and installment amount, and get totalInstallments
             const amortization = calculateAmortizationDetails(
                 loan.principal_amount, loan.interest_rate, loan.date_start, loan.date_end, loan.payment_frequency
             );
             
-            // Get count of all installments that should have been paid by today
+            // Get count of all installments that should have been paid by today, limited by totalInstallments
             const paymentsDueCount = calculateExpectedPaymentsDue(
-                loan.date_start, loan.payment_frequency, todayMidnight
+                loan.date_start, loan.payment_frequency, todayMidnight, amortization.totalInstallments 
             );
             
             // Calculate total amount that should have been paid
             const expectedAmountDue = paymentsDueCount * amortization.installment_amount;
             
-            // Delinquency = Expected Due - Actual Paid
+            // Delinquency = Expected Due - Actual Paid (No Penalty)
             const delinquencyAmount = expectedAmountDue - totalPaid;
             
             // Flag as delinquent if the amount past due is greater than a small tolerance (to avoid floating point errors)

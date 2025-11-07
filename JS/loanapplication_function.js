@@ -248,73 +248,81 @@ document.addEventListener('DOMContentLoaded', function() {
     window.closeModal = closeModal;
 
     /**
-     * Helper function to generate a loan payment schedule (Equal Principal Payment Method).
+     * Helper function to generate a loan payment schedule (Fixed Installment/Equal Total Payment Method).
+     * This logic is aligned with the PHP accountsreceivableselectsched_handle.php, including the strict day-based due date calculation.
      */
     function generateLoanSchedule(principal, frequency, startDateStr, durationInPeriods, interestRate) {
         const schedule = [];
         const startDate = new Date(startDateStr);
-        let currentDate = new Date(startDateStr);
         
-        let remainingBalance = principal;
-        const principalPerPayment = principal / durationInPeriods;
-
+        // --- 1. Calculate Loan Totals (Simple Interest) ---
         const totalInterest = principal * (interestRate / 100);
-        const interestPerPayment = totalInterest / durationInPeriods;
+        const totalPayable = principal + totalInterest;
+        
+        // --- 2. Calculate Fixed Installment Components ---
+        // Installment amounts are fixed based on total repayment/periods (Fixed Installment/Equal Total Payment)
+        const totalRepaymentPerPeriod = totalPayable / durationInPeriods;
+        const principalPerPeriod = principal / durationInPeriods;
+        const interestPerPeriod = totalInterest / durationInPeriods;
 
-        // Helper to determine the next payment date based on frequency
-        const getNextPaymentDate = (date, freq) => {
-            let nextDate = new Date(date);
+        // --- 3. Determine Fixed Day Interval (Strictly matching PHP logic) ---
+        const freqDays = (function() {
+            const freq = frequency.toLowerCase();
             switch (freq) {
-                case 'daily':
-                    nextDate.setDate(date.getDate() + 1);
-                    break;
-                case 'weekly':
-                    nextDate.setDate(date.getDate() + 7);
-                    break;
-                case 'monthly':
-                    nextDate.setMonth(date.getMonth() + 1);
-                    if (nextDate.getDate() !== date.getDate()) {
-                        nextDate.setDate(0); 
-                    }
-                    break;
-                default:
-                    nextDate.setDate(date.getDate() + 1);
+                case 'daily': return 1;
+                case 'weekly': return 7;
+                case 'monthly': return 30; // STRICTLY 30 days, matching PHP $freq_days
+                default: return 30;
             }
-            return nextDate;
-        };
+        })();
+        
+        // --- 4. Generate Schedule ---
+        let remainingBalance = totalPayable; 
+        
+        // Initialize the current due date (Matching PHP: $current_due_date->modify("+$freq_days days"); BEFORE the loop)
+        let currentDate = new Date(startDate);
+        currentDate.setDate(startDate.getDate() + freqDays); // First payment is here
 
         for (let i = 1; i <= durationInPeriods; i++) {
             
-            let paymentDate = currentDate;
+            let paymentDate = new Date(currentDate); // Use the calculated due date for this period
 
-            if (i > 1) {
-                 paymentDate = getNextPaymentDate(currentDate, frequency);
-                 currentDate = paymentDate;
-            }
-
-            const principalPayment = (i === durationInPeriods) ? remainingBalance : principalPerPayment;
-            const interestPayment = interestPerPayment; 
-            const totalPayment = principalPerPayment + interestPerPayment;
+            // Calculate payments for this period
+            let totalPayment = totalRepaymentPerPeriod;
+            let principalPayment = principalPerPeriod;
+            let interestPayment = interestPerPeriod;
             
-            remainingBalance = Math.max(0, remainingBalance - principalPayment);
+            // Adjust the last payment for any rounding differences
+            if (i === durationInPeriods) {
+                const totalPaidSoFar = schedule.reduce((sum, row) => sum + row.totalPayment, 0);
+                totalPayment = totalPayable - totalPaidSoFar;
+                // Simple allocation of rounding error to the principal component for the last period
+                principalPayment = totalPayment - interestPerPeriod;
+            }
+            
+            // Update remaining balance (based on payment being made)
+            remainingBalance = Math.max(0, remainingBalance - totalPayment);
             
             schedule.push({
                 'period': i,
+                // Format the date for the schedule
                 'dueDate': paymentDate.toLocaleDateString('en-US'),
-                'principal': principalPayment,
-                'interest': interestPayment,
-                'totalPayment': totalPayment,
-                'balance': (i === durationInPeriods) ? 0 : remainingBalance
+                // Round all values for clean display and calculation integrity
+                'principal': Math.round(principalPayment * 100) / 100,
+                'interest': Math.round(interestPayment * 100) / 100,
+                'totalPayment': Math.round(totalPayment * 100) / 100,
+                'balance': (i === durationInPeriods) ? 0 : Math.round(remainingBalance * 100) / 100
             });
+            
+            // Calculate the due date for the NEXT installment (Matching PHP: $current_due_date->modify("+$freq_days days"); inside the loop)
+            currentDate.setDate(currentDate.getDate() + freqDays); 
         }
         
-        const totalPayable = principal + totalInterest;
-
         return {
             schedule,
-            totalInterest,
-            totalPayable,
-            principalPerPayment, 
+            totalInterest: Math.round(totalInterest * 100) / 100,
+            totalPayable: Math.round(totalPayable * 100) / 100,
+            principalPerPeriod: Math.round(principalPerPeriod * 100) / 100,
             totalPayments: durationInPeriods
         };
     }
@@ -446,31 +454,47 @@ document.addEventListener('DOMContentLoaded', function() {
          * Function to calculate duration based on frequency, fixed to 100 days.
          * The number of 'periods' is calculated based on the 100-day duration.
          */
+// ...
+        /**
+         * Function to calculate duration based on frequency, fixed to 100 days.
+         * The number of 'periods' is calculated based on the 100-day duration.
+         */
         const calculateDuration = (frequency) => {
             const FIXED_DAYS = 100;
             let periods = 0;
             let label = '';
             
+            // NOTE: This logic determines the NUMBER of periods and total days, 
+            // consistent with the PHP's goal of dividing the 100 days into payment terms.
             switch (frequency) {
                 case 'daily': 
-                    periods = FIXED_DAYS; 
+                    // Matches PHP: floor(100 / 1) = 100
+                    periods = Math.floor(FIXED_DAYS / 1); 
                     label = 'days';
                     break;
                 case 'weekly': 
-                    periods = Math.ceil(FIXED_DAYS / 7); 
+                    // Matches PHP: floor(100 / 7) = 14
+                    periods = Math.floor(FIXED_DAYS / 7); 
                     label = 'weeks';
                     break;
                 case 'monthly': 
-                    periods = 4; // 4 periods covers the 100 days.
+                    // STRICTLY MATCHES PHP: floor(100 / 30) = 3
+                    periods = Math.floor(FIXED_DAYS / 30); 
                     label = 'months';
                     break;
                 default: 
-                    return { days: 0, periods: 0, label: 'days' };
+                    // Fallback to monthly (3 periods)
+                    periods = Math.floor(FIXED_DAYS / 30); 
+                    label = 'days';
+                    break;
             }
+            
+            // Matches PHP: max(1, periods)
+            periods = Math.max(1, periods);
 
             return { days: FIXED_DAYS, periods: periods, label: label };
         };
-
+// ...
         const paymentFrequencySelect = document.getElementById('payment-frequency');
         
         // Add listener to Payment Frequency
@@ -498,7 +522,7 @@ document.addEventListener('DOMContentLoaded', function() {
 
                 endDateInput.value = formattedEndDate;
                 // ⭐ MODIFICATION 2a: Set duration display to strictly "100 days"
-                durationInput.value = `100 days`; 
+                durationInput.value = `${days} days`; 
                 // ⭐ MODIFICATION 2b: Store the calculated payment periods in the hidden field
                 periodsInput.value = periods;
             } else if (endDateInput && durationInput) {
