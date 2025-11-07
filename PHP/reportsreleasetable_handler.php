@@ -2,7 +2,7 @@
 header('Content-Type: application/json');
 
 // Include your database connection handler
-require_once 'aadb_connect_handler.php'; 
+require_once 'aadb_connect_handler.php'; // Corrected to use the same file as reportsrelease_handler.php
 
 $response = [
     'success' => false,
@@ -14,11 +14,8 @@ try {
     // Establish PDO connection
     $pdo = connectDB();
 
-    // Corrected SQL Query: 
-    // - Uses 'loan_applications' (aliased as 'l') and 'clients' (aliased as 'c').
-    // - Uses 'l.loan_application_id' (to match the table schema).
-    // - Uses 'l.loan_amount' (to match the table schema, assuming it serves as the amount due at this stage).
-    // - Filters for 'release_status = 'forrelease'' (to show pending reports).
+    // SQL Query to fetch loans ready for release.
+    // Filters for 'release_status = 'forrelease'' (to show pending reports).
     $sql = "
         SELECT 
             l.loan_application_id AS loan_id,
@@ -31,7 +28,7 @@ try {
         JOIN 
             clients c ON l.client_ID = c.client_ID
         WHERE 
-            l.release_status = 'forrelease'
+            l.release_status = 'forrelease' -- Only fetch loans pending release
         ORDER BY 
             l.loan_application_id DESC
     ";
@@ -50,8 +47,6 @@ try {
     }
 
 } catch (PDOException $e) {
-    // If the connectDB() function fails, it exits with JSON error.
-    // This catches other PDO errors (e.g., failed query execution).
     $response['message'] = "Database Query failed: " . $e->getMessage();
 }
 
