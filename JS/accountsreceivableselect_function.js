@@ -1,7 +1,12 @@
 document.addEventListener('DOMContentLoaded', function() {
-    // 1. Define Access Rules
-    // Map of menu item names to an array of roles that have access.
-    // Ensure the keys here match the text content of your <a> tags exactly.
+    // 1. VARIABLE DECLARATION (Now in the main scope)
+    let globalUserName = 'Unknown User'; 
+    
+    // ==========================================================
+    // SECTION 1: ACCESS CONTROL AND SESSION CHECK
+    // ==========================================================
+
+    // Define Access Rules
     const accessRules = {
         'Dashboard': ['Admin', 'Manager', 'Loan_Officer'],
         'Client Creation': ['Admin', 'Loan_Officer'],
@@ -13,171 +18,135 @@ document.addEventListener('DOMContentLoaded', function() {
         'Tools': ['Admin', 'Manager', 'Loan_Officer']
     };
 
-    // 2. Fetch the current user's role
+    // Fetch the current user's role and name/username
     fetch('PHP/check_session.php')
         .then(response => {
-            // Check if the response is successful (HTTP 200)
             if (!response.ok) {
                 throw new Error('Network response was not ok');
             }
             return response.json();
         })
         .then(data => {
-            // Ensure the session is active and a role is returned
             if (data.status === 'active' && data.role) {
                 const userRole = data.role;
+                // ⭐ CAPTURE THE USERNAME/NAME AND UPDATE THE VARIABLE
+                globalUserName = data.user_name || 'System User'; 
                 applyAccessControl(userRole);
             } else {
-                // If not logged in, you might want to hide everything or redirect
-                // For now, we'll assume the 'none' role has no access, which the loop handles.
                 applyAccessControl('none');
             }
         })
         .catch(error => {
             console.error('Error fetching user session:', error);
-            // Optionally hide all nav links on severe error
-            // document.querySelector('.sidebar-nav ul').style.display = 'none';
         });
 
-    // 3. Apply Access Control
+    // Apply Access Control
     function applyAccessControl(userRole) {
-        // Select all navigation links within the sidebar
         const navLinks = document.querySelectorAll('.sidebar-nav ul li a');
 
         navLinks.forEach(link => {
             const linkName = link.textContent.trim();
-            const parentListItem = link.parentElement; // The <li> element
+            const parentListItem = link.parentElement; 
 
-            // Check if the link name exists in the access rules
             if (accessRules.hasOwnProperty(linkName)) {
                 const allowedRoles = accessRules[linkName];
 
-                // Check if the current user's role is in the list of allowed roles
                 if (!allowedRoles.includes(userRole)) {
-                    // Hide the entire list item (<li>) if the user role is NOT authorized
                     parentListItem.style.display = 'none';
                 }
             } else {
-                // Optional: Hide links that are not defined in the accessRules for safety
-                // parentListItem.style.display = 'none';
                 console.warn(`No access rule defined for: ${linkName}`);
             }
         });
     }
-});
-//==============================================================================================================================================
-document.addEventListener('DOMContentLoaded', function() {
-            enforceRoleAccess(['admin','Manager']); 
-        });
-/*=============================================================================*/
-
-
-document.addEventListener('DOMContentLoaded', function() {
-  // Call the session check function as soon as the page loads.
-  checkSessionAndRedirect(); 
-
-  // --- Global Logging Function (Updated to accept two parameters) ---
-  function logUserAction(actionType, description) {
-    // Note: The PHP script (PHP/log_action.php) must be updated 
-    // to handle both 'action' (the type) and 'description' (the detail).
-    
-    // Use URLSearchParams to easily format the POST body
-    const bodyData = new URLSearchParams();
-    bodyData.append('action', actionType); 
-    bodyData.append('description', description); 
-
-    fetch('PHP/log_action.php', {
-      method: 'POST',
-      headers: {
-        'Content-Type': 'application/x-www-form-urlencoded',
-      },
-      body: bodyData.toString()
-    })
-    .then(response => {
-      if (!response.ok) {
-        console.warn('Audit log failed to record:', actionType, description);
-      }
-    })
-    .catch(error => {
-      console.error('Audit log fetch error:', error);
-    });
-  }
-  // --------------------------------------------------------
-
-  const navLinks = document.querySelectorAll('.nav-link');
-  const logoutButton = document.querySelector('.logout-button');
-
-  const urlMapping = {
-    'dashboard': 'DashBoard.html',
-    'clientcreation': 'ClientCreationForm.html',
-    'loanapplication': 'LoanApplication.html',
-    'pendingaccounts': 'PendingAccount.html',
-    'paymentcollection': 'AccountsReceivable.html',
-    'ledger': 'Ledgers.html',
-    'reports': 'Reports.html',
-    'usermanagement': 'UserManagement.html',
-    'tools': 'Tools.html'
-  };
-
-  navLinks.forEach(link => {
-    link.addEventListener('click', function(event) {
-      event.preventDefault(); 
-      navLinks.forEach(nav => nav.classList.remove('active'));
-      this.classList.add('active');
-
-      // Normalize the link text for mapping lookup
-      const linkText = this.textContent.toLowerCase().replace(/\s/g, ''); 
-      const targetPage = urlMapping[linkText];
-        
-      if (targetPage) {
-        // 1. Define clear action type and description for the log
-        const actionType = 'NAVIGATION'; // Use the fixed type for filtering
-        const description = `Clicked "${this.textContent}" link, redirecting to ${targetPage}`;
-
-        // 2. ASYNCHRONOUS AUDIT LOG: Log the action.
-        logUserAction(actionType, description);
-
-        // 3. Perform the page redirect immediately after initiating the log.
-        window.location.href = targetPage;
-      } else {
-        console.error('No page defined for this link:', linkText);
-        
-        // OPTIONAL: Log the failed navigation attempt
-        const actionType = 'NAVIGATION';
-        const description = `FAILED: Clicked link "${this.textContent}" with no mapped page.`;
-        logUserAction(actionType, description);
-      }
-    });
-  });
-
-  // Handle the logout button securely
-  // The PHP script 'PHP/check_logout.php' should handle the log *before* session destruction.
-  if (logoutButton) {
-    logoutButton.addEventListener('click', function() {
-      window.location.href = 'PHP/check_logout.php'; 
-    });
-  }
-  const returnButton = document.querySelector('.return-button');
-
-  if (returnButton) {
-    returnButton.addEventListener('click', function() {
-      const targetPage = 'AccountsReceivable.html';
-
-      // Log the action before navigation
-      logUserAction(' NAVIGATION', `User clicked RETURN button, redirecting to ${targetPage}.`);
-
-      // Perform the page navigation
-      window.location.href = targetPage;
-    });
-    
-    console.log('Successfully attached click handler to the RETURN button.');
-  } else {
-    // This is not a critical error if the button isn't on the page
-    // console.error('RETURN button element not found.');
-  }
 
     // ==========================================================
-    // 3. Loan Details, Schedule Fetch, and Payment Handler 
+    // SECTION 2: NAVIGATION AND AUDIT LOGGING
+    // ==========================================================
+    
+    // --- Global Logging Function ---
+    function logUserAction(actionType, description) {
+        const bodyData = new URLSearchParams();
+        bodyData.append('action', actionType); 
+        bodyData.append('description', description); 
+
+        fetch('PHP/log_action.php', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/x-www-form-urlencoded',
+            },
+            body: bodyData.toString()
+        })
+        .then(response => {
+            if (!response.ok) {
+                console.warn('Audit log failed to record:', actionType, description);
+            }
+        })
+        .catch(error => {
+            console.error('Audit log fetch error:', error);
+        });
+    }
+    // --------------------------------------------------------
+
+    const navLinks = document.querySelectorAll('.nav-link');
+    const logoutButton = document.querySelector('.logout-button');
+
+    const urlMapping = {
+        'dashboard': 'DashBoard.html',
+        'clientcreation': 'ClientCreationForm.html',
+        'loanapplication': 'LoanApplication.html',
+        'pendingaccounts': 'PendingAccount.html',
+        'paymentcollection': 'AccountsReceivable.html',
+        'ledger': 'Ledgers.html',
+        'reports': 'Reports.html',
+        'usermanagement': 'UserManagement.html',
+        'tools': 'Tools.html'
+    };
+
+    navLinks.forEach(link => {
+        link.addEventListener('click', function(event) {
+            event.preventDefault(); 
+            navLinks.forEach(nav => nav.classList.remove('active'));
+            this.classList.add('active');
+
+            const linkText = this.textContent.toLowerCase().replace(/\s/g, ''); 
+            const targetPage = urlMapping[linkText];
+            
+            if (targetPage) {
+                const actionType = 'NAVIGATION'; 
+                const description = `Clicked "${this.textContent}" link, redirecting to ${targetPage}`;
+                logUserAction(actionType, description);
+                window.location.href = targetPage;
+            } else {
+                console.error('No page defined for this link:', linkText);
+                const actionType = 'NAVIGATION';
+                const description = `FAILED: Clicked link "${this.textContent}" with no mapped page.`;
+                logUserAction(actionType, description);
+            }
+        });
+    });
+
+    // Handle the logout button securely
+    if (logoutButton) {
+        logoutButton.addEventListener('click', function() {
+            window.location.href = 'PHP/check_logout.php'; 
+        });
+    }
+    
+    const returnButton = document.querySelector('.return-button');
+
+    if (returnButton) {
+        returnButton.addEventListener('click', function() {
+            const targetPage = 'AccountsReceivable.html';
+            logUserAction(' NAVIGATION', `User clicked RETURN button, redirecting to ${targetPage}.`);
+            window.location.href = targetPage;
+        });
+        
+        console.log('Successfully attached click handler to the RETURN button.');
+    } 
+
+    // ==========================================================
+    // SECTION 3: Loan Details, Schedule Fetch, and Payment Handler 
     // ==========================================================
     
     const urlParams = new URLSearchParams(window.location.search);
@@ -276,10 +245,10 @@ document.addEventListener('DOMContentLoaded', function() {
                 return;
             }
 
-            // Render Table (rendering logic omitted for brevity, assumed to be correct)
+            // Render Table
             scheduleData.forEach((installment) => {
                 const row = scheduleTableBody.insertRow();
-                // ... row rendering logic ...
+                
                 const isPaid = installment.is_paid;
                 const isPartiallyPaid = installment.amount_paid > 0 && !isPaid;
                 const rowClass = isPaid ? 'paid' : (isPartiallyPaid ? 'partially-paid' : '');
@@ -296,7 +265,7 @@ document.addEventListener('DOMContentLoaded', function() {
                 row.insertCell().textContent = formatCurrency(installment.remaining_balance);
             });
             
-            // Update Due Dates (logic omitted for brevity, assumed to be correct)
+            // Update Due Dates 
             const firstUnpaid = scheduleData.find(item => !item.is_paid);
             if (firstUnpaid) {
                 const firstUnpaidIndex = scheduleData.findIndex(item => !item.is_paid);
@@ -380,12 +349,15 @@ document.addEventListener('DOMContentLoaded', function() {
             };
             const beforeStateJSON = JSON.stringify(beforePaymentState);
 
+            // Fetch the username from the global scope (which is now the main DOMContentLoaded scope)
+            const loggedInUser = globalUserName || 'Unknown User'; 
 
             const formData = new FormData();
             formData.append('client_id', clientId);
             formData.append('loan_id', loanId);
             formData.append('amount', amount); 
-            formData.append('processby', 'system');
+            // ⭐ NO LONGER UNDEFINED: Uses the variable declared at the top of this scope
+            formData.append('processby', loggedInUser); 
             
             if (reconstructId) {
                 formData.append('reconstructID', reconstructId);
@@ -408,7 +380,7 @@ document.addEventListener('DOMContentLoaded', function() {
                         logUserAction('PAYMENT', 
                                      `Attempted to pay ${formatCurrency(amount)} for Client ID: ${clientId}, Loan ID: ${loanId}. Server Error: ${data.error}`,
                                      {
-                                         targetTable: 'payment', // Target payment table
+                                         targetTable: 'payment', 
                                          targetId: loanId,
                                          beforeState: beforeStateJSON,
                                          afterState: JSON.stringify({ error: data.error })
@@ -426,7 +398,6 @@ document.addEventListener('DOMContentLoaded', function() {
                                          targetTable: 'payment', 
                                          targetId: loanId,
                                          beforeState: beforeStateJSON,
-                                         // The server message indicates success, use it as a placeholder for afterState
                                          afterState: JSON.stringify({ message: data.message, amount: formatCurrency(amount) }) 
                                      }
                         );
