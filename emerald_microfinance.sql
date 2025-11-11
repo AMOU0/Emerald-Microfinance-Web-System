@@ -3,7 +3,7 @@
 -- https://www.phpmyadmin.net/
 --
 -- Host: 127.0.0.1
--- Generation Time: Nov 07, 2025 at 06:14 PM
+-- Generation Time: Nov 11, 2025 at 03:55 PM
 -- Server version: 10.4.32-MariaDB
 -- PHP Version: 8.2.12
 
@@ -40,6 +40,63 @@ CREATE TABLE `audit_logs` (
   `created_at` timestamp NOT NULL DEFAULT current_timestamp()
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 
+--
+-- Dumping data for table `audit_logs`
+--
+
+INSERT INTO `audit_logs` (`log_id`, `user_id`, `action`, `description`, `target_table`, `target_id`, `ip_address`, `before_state`, `after_state`, `created_at`) VALUES
+(1, 1, 'CREATED', 'FAILED: Client creation failed due to missing required field: Employment Status.', NULL, NULL, '::1', NULL, NULL, '2025-11-11 03:59:10'),
+(2, 1, 'CREATED', 'FAILED: Client creation failed due to missing required field: Employment Status.', NULL, NULL, '::1', NULL, NULL, '2025-11-11 03:59:22'),
+(3, 1, 'CREATED', 'SUCCESS: Client created with ID: 202500001', 'clients', '202500001', '::1', NULL, NULL, '2025-11-11 03:59:26'),
+(4, 1, 'NAVIGATION', 'Clicked \"Loan Application\" link, redirecting to LoanApplication.html', NULL, NULL, '::1', NULL, NULL, '2025-11-11 03:59:29'),
+(5, 1, 'VIEWED', 'Opened Client Search Modal.', 'clients', NULL, '::1', NULL, NULL, '2025-11-11 03:59:30'),
+(6, 1, 'VIEWED', 'Fetched Interest Rate: 20%', 'interest_pecent', NULL, '::1', NULL, NULL, '2025-11-11 03:59:30'),
+(7, 1, 'UPDATED', 'Selected Client ID 202500001 (Angel Laurence Paras Mallari) for loan application.', 'clients', '202500001', '::1', '{\"clientID\":\"\",\"clientName\":\"\"}', '{\"clientID\":\"202500001\",\"clientName\":\"Angel Laurence Paras Mallari\"}', '2025-11-11 03:59:31'),
+(8, 1, 'CREATED', 'Attempting submission for Client ID: 202500001. Target: loan_applications (202500001)', 'loan_applications', '202500001', '::1', NULL, NULL, '2025-11-11 03:59:40'),
+(9, 1, 'VIEWED', 'Opened Loan Details Modal for Loan ID: 11202500001. Target: loan_applications (11202500001)', NULL, NULL, '::1', NULL, NULL, '2025-11-11 03:59:40'),
+(10, 1, 'CREATED', 'Loan application successfully created. Loan ID: 11202500001. Client ID: 202500001.', 'loan_applications', '11202500001', '::1', NULL, '{\"clientID\":\"202500001\",\"clientName\":\"Angel Laurence Paras Mallari\",\"colateral\":\"Single Motor(Rusi 125)\",\"guarantorLastName\":\"Mallari\",\"guarantorFirstName\":\"Angel Laurence\",\"guarantorMiddleName\":\"Paras\",\"guarantorStreetAddress\":\"#205 Alvindia Segundo Tarlac City\",\"guarantorPhoneNumber\":\"09212271315\",\"loan-amount\":5000,\"payment-frequency\":\"monthly\",\"date-start\":\"2025-11-19\",\"duration-of-loan\":\"100 days\",\"duration-in-periods\":\"3\",\"date-end\":\"2026-02-27\",\"interest-rate\":20,\"loanID\":\"11202500001\"}', '2025-11-11 03:59:40'),
+(11, 1, 'VIEWED', 'Closed Loan Details Modal for Loan ID: 11202500001', NULL, NULL, '::1', NULL, NULL, '2025-11-11 03:59:46'),
+(12, 1, 'NAVIGATION', 'Clicked \"Pending Accounts\" link, redirecting to PendingAccount.html', NULL, NULL, '::1', NULL, NULL, '2025-11-11 03:59:47'),
+(13, 1, 'UPDATE', 'Loan Application Status changed to \'APPROVED\' for ID: 11202500001', NULL, NULL, '::1', NULL, NULL, '2025-11-11 03:59:50'),
+(14, 1, 'NAVIGATION', 'Clicked \"Payment Collection\" link, redirecting to AccountsReceivable.html', NULL, NULL, '::1', NULL, NULL, '2025-11-11 03:59:51'),
+(15, 1, 'DATA_FETCH', 'Fetching approved and unpaid accounts for collection.', NULL, NULL, '::1', NULL, NULL, '2025-11-11 03:59:51'),
+(16, 1, 'NAVIGATION', 'Clicked \"Reports\" link, redirecting to Reports.html', NULL, NULL, '::1', NULL, NULL, '2025-11-11 03:59:56'),
+(17, 1, 'VIEW', 'Viewed Report: For Release (ReportsRelease.html)', NULL, NULL, '::1', NULL, NULL, '2025-11-11 03:59:57'),
+(18, 1, 'RELEASE', 'Report Released for Client ID: 202500001 - Angel Laurence Mallari, Loan ID: 11202500001', NULL, NULL, '::1', NULL, NULL, '2025-11-11 04:00:01'),
+(19, 1, 'NAVIGATION', 'Clicked \"Payment Collection\" link, redirecting to AccountsReceivable.html', NULL, NULL, '::1', NULL, NULL, '2025-11-11 04:00:02'),
+(20, 1, 'DATA_FETCH', 'Fetching approved and unpaid accounts for collection.', NULL, NULL, '::1', NULL, NULL, '2025-11-11 04:00:02'),
+(21, 1, 'NAVIGATION', 'Clicked \"Dashboard\" link, redirecting to DashBoard.html', NULL, NULL, '::1', NULL, NULL, '2025-11-11 04:00:03'),
+(22, 1, 'NAVIGATION', 'Clicked dashboard tile:  For Release (Nov 18, 2025), redirecting to ReleasedLoan.html', NULL, NULL, '::1', NULL, NULL, '2025-11-11 04:00:04'),
+(23, 1, 'NAVIGATION', 'Clicked \"Dashboard\" link, redirecting to DashBoard.html', NULL, NULL, '::1', NULL, NULL, '2025-11-11 04:00:08'),
+(24, 1, 'NAVIGATION', 'Clicked dashboard tile: Collection Today, redirecting to CollectionToday.html', NULL, NULL, '::1', NULL, NULL, '2025-11-11 04:00:19'),
+(25, 1, 'NAVIGATION', 'Clicked \"Payment Collection\" link, redirecting to AccountsReceivable.html', NULL, NULL, '::1', NULL, NULL, '2025-11-11 04:00:22'),
+(26, 1, 'DATA_FETCH', 'Fetching approved and unpaid accounts for collection.', NULL, NULL, '::1', NULL, NULL, '2025-11-11 04:00:22'),
+(27, 1, 'NAVIGATION', 'SELECT button clicked for Loan ID 11202500001. Redirecting to payment page.', 'loan_applications', '11202500001', '::1', NULL, NULL, '2025-11-11 04:00:25'),
+(28, 1, 'VIEW', 'Successfully loaded loan details and schedule for Client ID: 202500001, Loan ID: 11202500001', NULL, NULL, '::1', NULL, NULL, '2025-11-11 04:00:25'),
+(29, 1, 'PAYMENT', 'Successfully processed payment of 2000.00 for Client ID: 202500001, Loan ID: 11202500001.', NULL, NULL, '::1', NULL, NULL, '2025-11-11 04:00:26'),
+(30, 1, 'VIEW', 'Successfully loaded loan details and schedule for Client ID: 202500001, Loan ID: 11202500001', NULL, NULL, '::1', NULL, NULL, '2025-11-11 04:00:26'),
+(31, 1, 'VIEW', 'Successfully loaded loan details and schedule for Client ID: 202500001, Loan ID: 11202500001', NULL, NULL, '::1', NULL, NULL, '2025-11-11 04:08:19'),
+(32, 1, 'VIEW', 'Successfully loaded loan details and schedule for Client ID: 202500001, Loan ID: 11202500001', NULL, NULL, '::1', NULL, NULL, '2025-11-11 04:08:24'),
+(33, 1, 'VIEW', 'Successfully loaded loan details and schedule for Client ID: 202500001, Loan ID: 11202500001', NULL, NULL, '::1', NULL, NULL, '2025-11-11 04:08:24'),
+(34, 1, 'VIEW', 'Successfully loaded loan details and schedule for Client ID: 202500001, Loan ID: 11202500001', NULL, NULL, '::1', NULL, NULL, '2025-11-11 04:09:14'),
+(35, 1, 'PAYMENT', 'Successfully processed payment of 2000.00 for Client ID: 202500001, Loan ID: 11202500001.', NULL, NULL, '::1', NULL, NULL, '2025-11-11 04:09:15'),
+(36, 1, 'VIEW', 'Successfully loaded loan details and schedule for Client ID: 202500001, Loan ID: 11202500001', NULL, NULL, '::1', NULL, NULL, '2025-11-11 04:09:15'),
+(37, 1, 'NAVIGATION', 'Clicked \"Dashboard\" link, redirecting to DashBoard.html', NULL, NULL, '::1', NULL, NULL, '2025-11-11 04:09:28'),
+(38, 1, 'NAVIGATION', 'Clicked dashboard tile: Collection Today, redirecting to CollectionToday.html', NULL, NULL, '::1', NULL, NULL, '2025-11-11 04:09:31'),
+(39, 1, 'NAVIGATION', 'Clicked \"User Management\" link, redirecting to UserManagement.html', NULL, NULL, '::1', NULL, NULL, '2025-11-11 08:17:19'),
+(40, 1, 'NAVIGATION', 'Clicked \"Dashboard\" link, redirecting to DashBoard.html', NULL, NULL, '::1', NULL, NULL, '2025-11-11 08:18:03'),
+(41, 1, 'NAVIGATION', 'Clicked dashboard tile: Collection Today, redirecting to CollectionToday.html', NULL, NULL, '::1', NULL, NULL, '2025-11-11 08:18:03'),
+(42, 1, 'NAVIGATION', 'Clicked \"Dashboard\" link, redirecting to DashBoard.html', NULL, NULL, '::1', NULL, NULL, '2025-11-11 08:18:07'),
+(43, 1, 'NAVIGATION', 'Clicked \"Client Creation\" link, redirecting to ClientCreationForm.html', NULL, NULL, '::1', NULL, NULL, '2025-11-11 08:18:08'),
+(44, 1, 'NAVIGATION', 'Clicked \"Dashboard\" link, redirecting to DashBoard.html', NULL, NULL, '::1', NULL, NULL, '2025-11-11 08:18:09'),
+(45, 1, 'NAVIGATION', 'Clicked dashboard tile: Collection Today, redirecting to CollectionToday.html', NULL, NULL, '::1', NULL, NULL, '2025-11-11 12:15:23'),
+(46, 1, 'NAVIGATION', 'Clicked \"Payment Collection\" link, redirecting to AccountsReceivable.html', NULL, NULL, '::1', NULL, NULL, '2025-11-11 14:46:10'),
+(47, 1, 'DATA_FETCH', 'Fetching approved and unpaid accounts for collection.', NULL, NULL, '::1', NULL, NULL, '2025-11-11 14:46:10'),
+(48, 1, 'NAVIGATION', 'Clicked \"Dashboard\" link, redirecting to DashBoard.html', NULL, NULL, '::1', NULL, NULL, '2025-11-11 14:46:12'),
+(49, 1, 'NAVIGATION', 'Clicked dashboard tile: Collection Today, redirecting to CollectionToday.html', NULL, NULL, '::1', NULL, NULL, '2025-11-11 14:46:12'),
+(50, 1, 'NAVIGATION', 'Clicked \"Client Creation\" link, redirecting to ClientCreationForm.html', NULL, NULL, '::1', NULL, NULL, '2025-11-11 14:53:41'),
+(51, 1, 'NAVIGATION', 'Clicked \"Loan Application\" link, redirecting to LoanApplication.html', NULL, NULL, '::1', NULL, NULL, '2025-11-11 14:53:42');
+
 -- --------------------------------------------------------
 
 --
@@ -65,6 +122,13 @@ CREATE TABLE `clients` (
   `created_at` timestamp NOT NULL DEFAULT current_timestamp() ON UPDATE current_timestamp()
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 
+--
+-- Dumping data for table `clients`
+--
+
+INSERT INTO `clients` (`client_ID`, `last_name`, `first_name`, `middle_name`, `marital_status`, `gender`, `date_of_birth`, `city`, `barangay`, `street_address`, `phone_number`, `employment_status`, `occupation`, `years_in_job`, `income`, `created_at`) VALUES
+(202500001, 'Mallari', 'Angel Laurence', 'Paras', 'Divorced', 'Female', '2003-11-11', 'Tarlac City', 'Alvindia', '#205 Alvindia Segundo Tarlac City', '09212271315', 'Employed', 'Player', 1, '5,000 - 10,000', '2025-11-11 03:59:25');
+
 -- --------------------------------------------------------
 
 --
@@ -77,6 +141,13 @@ CREATE TABLE `client_requirements` (
   `client_ID` bigint(20) NOT NULL,
   `created_at` text DEFAULT current_timestamp()
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
+
+--
+-- Dumping data for table `client_requirements`
+--
+
+INSERT INTO `client_requirements` (`has_valid_id`, `has_barangay_clearance`, `client_ID`, `created_at`) VALUES
+('Voter\'s ID', 1, 202500001, '2025-11-11 11:59:26');
 
 -- --------------------------------------------------------
 
@@ -116,6 +187,13 @@ CREATE TABLE `guarantor` (
   `client_ID` bigint(20) DEFAULT NULL,
   `created_at` text DEFAULT current_timestamp()
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
+
+--
+-- Dumping data for table `guarantor`
+--
+
+INSERT INTO `guarantor` (`guarantor_id`, `guarantor_last_name`, `guarantor_first_name`, `guarantor_middle_name`, `guarantor_street_address`, `guarantor_phone_number`, `loan_application_id`, `client_ID`, `created_at`) VALUES
+(1, 'Mallari', 'Angel Laurence', 'Paras', '#205 Alvindia Segundo Tarlac City', '09212271315', 11202500001, 202500001, '2025-11-11 11:59:40');
 
 -- --------------------------------------------------------
 
@@ -226,6 +304,13 @@ CREATE TABLE `loan_applications` (
   `created_at` text DEFAULT current_timestamp()
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 
+--
+-- Dumping data for table `loan_applications`
+--
+
+INSERT INTO `loan_applications` (`loan_application_id`, `colateral`, `loan_amount`, `payment_frequency`, `date_start`, `duration_of_loan`, `interest_rate`, `date_end`, `client_ID`, `status`, `release_status`, `paid`, `created_at`) VALUES
+(11202500001, 'Single Motor(Rusi 125)', 5000.00, 'monthly', '2025-11-11', '100 days', 20, '2026-02-19', 202500001, 'approved', 'Released', 'Unpaid', '2025-11-11 11:59:40');
+
 -- --------------------------------------------------------
 
 --
@@ -282,6 +367,14 @@ CREATE TABLE `payment` (
   `date_payed` timestamp NOT NULL DEFAULT current_timestamp(),
   `processby` varchar(255) NOT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
+
+--
+-- Dumping data for table `payment`
+--
+
+INSERT INTO `payment` (`payment_id`, `loan_reconstruct_id`, `loan_application_id`, `client_id`, `amount_paid`, `date_payed`, `processby`) VALUES
+(1, NULL, 11202500001, 202500001, 2000.00, '2025-11-11 04:00:26', 'Angel Laurence Paras Mallari'),
+(2, NULL, 11202500001, 202500001, 2000.00, '2025-11-11 04:09:15', 'Angel Laurence Paras Mallari');
 
 -- --------------------------------------------------------
 
@@ -434,6 +527,13 @@ CREATE TABLE `released` (
   `created_at` date NOT NULL DEFAULT current_timestamp()
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 
+--
+-- Dumping data for table `released`
+--
+
+INSERT INTO `released` (`release_id`, `client_ID`, `loan_application_id`, `created_at`) VALUES
+(1, 202500001, 11202500001, '2025-11-11');
+
 -- --------------------------------------------------------
 
 --
@@ -581,7 +681,7 @@ ALTER TABLE `user_accounts`
 -- AUTO_INCREMENT for table `audit_logs`
 --
 ALTER TABLE `audit_logs`
-  MODIFY `log_id` int(11) NOT NULL AUTO_INCREMENT;
+  MODIFY `log_id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=52;
 
 --
 -- AUTO_INCREMENT for table `genders`
@@ -593,7 +693,7 @@ ALTER TABLE `genders`
 -- AUTO_INCREMENT for table `guarantor`
 --
 ALTER TABLE `guarantor`
-  MODIFY `guarantor_id` int(11) NOT NULL AUTO_INCREMENT;
+  MODIFY `guarantor_id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=2;
 
 --
 -- AUTO_INCREMENT for table `income_salaries`
@@ -611,7 +711,7 @@ ALTER TABLE `marital_statuses`
 -- AUTO_INCREMENT for table `payment`
 --
 ALTER TABLE `payment`
-  MODIFY `payment_id` int(11) NOT NULL AUTO_INCREMENT;
+  MODIFY `payment_id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=3;
 
 --
 -- AUTO_INCREMENT for table `philippine_barangays`
@@ -635,7 +735,7 @@ ALTER TABLE `philippine_valid_ids`
 -- AUTO_INCREMENT for table `released`
 --
 ALTER TABLE `released`
-  MODIFY `release_id` bigint(20) NOT NULL AUTO_INCREMENT;
+  MODIFY `release_id` bigint(20) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=2;
 
 --
 -- AUTO_INCREMENT for table `user_accounts`
