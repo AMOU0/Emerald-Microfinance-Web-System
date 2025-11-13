@@ -53,8 +53,6 @@ document.addEventListener('DOMContentLoaded', function() {
         'paymentcollection': 'AccountsReceivable.html',
         'ledger': 'Ledgers.html',
         'reports': 'Reports.html',
-        // Assuming there is a UserManagement link that might be conditionally visible
-        'usermanagement': 'UserManagement.html', 
         'tools': 'Tools.html'
     };
 
@@ -417,7 +415,7 @@ document.addEventListener('DOMContentLoaded', function() {
         tableBody.innerHTML = '<tr><td colspan="7" style="text-align: center; padding: 16px;">Fetching data...</td></tr>';
         totalCollectionSpan.textContent = 'PHP 0.00'; 
         
-        const url = `collectiontoday_handler.php?date_from=${dateFrom}&date_to=${dateTo}`;
+        const url = `PHP/collectiontoday_handler.php?date_from=${dateFrom}&date_to=${dateTo}`;
 
         try {
             const response = await fetch(url);
@@ -538,3 +536,87 @@ document.addEventListener('DOMContentLoaded', function() {
     // Start the application logic
     initialize();
 });
+
+
+// JS/collectiontoday_function.js
+
+document.addEventListener('DOMContentLoaded', () => {
+    const exportCsvBtn = document.getElementById('export-csv-btn');
+    const dataTable = document.querySelector('.data-table');
+
+    // Function to escape string for CSV (handling commas, quotes, and newlines)
+    const csvEscape = (value) => {
+        if (value === null || value === undefined) {
+            return '';
+        }
+        let stringValue = String(value).trim();
+        // If the value contains a comma, double-quote, or newline, enclose it in double quotes.
+        if (stringValue.includes(',') || stringValue.includes('"') || stringValue.includes('\n')) {
+            // Escape double quotes by doubling them
+            stringValue = stringValue.replace(/"/g, '""');
+            return `"${stringValue}"`;
+        }
+        return stringValue;
+    };
+
+    const exportTableToCSV = () => {
+        const rows = dataTable.querySelectorAll('tr');
+        if (rows.length === 0) {
+            alert('No data to export.');
+            return;
+        }
+
+        let csvContent = [];
+        
+        // 1. Get Headers
+        const headerRow = dataTable.querySelector('thead tr');
+        if (headerRow) {
+            const headers = Array.from(headerRow.querySelectorAll('th'))
+                                 .map(th => csvEscape(th.textContent.trim()))
+                                 .join(',');
+            csvContent.push(headers);
+        }
+
+        // 2. Get Data Rows
+        const dataRows = dataTable.querySelectorAll('tbody tr');
+        dataRows.forEach(row => {
+            const cells = Array.from(row.querySelectorAll('td'))
+                               .map(td => csvEscape(td.textContent.trim()))
+                               .join(',');
+            csvContent.push(cells);
+        });
+
+        // Combine all rows with a newline character
+        const csvString = csvContent.join('\n');
+
+        // 3. Create a Blob and trigger Download
+        const blob = new Blob([csvString], { type: 'text/csv;charset=utf-8;' });
+        const url = URL.createObjectURL(blob);
+        
+        // Create a temporary link element to trigger the download
+        const a = document.createElement('a');
+        a.href = url;
+        // Set a filename using the current date
+        const date = new Date().toISOString().slice(0, 10);
+        a.download = `Emerald_Collection_Today_${date}.csv`;
+        
+        // Append to the body, click it, and remove it
+        document.body.appendChild(a);
+        a.click();
+        document.body.removeChild(a);
+        URL.revokeObjectURL(url); // Clean up the object URL
+    };
+
+    // Attach the event listener to the "Export CSV" button
+    if (exportCsvBtn) {
+        exportCsvBtn.addEventListener('click', exportTableToCSV);
+    }
+});
+
+//=========================================================================================================
+
+
+
+
+
+
