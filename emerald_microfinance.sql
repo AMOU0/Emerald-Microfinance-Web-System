@@ -3,7 +3,7 @@
 -- https://www.phpmyadmin.net/
 --
 -- Host: 127.0.0.1
--- Generation Time: Nov 11, 2025 at 03:55 PM
+-- Generation Time: Nov 13, 2025 at 06:41 PM
 -- Server version: 10.4.32-MariaDB
 -- PHP Version: 8.2.12
 
@@ -95,7 +95,115 @@ INSERT INTO `audit_logs` (`log_id`, `user_id`, `action`, `description`, `target_
 (48, 1, 'NAVIGATION', 'Clicked \"Dashboard\" link, redirecting to DashBoard.html', NULL, NULL, '::1', NULL, NULL, '2025-11-11 14:46:12'),
 (49, 1, 'NAVIGATION', 'Clicked dashboard tile: Collection Today, redirecting to CollectionToday.html', NULL, NULL, '::1', NULL, NULL, '2025-11-11 14:46:12'),
 (50, 1, 'NAVIGATION', 'Clicked \"Client Creation\" link, redirecting to ClientCreationForm.html', NULL, NULL, '::1', NULL, NULL, '2025-11-11 14:53:41'),
-(51, 1, 'NAVIGATION', 'Clicked \"Loan Application\" link, redirecting to LoanApplication.html', NULL, NULL, '::1', NULL, NULL, '2025-11-11 14:53:42');
+(51, 1, 'NAVIGATION', 'Clicked \"Loan Application\" link, redirecting to LoanApplication.html', NULL, NULL, '::1', NULL, NULL, '2025-11-11 14:53:42'),
+(52, 1, 'NAVIGATION', 'Clicked \"Dashboard\" link, redirecting to DashBoard.html', NULL, NULL, '::1', NULL, NULL, '2025-11-11 14:59:17'),
+(53, 1, 'NAVIGATION', 'Clicked dashboard tile: Collection Today, redirecting to CollectionToday.html', NULL, NULL, '::1', NULL, NULL, '2025-11-11 14:59:18'),
+(54, 1, 'NAVIGATION', 'Clicked \"Payment Collection\" link, redirecting to AccountsReceivable.html', NULL, NULL, '::1', NULL, NULL, '2025-11-11 15:02:03'),
+(55, 1, 'DATA_FETCH', 'Fetching approved and unpaid accounts for collection.', NULL, NULL, '::1', NULL, NULL, '2025-11-11 15:02:03'),
+(56, 1, 'NAVIGATION', 'Clicked \"Reports\" link, redirecting to Reports.html', NULL, NULL, '::1', NULL, NULL, '2025-11-11 15:02:09'),
+(57, 1, 'User logged in successfully: admin with role: Admin', '', NULL, NULL, '::1', NULL, NULL, '2025-11-13 14:48:56'),
+(58, 1, 'NAVIGATION', 'Clicked \"Client Creation\" link, redirecting to ClientCreationForm.html', NULL, NULL, '::1', NULL, NULL, '2025-11-13 14:49:04'),
+(59, 1, 'NAVIGATION', 'Clicked \"Pending Accounts\" link, redirecting to PendingAccount.html', NULL, NULL, '::1', NULL, NULL, '2025-11-13 14:49:05'),
+(60, 1, 'NAVIGATION', 'Clicked \"Loan Application\" link, redirecting to LoanApplication.html', NULL, NULL, '::1', NULL, NULL, '2025-11-13 14:49:06'),
+(61, 1, 'NAVIGATION', 'Clicked \"Client Creation\" link, redirecting to ClientCreationForm.html', NULL, NULL, '::1', NULL, NULL, '2025-11-13 14:49:07'),
+(62, 1, 'NAVIGATION', 'Clicked \"Loan Application\" link, redirecting to LoanApplication.html', NULL, NULL, '::1', NULL, NULL, '2025-11-13 14:49:13'),
+(63, 1, 'NAVIGATION', 'Clicked \"Payment Collection\" link, redirecting to AccountsReceivable.html', NULL, NULL, '::1', NULL, NULL, '2025-11-13 14:49:43'),
+(64, 1, 'DATA_FETCH', 'Fetching approved and unpaid accounts for collection.', NULL, NULL, '::1', NULL, NULL, '2025-11-13 14:49:43'),
+(65, 1, 'NAVIGATION', 'Clicked \"Pending Accounts\" link, redirecting to PendingAccount.html', NULL, NULL, '::1', NULL, NULL, '2025-11-13 14:49:44'),
+(66, 1, 'NAVIGATION', 'Clicked \"Payment Collection\" link, redirecting to AccountsReceivable.html', NULL, NULL, '::1', NULL, NULL, '2025-11-13 14:49:45'),
+(67, 1, 'DATA_FETCH', 'Fetching approved and unpaid accounts for collection.', NULL, NULL, '::1', NULL, NULL, '2025-11-13 14:49:45'),
+(68, 1, 'NAVIGATION', 'Clicked \"Dashboard\" link, redirecting to DashBoard.html', NULL, NULL, '::1', NULL, NULL, '2025-11-13 14:53:43'),
+(69, 1, 'NAVIGATION', 'Clicked dashboard tile: Collection Today, redirecting to CollectionToday.html', NULL, NULL, '::1', NULL, NULL, '2025-11-13 14:53:44'),
+(70, 1, 'NAVIGATION', 'Clicked \"Pending Accounts\" link, redirecting to PendingAccount.html', NULL, NULL, '::1', NULL, NULL, '2025-11-13 15:02:19'),
+(71, 1, 'NAVIGATION', 'Clicked \"Payment Collection\" link, redirecting to AccountsReceivable.html', NULL, NULL, '::1', NULL, NULL, '2025-11-13 15:02:20'),
+(72, 1, 'DATA_FETCH', 'Fetching approved and unpaid accounts for collection.', NULL, NULL, '::1', NULL, NULL, '2025-11-13 15:02:20'),
+(73, 1, 'NAVIGATION', 'Clicked \"Dashboard\" link, redirecting to DashBoard.html', NULL, NULL, '::1', NULL, NULL, '2025-11-13 15:06:21'),
+(74, 1, 'NAVIGATION', 'Clicked dashboard tile: Collection Today, redirecting to CollectionToday.html', NULL, NULL, '::1', NULL, NULL, '2025-11-13 15:06:22'),
+(75, 1, 'NAVIGATION', 'Clicked \"Payment Collection\" link, redirecting to AccountsReceivable.html', NULL, NULL, '::1', NULL, NULL, '2025-11-13 15:06:24'),
+(76, 1, 'DATA_FETCH', 'Fetching approved and unpaid accounts for collection.', NULL, NULL, '::1', NULL, NULL, '2025-11-13 15:06:24'),
+(77, 1, 'NAVIGATION', 'Clicked \"Dashboard\" link, redirecting to DashBoard.html', NULL, NULL, '::1', NULL, NULL, '2025-11-13 15:06:25'),
+(78, 1, 'NAVIGATION', 'Clicked dashboard tile: Collection Today, redirecting to CollectionToday.html', NULL, NULL, '::1', NULL, NULL, '2025-11-13 15:06:26'),
+(79, 1, 'NAVIGATION', 'Clicked \"Dashboard\" link, redirecting to DashBoard.html', NULL, NULL, '::1', NULL, NULL, '2025-11-13 15:06:27'),
+(80, 1, 'NAVIGATION', 'Clicked dashboard tile:  For Release (Nov 18, 2025), redirecting to ReleasedLoan.html', NULL, NULL, '::1', NULL, NULL, '2025-11-13 15:06:28'),
+(81, 1, 'NAVIGATION', 'Clicked \"Dashboard\" link, redirecting to DashBoard.html', NULL, NULL, '::1', NULL, NULL, '2025-11-13 15:06:29'),
+(82, 1, 'NAVIGATION', 'Clicked dashboard tile: Collection Today, redirecting to CollectionToday.html', NULL, NULL, '::1', NULL, NULL, '2025-11-13 15:06:30'),
+(83, 1, 'NAVIGATION', 'Clicked \"Reports\" link, redirecting to Reports.html', NULL, NULL, '::1', NULL, NULL, '2025-11-13 15:06:58'),
+(84, 1, 'NAVIGATION', 'Clicked \"Ledger\" link, redirecting to Ledgers.html', NULL, NULL, '::1', NULL, NULL, '2025-11-13 15:07:00'),
+(85, 1, 'NAVIGATION', 'Clicked \"Reports\" link, redirecting to Reports.html', NULL, NULL, '::1', 'From URL: /EmeraldMicrofinance/Ledgers.html', 'To URL: Reports.html', '2025-11-13 15:07:01'),
+(86, 1, 'NAVIGATION', 'Clicked \"Ledger\" link, redirecting to Ledgers.html', NULL, NULL, '::1', NULL, NULL, '2025-11-13 15:07:02'),
+(87, 1, 'NAVIGATION', 'Clicked \"Dashboard\" link, redirecting to DashBoard.html', NULL, NULL, '::1', 'From URL: /EmeraldMicrofinance/Ledgers.html', 'To URL: DashBoard.html', '2025-11-13 15:07:03'),
+(88, 1, 'NAVIGATION', 'Clicked dashboard tile: Collection Today, redirecting to CollectionToday.html', NULL, NULL, '::1', NULL, NULL, '2025-11-13 15:07:04'),
+(89, 1, 'NAVIGATION', 'Clicked \"Payment Collection\" link, redirecting to AccountsReceivable.html', NULL, NULL, '::1', NULL, NULL, '2025-11-13 15:08:17'),
+(90, 1, 'DATA_FETCH', 'Fetching approved and unpaid accounts for collection.', NULL, NULL, '::1', NULL, NULL, '2025-11-13 15:08:17'),
+(91, 1, 'NAVIGATION', 'SELECT button clicked for Loan ID 11202500001. Redirecting to payment page.', 'loan_applications', '11202500001', '::1', NULL, NULL, '2025-11-13 15:08:19'),
+(92, 1, 'VIEW', 'Successfully loaded loan details and schedule for Client ID: 202500001, Loan ID: 11202500001', NULL, NULL, '::1', NULL, NULL, '2025-11-13 15:08:19'),
+(93, 1, 'PAYMENT', 'Successfully processed payment of 1000.00 for Client ID: 202500001, Loan ID: 11202500001.', NULL, NULL, '::1', NULL, NULL, '2025-11-13 15:08:27'),
+(94, 1, 'VIEW', 'Successfully loaded loan details and schedule for Client ID: 202500001, Loan ID: 11202500001', NULL, NULL, '::1', NULL, NULL, '2025-11-13 15:08:27'),
+(95, 1, 'NAVIGATION', 'Clicked \"Client Creation\" link, redirecting to ClientCreationForm.html', NULL, NULL, '::1', NULL, NULL, '2025-11-13 15:08:34'),
+(96, 1, 'NAVIGATION', 'Clicked \"Dashboard\" link, redirecting to DashBoard.html', NULL, NULL, '::1', NULL, NULL, '2025-11-13 15:08:35'),
+(97, 1, 'NAVIGATION', 'Clicked dashboard tile: Collection Today, redirecting to CollectionToday.html', NULL, NULL, '::1', NULL, NULL, '2025-11-13 15:08:36'),
+(98, 1, 'NAVIGATION', 'Clicked \"Pending Accounts\" link, redirecting to PendingAccount.html', NULL, NULL, '::1', NULL, NULL, '2025-11-13 15:09:37'),
+(99, 1, 'NAVIGATION', 'Clicked \"Ledger\" link, redirecting to Ledgers.html', NULL, NULL, '::1', NULL, NULL, '2025-11-13 15:09:38'),
+(100, 1, 'NAVIGATION', 'Clicked \"Payment Collection\" link, redirecting to AccountsReceivable.html', NULL, NULL, '::1', 'From URL: /EmeraldMicrofinance/Ledgers.html', 'To URL: AccountsReceivable.html', '2025-11-13 15:09:39'),
+(101, 1, 'DATA_FETCH', 'Fetching approved and unpaid accounts for collection.', NULL, NULL, '::1', NULL, NULL, '2025-11-13 15:09:39'),
+(102, 1, 'NAVIGATION', 'RESTRUCTURE button clicked for Loan ID 11202500001. Redirecting to reconstruct page.', 'loan_applications', '11202500001', '::1', NULL, NULL, '2025-11-13 15:09:42'),
+(103, 1, 'NAVIGATION', 'User clicked RETURN button, redirecting to AccountsReceivable.html.', NULL, NULL, '::1', NULL, NULL, '2025-11-13 15:09:43'),
+(104, 1, 'DATA_FETCH', 'Fetching approved and unpaid accounts for collection.', NULL, NULL, '::1', NULL, NULL, '2025-11-13 15:09:43'),
+(105, 1, 'NAVIGATION', 'Clicked \"Pending Accounts\" link, redirecting to PendingAccount.html', NULL, NULL, '::1', NULL, NULL, '2025-11-13 15:09:44'),
+(106, 1, 'NAVIGATION', 'Clicked \"Ledger\" link, redirecting to Ledgers.html', NULL, NULL, '::1', NULL, NULL, '2025-11-13 15:09:45'),
+(107, 1, 'VIEW', 'Selected client \"Angel Laurence Paras Mallari\" (ID: 202500001) to view ledger.', 'clients', '202500001', '::1', 'From URL: /EmeraldMicrofinance/Ledgers.html', 'To URL: LedgersView.html?client_id=202500001', '2025-11-13 15:09:47'),
+(108, 1, 'VIEW', 'Opened Loan Detail Modal for Loan ID: 11202500001.', 'loan_applications', '11202500001', '::1', NULL, NULL, '2025-11-13 15:09:49'),
+(109, 1, 'VIEW', 'Closed Loan Detail Modal via button.', 'UI_ACTION', 'loanDetailModal', '::1', NULL, NULL, '2025-11-13 15:09:52'),
+(110, 1, 'NAVIGATION', 'Mapsd from Ledgers View to Payment Collection page.', 'NAVIGATION', 'AccountsReceivable.html', '::1', NULL, NULL, '2025-11-13 15:09:53'),
+(111, 1, 'DATA_FETCH', 'Fetching approved and unpaid accounts for collection.', NULL, NULL, '::1', NULL, NULL, '2025-11-13 15:09:53'),
+(112, 1, 'NAVIGATION', 'Clicked \"Pending Accounts\" link, redirecting to PendingAccount.html', NULL, NULL, '::1', NULL, NULL, '2025-11-13 15:09:54'),
+(113, 1, 'NAVIGATION', 'Clicked \"Loan Application\" link, redirecting to LoanApplication.html', NULL, NULL, '::1', NULL, NULL, '2025-11-13 15:09:55'),
+(114, 1, 'NAVIGATION', 'Clicked \"Pending Accounts\" link, redirecting to PendingAccount.html', NULL, NULL, '::1', NULL, NULL, '2025-11-13 15:09:56'),
+(115, 1, 'NAVIGATION', 'Clicked \"Payment Collection\" link, redirecting to AccountsReceivable.html', NULL, NULL, '::1', NULL, NULL, '2025-11-13 15:09:58'),
+(116, 1, 'DATA_FETCH', 'Fetching approved and unpaid accounts for collection.', NULL, NULL, '::1', NULL, NULL, '2025-11-13 15:09:58'),
+(117, 1, 'NAVIGATION', 'Clicked \"Reports\" link, redirecting to Reports.html', NULL, NULL, '::1', NULL, NULL, '2025-11-13 15:10:02'),
+(118, 1, 'VIEW', 'Viewed Report: Existing Clients (ReportsExistingClient.html)', NULL, NULL, '::1', NULL, NULL, '2025-11-13 15:10:05'),
+(119, 1, 'VIEW', 'Accessed detailed view for Client ID: 202500001', 'clients', '202500001', '::1', NULL, NULL, '2025-11-13 15:10:06'),
+(120, 1, 'VIEW', 'Opened Loan Detail Modal for Loan ID: 11202500001.', NULL, NULL, '::1', NULL, NULL, '2025-11-13 15:10:06'),
+(121, 1, 'VIEW', 'Closed Loan Detail Modal via button.', NULL, NULL, '::1', NULL, NULL, '2025-11-13 15:10:09'),
+(122, 1, 'NAVIGATION', 'Mapsd from Ledgers View to Payment Collection page.', NULL, NULL, '::1', NULL, NULL, '2025-11-13 15:10:18'),
+(123, 1, 'DATA_FETCH', 'Fetching approved and unpaid accounts for collection.', NULL, NULL, '::1', NULL, NULL, '2025-11-13 15:10:18'),
+(124, 1, 'NAVIGATION', 'Clicked \"Ledger\" link, redirecting to Ledgers.html', NULL, NULL, '::1', NULL, NULL, '2025-11-13 15:10:19'),
+(125, 1, 'VIEW', 'Selected client \"Angel Laurence Paras Mallari\" (ID: 202500001) to view ledger.', 'clients', '202500001', '::1', 'From URL: /EmeraldMicrofinance/Ledgers.html', 'To URL: LedgersView.html?client_id=202500001', '2025-11-13 15:10:20'),
+(126, 1, 'VIEW', 'Opened Loan Detail Modal for Loan ID: 11202500001.', 'loan_applications', '11202500001', '::1', NULL, NULL, '2025-11-13 15:10:21'),
+(127, 1, 'NAVIGATION', 'Mapsd from Ledgers View to Pending Accounts page.', 'NAVIGATION', 'PendingAccount.html', '::1', NULL, NULL, '2025-11-13 15:10:56'),
+(128, 1, 'NAVIGATION', 'Clicked \"Payment Collection\" link, redirecting to AccountsReceivable.html', NULL, NULL, '::1', NULL, NULL, '2025-11-13 15:10:57'),
+(129, 1, 'DATA_FETCH', 'Fetching approved and unpaid accounts for collection.', NULL, NULL, '::1', NULL, NULL, '2025-11-13 15:10:57'),
+(130, 1, 'NAVIGATION', 'Clicked \"Loan Application\" link, redirecting to LoanApplication.html', NULL, NULL, '::1', NULL, NULL, '2025-11-13 15:10:58'),
+(131, 1, 'NAVIGATION', 'Clicked \"Client Creation\" link, redirecting to ClientCreationForm.html', NULL, NULL, '::1', NULL, NULL, '2025-11-13 15:10:58'),
+(132, 1, 'NAVIGATION', 'Clicked \"Dashboard\" link, redirecting to DashBoard.html', NULL, NULL, '::1', NULL, NULL, '2025-11-13 15:10:59'),
+(133, 1, 'NAVIGATION', 'Clicked \"Client Creation\" link, redirecting to ClientCreationForm.html', NULL, NULL, '::1', NULL, NULL, '2025-11-13 15:11:00'),
+(134, 1, 'NAVIGATION', 'Clicked \"Loan Application\" link, redirecting to LoanApplication.html', NULL, NULL, '::1', NULL, NULL, '2025-11-13 15:11:01'),
+(135, 1, 'NAVIGATION', 'Clicked \"Pending Accounts\" link, redirecting to PendingAccount.html', NULL, NULL, '::1', NULL, NULL, '2025-11-13 15:11:02'),
+(136, 1, 'NAVIGATION', 'Clicked \"Payment Collection\" link, redirecting to AccountsReceivable.html', NULL, NULL, '::1', NULL, NULL, '2025-11-13 15:11:04'),
+(137, 1, 'DATA_FETCH', 'Fetching approved and unpaid accounts for collection.', NULL, NULL, '::1', NULL, NULL, '2025-11-13 15:11:04'),
+(138, 1, 'NAVIGATION', 'Clicked \"Ledger\" link, redirecting to Ledgers.html', NULL, NULL, '::1', NULL, NULL, '2025-11-13 15:14:30'),
+(139, 1, 'NAVIGATION', 'Clicked \"Reports\" link, redirecting to Reports.html', NULL, NULL, '::1', 'From URL: /EmeraldMicrofinance/Ledgers.html', 'To URL: Reports.html', '2025-11-13 15:14:31'),
+(140, 1, 'VIEW', 'Viewed Report: Audit Trail (ReportsAuditTrail.html)', NULL, NULL, '::1', NULL, NULL, '2025-11-13 15:14:33'),
+(141, 1, 'VIEW', 'Viewed Report: Overdue (ReportsDelinquentAccounts.html)', NULL, NULL, '::1', NULL, NULL, '2025-11-13 15:14:34'),
+(142, 1, 'VIEW', 'Viewed Report: Overdue (ReportsDelinquentAccounts.html)', NULL, NULL, '::1', NULL, NULL, '2025-11-13 15:14:34'),
+(143, 1, 'VIEW', 'Viewed Report: Due Payments (ReportsDuePayments.html)', NULL, NULL, '::1', NULL, NULL, '2025-11-13 15:14:36'),
+(144, 1, 'VIEW', 'Initial load with default filters: Date=2025-11-13, Status=Due Today', NULL, NULL, '::1', NULL, NULL, '2025-11-13 15:14:36'),
+(145, 1, 'VIEW', 'Loaded Due Payments Report with 0 records.', NULL, NULL, '::1', NULL, NULL, '2025-11-13 15:14:36'),
+(146, 1, 'VIEW', 'Applied filters: Date=2025-11-13, Status=All', NULL, NULL, '::1', NULL, NULL, '2025-11-13 15:14:41'),
+(147, 1, 'VIEW', 'Successfully loaded Due Payments Report with 1 records.', NULL, NULL, '::1', NULL, NULL, '2025-11-13 15:14:41'),
+(148, 1, 'NAVIGATION', 'Clicked \"Dashboard\" link, redirecting to DashBoard.html', NULL, NULL, '::1', NULL, NULL, '2025-11-13 15:21:38'),
+(149, 1, 'NAVIGATION', 'Clicked dashboard tile: Collection Today, redirecting to CollectionToday.html', NULL, NULL, '::1', NULL, NULL, '2025-11-13 15:21:40'),
+(150, 1, 'NAVIGATION', 'Clicked \"Dashboard\" link, redirecting to DashBoard.html', NULL, NULL, '::1', NULL, NULL, '2025-11-13 15:35:01'),
+(151, 1, 'NAVIGATION', 'Clicked dashboard tile: Collection Today, redirecting to CollectionToday.html', NULL, NULL, '::1', NULL, NULL, '2025-11-13 15:35:01'),
+(152, 1, 'DATA_FETCH', 'Fetching payments from 2025-11-13 to 2025-11-13', NULL, NULL, '::1', NULL, NULL, '2025-11-13 15:57:44'),
+(153, 1, 'DATA_FETCH', 'Fetching payments from 2025-11-13 to 2025-11-13', NULL, NULL, '::1', NULL, NULL, '2025-11-13 15:57:45'),
+(154, 1, 'DATA_FETCH', 'Fetching payments from 2025-11-13 to 2025-11-13', NULL, NULL, '::1', NULL, NULL, '2025-11-13 15:57:45'),
+(155, 1, 'DATA_FETCH', 'Fetching payments from 2025-11-13 to 2025-11-13', NULL, NULL, '::1', NULL, NULL, '2025-11-13 15:58:09'),
+(156, 1, 'DATA_FETCH', 'Fetching payments from 2025-11-14 to 2025-11-14', NULL, NULL, '::1', NULL, NULL, '2025-11-13 16:00:25'),
+(157, 1, 'DATA_FETCH', 'Fetching payments from 2025-11-14 to 2025-11-14', NULL, NULL, '::1', NULL, NULL, '2025-11-13 16:58:08'),
+(158, 1, 'DATA_FETCH', 'Fetching payments from 2025-11-13 to 2025-11-14', NULL, NULL, '::1', NULL, NULL, '2025-11-13 16:58:17'),
+(159, 1, 'NAVIGATION', 'Clicked \"Dashboard\" link, redirecting to DashBoard.html', NULL, NULL, '::1', NULL, NULL, '2025-11-13 17:12:32');
 
 -- --------------------------------------------------------
 
@@ -374,7 +482,8 @@ CREATE TABLE `payment` (
 
 INSERT INTO `payment` (`payment_id`, `loan_reconstruct_id`, `loan_application_id`, `client_id`, `amount_paid`, `date_payed`, `processby`) VALUES
 (1, NULL, 11202500001, 202500001, 2000.00, '2025-11-11 04:00:26', 'Angel Laurence Paras Mallari'),
-(2, NULL, 11202500001, 202500001, 2000.00, '2025-11-11 04:09:15', 'Angel Laurence Paras Mallari');
+(2, NULL, 11202500001, 202500001, 2000.00, '2025-11-11 04:09:15', 'Angel Laurence Paras Mallari'),
+(3, NULL, 11202500001, 202500001, 1000.00, '2025-11-13 15:08:27', 'Angel Laurence Paras Mallari');
 
 -- --------------------------------------------------------
 
@@ -681,7 +790,7 @@ ALTER TABLE `user_accounts`
 -- AUTO_INCREMENT for table `audit_logs`
 --
 ALTER TABLE `audit_logs`
-  MODIFY `log_id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=52;
+  MODIFY `log_id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=160;
 
 --
 -- AUTO_INCREMENT for table `genders`
@@ -711,7 +820,7 @@ ALTER TABLE `marital_statuses`
 -- AUTO_INCREMENT for table `payment`
 --
 ALTER TABLE `payment`
-  MODIFY `payment_id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=3;
+  MODIFY `payment_id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=4;
 
 --
 -- AUTO_INCREMENT for table `philippine_barangays`
