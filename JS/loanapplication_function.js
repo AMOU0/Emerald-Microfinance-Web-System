@@ -7,6 +7,7 @@ document.addEventListener('DOMContentLoaded', function() {
         'Client Creation': ['Admin', 'Loan_Officer'],
         'Loan Application': ['Admin', 'Loan_Officer'],
         'Pending Accounts': ['Admin', 'Manager'],
+        'For Release': ['Admin', 'Manager', 'Loan_Officer'],
         'Payment Collection': ['Admin', 'Manager'],
         'Ledger': ['Admin', 'Manager', 'Loan_Officer'],
         'Reports': ['Admin', 'Manager', 'Loan_Officer'],
@@ -121,7 +122,7 @@ document.addEventListener('DOMContentLoaded', function() {
     periodsInput.setAttribute('name', 'duration-in-periods');
     loanApplicationForm.appendChild(periodsInput); // Append it to the form
 
-    const nameInputs = [guarantorLastNameInput, guarantorFirstNameInput, guarantorMiddleNameInput];
+const nameInputs = [guarantorLastNameInput, guarantorFirstNameInput];
 
     let clientName = '';
     let globalInterestRate = 0;
@@ -363,6 +364,7 @@ document.addEventListener('DOMContentLoaded', function() {
         'clientcreation': 'ClientCreationForm.html',
         'loanapplication': 'LoanApplication.html',
         'pendingaccounts': 'PendingAccount.html',
+        'forrelease': 'ReportsRelease.html',
         'paymentcollection': 'AccountsReceivable.html',
         'ledger': 'Ledgers.html',
         'reports': 'Reports.html',
@@ -805,7 +807,7 @@ document.addEventListener('DOMContentLoaded', function() {
                         <thead>
                             <tr class="bg-gray-50">
                                 <th class="px-3 py-2 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">#</th>
-                                <th class="px-3 py-2 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Due Date</th>
+                                <th class="px-3 py-2 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Scheduled Payment</th>
                                 <th class="px-3 py-2 text-right text-xs font-medium text-gray-500 uppercase tracking-wider">Principal</th>
                                 <th class="px-3 py-2 text-right text-xs font-medium text-gray-500 uppercase tracking-wider">Interest</th>
                                 <th class="px-3 py-2 text-right text-xs font-medium text-gray-500 uppercase tracking-wider">Total Payment</th>
@@ -1050,11 +1052,11 @@ document.addEventListener('DOMContentLoaded', function() {
         modalContent.innerHTML = `
             <div class="flex justify-between items-center pb-4 border-b border-gray-200 mb-4">
                 <h2 class="text-2xl font-bold">Select a Client</h2>
-                <button class="close-button text-gray-400 hover:text-gray-600 transition-colors duration-200" onclick="closeModal()">
-                    <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
-                        <path stroke-linecap="round" stroke-linejoin="round" d="M6 18L18 6M6 6l12 12" />
-                    </svg>
-                </button>
+<button class="close-button text-gray-900 hover:text-red-500 transition-colors duration-200" onclick="closeModal()">
+    <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+        <path stroke-linecap="round" stroke-linejoin="round" d="M6 18L18 6M6 6l12 12" />
+    </svg>
+</button>
             </div>
             <div class="search-container mb-4">
                 <input type="text" id="clientSearchInput" class="form-input w-full p-2 border border-gray-300 rounded" placeholder="Search by name...">

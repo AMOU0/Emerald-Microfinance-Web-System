@@ -8,6 +8,7 @@ document.addEventListener('DOMContentLoaded', function() {
         'Client Creation': ['Admin', 'Loan_Officer'],
         'Loan Application': ['Admin', 'Loan_Officer'],
         'Pending Accounts': ['Admin', 'Manager'],
+        'For Release': ['Admin', 'Manager', 'Loan_Officer'],
         'Payment Collection': ['Admin', 'Manager'],
         'Ledger': ['Admin', 'Manager', 'Loan_Officer'],
         'Reports': ['Admin', 'Manager', 'Loan_Officer'],
@@ -65,11 +66,9 @@ document.addEventListener('DOMContentLoaded', function() {
             }
         });
     }
+    
+    // Ä FIX: Removed the standalone, problematic enforceRoleAccess call that was here.
 });
-//==============================================================================================================================================
-document.addEventListener('DOMContentLoaded', function() {
-            enforceRoleAccess(['admin','Manager','Loan_Officer']); 
-        });
 /*=============================================================================*/
 
 
@@ -115,6 +114,7 @@ document.addEventListener('DOMContentLoaded', function() {
     'clientcreation': 'ClientCreationForm.html',
     'loanapplication': 'LoanApplication.html',
     'pendingaccounts': 'PendingAccount.html',
+    'forrelease': 'ReportsRelease.html',
     'paymentcollection': 'AccountsReceivable.html',
     'ledger': 'Ledgers.html',
     'reports': 'Reports.html',

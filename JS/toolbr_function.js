@@ -7,6 +7,7 @@ document.addEventListener('DOMContentLoaded', function() {
         'Client Creation': ['Admin', 'Loan_Officer'],
         'Loan Application': ['Admin', 'Loan_Officer'],
         'Pending Accounts': ['Admin', 'Manager'],
+        'For Release': ['Admin', 'Manager', 'Loan_Officer'],
         'Payment Collection': ['Admin', 'Manager'],
         'Ledger': ['Admin', 'Manager', 'Loan_Officer'],
         'Reports': ['Admin', 'Manager', 'Loan_Officer'],
@@ -15,7 +16,6 @@ document.addEventListener('DOMContentLoaded', function() {
         // 🚨 NEW ACCESS RULES FOR SUBMENU BUTTONS 🚨
         'Backup And Restore': ['Admin'],
         'Interest Amount': ['Admin'],
-        // Note: The role in the new button rule should be 'Loan_Officer' to match your existing roles.
         'User Management': ['Admin', 'Manager', 'Loan_Officer']
     };
 
@@ -142,6 +142,7 @@ document.addEventListener('DOMContentLoaded', function() {
     'clientcreation': 'ClientCreationForm.html',
     'loanapplication': 'LoanApplication.html',
     'pendingaccounts': 'PendingAccount.html',
+    'forrelease': 'ReportsRelease.html',
     'paymentcollection': 'AccountsReceivable.html',
     'ledger': 'Ledgers.html',
     'reports': 'Reports.html',

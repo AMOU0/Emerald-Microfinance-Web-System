@@ -40,6 +40,7 @@ document.addEventListener('DOMContentLoaded', function() {
         'Client Creation': ['admin', 'loan_officer'],
         'Loan Application': ['admin', 'loan_officer'],
         'Pending Accounts': ['admin', 'manager'],
+        'For Release': ['admin', 'manager', 'loan_officer'],
         'Payment Collection': ['admin', 'manager'],
         'Ledger': ['admin', 'manager', 'loan_officer'],
         'Reports': ['admin', 'manager', 'loan_officer'],
@@ -47,10 +48,11 @@ document.addEventListener('DOMContentLoaded', function() {
 
         // Report Sidebar Buttons (.reports-sidebar .report-button)
         'Existing Clients': ['admin', 'manager', 'loan_officer'],
+        'Released List': ['admin', 'manager', 'loan_officer'],
+        'Collection List': ['admin', 'manager', 'loan_officer'],
         'Overdue': ['admin', 'manager', 'loan_officer'],
         'Due Payments': ['admin', 'manager'],
-        'Audit Trail': ['admin'],
-        'For Release': ['admin', 'manager', 'loan_officer']
+        'Audit Trail': ['admin']
     };
 
     // 2. Fetch the current user's role
@@ -152,17 +154,19 @@ document.addEventListener('DOMContentLoaded', function() {
       'clientcreation': 'ClientCreationForm.html',
       'loanapplication': 'LoanApplication.html',
       'pendingaccounts': 'PendingAccount.html',
+      'forrelease': 'ReportsRelease.html',
       'paymentcollection': 'AccountsReceivable.html',
       'ledger': 'Ledgers.html',
       'reports': 'Reports.html',
       'tools': 'Tools.html'
     };
-    const reportUrlMapping = {
+     const reportUrlMapping = {
         'existingclients': 'ReportsExistingClient.html',
+        'releasedlist': 'ReleasedLoan.html',
+        'collectionlist': 'CollectionToday.html',
         'duepayments': 'ReportsDuePayments.html',
-        'overdue': 'ReportsDelinquentAccounts.html',
+        'overdue': 'ReportsDelinquentAccounts.html', 
         'audittrail': 'ReportsAuditTrail.html',
-        'forrelease': 'ReportsRelease.html'
     };
 
     navLinks.forEach(link => {
@@ -506,10 +510,6 @@ function showLoanDetailsModal(loanId) {
                                 <span class="info-label">Reconstruction Payments:</span>
                                 <strong class="info-value">${reconstructSchedule['Total_Payments_Recorded'] || '0'}</strong>
                             </div>
-                            <div class="info-item full-width-item final-balance">
-                                <span class="info-label">Recon Calculated Balance:</span>
-                                <strong class="info-value">PHP ${reconstructSchedule['Final_Calculated_Balance'] || '0.00'}</strong>
-                            </div>
                         </div>
                     </div>
                 `;
@@ -548,10 +548,6 @@ function showLoanDetailsModal(loanId) {
                                                 <div class="info-item">
                                                       <span class="info-label">Total Payments Recorded:</span>
                                                       <strong class="info-value">${standardSchedule['Total_Payments_Recorded'] || '0'}</strong>
-                                                </div>
-                                                <div class="info-item full-width-item final-balance">
-                                                      <span class="info-label">Final Calculated Balance:</span>
-                                                      <strong class="info-value">PHP ${standardSchedule['Final_Calculated_Balance'] || '0.00'}</strong>
                                                 </div>
                                           </div>
                                     </div>

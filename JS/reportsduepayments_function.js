@@ -9,6 +9,7 @@ document.addEventListener('DOMContentLoaded', function() {
         'Client Creation': ['admin', 'loan_officer'],
         'Loan Application': ['admin', 'loan_officer'],
         'Pending Accounts': ['admin', 'manager'],
+        'For Release': ['admin', 'manager', 'loan_officer'],
         'Payment Collection': ['admin', 'manager'],
         'Ledger': ['admin', 'manager', 'loan_officer'],
         'Reports': ['admin', 'manager', 'loan_officer'],
@@ -16,10 +17,11 @@ document.addEventListener('DOMContentLoaded', function() {
         
         // Report Sidebar Buttons (.reports-sidebar .report-button)
         'Existing Clients': ['admin', 'manager', 'loan_officer'],
+        'Released List': ['admin', 'manager', 'loan_officer'],
+        'Collection List': ['admin', 'manager', 'loan_officer'],
         'Overdue': ['admin', 'manager', 'loan_officer'],
         'Due Payments': ['admin', 'manager'],
-        'Audit Trail': ['admin'],
-        'For Release': ['admin', 'manager', 'loan_officer']
+        'Audit Trail': ['admin']
     };
 
     // 2. Fetch the current user's role
@@ -360,6 +362,7 @@ document.addEventListener('DOMContentLoaded', function() {
       'clientcreation': 'ClientCreationForm.html',
       'loanapplication': 'LoanApplication.html',
       'pendingaccounts': 'PendingAccount.html',
+      'forrelease': 'ReportsRelease.html',
       'paymentcollection': 'AccountsReceivable.html',
       'ledger': 'Ledgers.html',
       'reports': 'Reports.html',
@@ -369,10 +372,11 @@ document.addEventListener('DOMContentLoaded', function() {
 
     const reportUrlMapping = {
         'existingclients': 'ReportsExistingClient.html',
+        'releasedlist': 'ReleasedLoan.html',
+        'collectionlist': 'CollectionToday.html',
         'duepayments': 'ReportsDuePayments.html',
- 'overdue': 'ReportsDelinquentAccounts.html', 
+        'overdue': 'ReportsDelinquentAccounts.html', 
         'audittrail': 'ReportsAuditTrail.html',
-        'forrelease': 'ReportsRelease.html'
     };
 
 

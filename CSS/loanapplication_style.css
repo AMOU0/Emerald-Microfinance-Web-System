@@ -122,37 +122,14 @@ body {
     margin: 0;
 }
 
-.client-info-display {
-    color: white;
-    margin-right: 20px;
-    display: flex;
-    flex-direction: column;
-    align-items: flex-start;
-    font-size: 0.85rem;
-}
+/* ❌ REMOVED: Obsolete .client-info-display styles that were incorrectly placed 
+   and caused wrong coloring/alignment on the white form background.
+.client-info-display { ... }
+.client-info-display label { ... }
+.client-info-display #displayClientName { ... }
+.header #clientID { ... } 
+*/
 
-.client-info-display label {
-    font-weight: 400;
-    margin-bottom: 2px;
-}
-
-.client-info-display #displayClientName {
-    font-weight: 600;
-    font-size: 1rem;
-    padding: 2px 0;
-}
-
-.header #clientID {
-    background-color: #f0f4f8;
-    color: #333;
-    border: none;
-    padding: 8px 12px;
-    border-radius: 6px;
-    font-weight: 600;
-    width: 120px;
-    text-align: center;
-    margin-right: 12px;
-}
 
 .search-client-button {
     background-color: #f0f4f8;
@@ -189,14 +166,66 @@ body {
 /* 3. FORM INPUTS & SECTIONS (3-Column Grid) */
 /* ========================================================================= */
 
-.form-header h2 {
-    font-size: 24px;
-    font-weight: 700;
-    color: #2D3748;
+/* ✨ FIX: Apply Flexbox to align form header elements horizontally ✨ */
+.form-header {
+    display: flex;
+    align-items: center; /* Vertically align items */
+    gap: 15px; /* Spacing between elements */
     margin-bottom: 20px;
     border-bottom: 2px solid #E2E8F0;
     padding-bottom: 10px;
 }
+
+.form-header h2 {
+    font-size: 24px;
+    font-weight: 700;
+    color: #2D3748;
+    margin: 0; /* Important: Remove default margin that could interfere */
+    flex-shrink: 0; /* Prevent title from shrinking */
+}
+
+/* Updated styles for the Client ID input inside the form header */
+.form-header #clientID {
+    background-color: #f0f4f8;
+    color: #333;
+    border: none;
+    padding: 8px 12px;
+    border-radius: 6px;
+    font-weight: 600;
+    width: 120px;
+    text-align: center;
+    margin: 0; 
+    flex-shrink: 0; /* Prevent ID input from shrinking */
+}
+
+/* Updated styles for the Client Info Display inside the form header */
+.form-header .client-info-display {
+    display: flex;
+    flex-direction: column;
+    align-items: flex-start;
+    font-size: 0.85rem;
+    flex-grow: 1; /* Allows it to take up the available middle space */
+    margin: 0;
+}
+
+.client-info-display label {
+    font-weight: 400;
+    margin-bottom: 2px;
+    color: #4A5568; /* Visible label color on white background */
+}
+
+.client-info-display #displayClientName {
+    font-weight: 600;
+    font-size: 1rem;
+    padding: 2px 0;
+    color: #2D3748; /* Visible value color on white background */
+}
+
+/* Ensure the button uses its flex properties */
+.form-header .search-client-button {
+    flex-shrink: 0;
+}
+/* ✨ END OF FIX ✨ */
 
 .form-section {
     margin-bottom: 30px;
@@ -411,18 +440,17 @@ body {
     color: #2D3748;
 }
 
-/* 🟢 UPDATED: Close Button/Span Style (for X character - perfectly square/sharp corners) */
+
 .close-modal-btn, .close-button, .close {
     position: absolute; 
     top: 16px;          
     right: 16px;        
-    color: #4A5568;     
-    padding: 6px 10px;      /* Adjusted padding for a tighter, more compact look */
-    border-radius: 0;       /* SHARP CORNERS (Perfectly square/rectangle) */
-    border: none;
+    color: #4A5568;     /* Default color for the 'X' icon stroke */
+    padding: 8px;       
+    border-radius: 9999px; 
+    border: 1px solid rgba(0,0,0,0.2); /* Temporary border for visibility. REMOVE LATER. */
+    background: transparent; /* Must be transparent */
     cursor: pointer;
-    font-size: 28px;        /* Slightly larger font size for a clearer '×' */
-    font-weight: 300;       
     line-height: 1;
     z-index: 1001;      
     transition: background-color 0.2s, color 0.2s;
@@ -432,12 +460,16 @@ body {
 }
 
 .close-modal-btn:hover, .close-button:hover, .close:hover {
-    color: #E53E3E;
+    color: #E53E3E; /* Change icon color to red on hover */
+    background-color: transparent; 
 }
 
-.close-modal-btn:focus, .close-button:focus, .close:focus {
-    outline: 2px solid #48BB78; /* Green focus ring for accessibility */
-    outline-offset: 2px;
+/* 👈 Add a specific style for the SVG inside the button */
+.close-button svg {
+    /* Ensure the icon is large enough and inherits the color from the parent button */
+    height: 24px !important; 
+    width: 24px !important;
+    stroke: currentColor !important;
 }
 
 /* --- Modal Body: Main Two-Column Grid --- */

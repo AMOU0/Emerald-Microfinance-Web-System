@@ -1,12 +1,13 @@
 document.addEventListener('DOMContentLoaded', function() {
     // 1. Define Access Rules
     // Map of menu item names to an array of roles that have access.
-    // Ensure the keys here match the text content of your <a> tags exactly.
+    // Ensure the keys here match the text content of your <a> tags exactly. 
     const accessRules = {
         'Dashboard': ['Admin', 'Manager', 'Loan_Officer'],
         'Client Creation': ['Admin', 'Loan_Officer'],
         'Loan Application': ['Admin', 'Loan_Officer'],
         'Pending Accounts': ['Admin', 'Manager'],
+        'For Release': ['Admin', 'Manager', 'Loan_Officer'],
         'Payment Collection': ['Admin', 'Manager'],
         'Ledger': ['Admin', 'Manager', 'Loan_Officer'],
         'Reports': ['Admin', 'Manager', 'Loan_Officer'],
@@ -190,14 +191,14 @@ document.addEventListener('DOMContentLoaded', function() {
             const checkData = {
                 lastName: data.lastName,
                 firstName: data.firstName,
-                middleName: data.middleName
-                // Date of Birth is intentionally excluded to check only by name
+                // Middle Name is now optional, but must be included in duplicate check if present.
+                middleName: data.middleName 
             };
 
             const response = await fetch('PHP/clientcreationform_handler.php?checkName=true', {
                 method: 'POST',
                 headers: {
-                    'Content-Type': 'application/json'
+                    'Content-Type': 'application/json' // Use JSON for this preliminary check
                 },
                 body: JSON.stringify(checkData)
             });
@@ -230,6 +231,7 @@ document.addEventListener('DOMContentLoaded', function() {
         'clientcreation': 'ClientCreationForm.html',
         'loanapplication': 'LoanApplication.html',
         'pendingaccounts': 'PendingAccount.html',
+        'forrelease': 'ReportsRelease.html',
         'paymentcollection': 'AccountsReceivable.html',
         'ledger': 'Ledgers.html',
         'reports': 'Reports.html',
@@ -281,6 +283,12 @@ document.addEventListener('DOMContentLoaded', function() {
     const validIdTypeSelect = document.getElementById('validIdType');
     const createButton = document.getElementById('create-button');
     
+    // NEW: File input elements and labels
+    const barangayClearanceFile = document.getElementById('barangayClearanceFile');
+    const validIdFile = document.getElementById('validIdFile');
+    const barangayClearanceLabel = document.getElementById('barangayClearanceLabel');
+    const validIdLabel = document.getElementById('validIdLabel');
+
     // Dropdown elements
     const maritalStatusSelect = document.getElementById('maritalStatus');
     const genderSelect = document.getElementById('gender');
@@ -315,29 +323,42 @@ document.addEventListener('DOMContentLoaded', function() {
         }
     });
     
+    // NEW: File Input Listeners (To update label with selected file name)
+    barangayClearanceFile.addEventListener('change', function() {
+        if (this.files.length > 0) {
+            barangayClearanceLabel.textContent = `File selected: ${this.files[0].name}`;
+        } else {
+            barangayClearanceLabel.textContent = 'Click to Add Barangay Clearance Scan';
+        }
+    });
+
+    validIdFile.addEventListener('change', function() {
+        if (this.files.length > 0) {
+            validIdLabel.textContent = `File selected: ${this.files[0].name}`;
+        } else {
+            validIdLabel.textContent = 'Click to Add Valid ID Scan';
+        }
+    });
+    
     // --- FINAL FORM SUBMISSION HANDLER ---
     clientCreationForm.addEventListener('submit', async (e) => {
         e.preventDefault();
 
-        const dateOfBirth = dateOfBirthInput.value;
-        const phoneNumber = phoneNumberInput.value ? phoneNumberInput.value.trim() : '';
-        const actionType = 'CREATED'; // Unified action type for all attempts
-
-        // Data preparation (needed for validation and duplicate check)
+        // Data preparation (Use FormData for submission, but convert to object for validation/duplicate check)
         const formData = new FormData(clientCreationForm);
-        const data = Object.fromEntries(formData.entries());
+        const data = Object.fromEntries(formData.entries()); 
         
-        // Get values for new validation checks
+        const dateOfBirth = data.dateOfBirth;
+        const phoneNumber = data.phoneNumber ? data.phoneNumber.trim() : '';
         const yearsInJob = data.yearsInJob ? data.yearsInJob.trim() : ''; 
+        const actionType = 'CREATED';
 
         // 1. Validation checks...
 
-        // 🛑 NEW: ALL REQUIRED FIELDS CHECK (Checks for '*' fields) 🛑
-        // This check ensures all required fields are filled using the consistent alert/focus/log/return pattern.
+        // 🛑 ALL REQUIRED FIELDS CHECK 🛑
         const requiredFields = [
             { name: 'Last Name', value: data.lastName, id: 'lastName' },
             { name: 'First Name', value: data.firstName, id: 'firstName' },
-            { name: 'Middle Name', value: data.middleName, id: 'middleName' },
             { name: 'Marital Status', value: data.maritalStatus, id: 'maritalStatus' },
             { name: 'Gender', value: data.gender, id: 'gender' },
             { name: 'Date of Birth', value: data.dateOfBirth, id: 'dateOfBirth' },
@@ -353,7 +374,6 @@ document.addEventListener('DOMContentLoaded', function() {
         
         for (const field of requiredFields) {
             if (!field.value || field.value.trim() === '') {
-                // Consistent validation actions matching the image example
                 alert(`Error: The "${field.name}" field is required.`);
                 document.getElementById(field.id).focus();
                 
@@ -364,26 +384,24 @@ document.addEventListener('DOMContentLoaded', function() {
         }
         // 🛑 END ALL REQUIRED FIELDS CHECK 🛑
 
-        // 🛑 NAME FIELDS CONSTRAINT CHECK (Letters and Spaces only) 🛑
+        // 🛑 NAME FIELDS CONSTRAINT CHECK 🛑
         const nameFields = [
             { name: 'Last Name', value: data.lastName, id: 'lastName' },
             { name: 'First Name', value: data.firstName, id: 'firstName' },
             { name: 'Middle Name', value: data.middleName, id: 'middleName' }
         ];
-        // Regex allows uppercase letters (A-Z), lowercase letters (a-z), and spaces (\s)
         const nameRegex = /^[A-Za-z\s]+$/;
 
         for (const field of nameFields) {
-            // Only check constraints if the field is NOT empty (empty is handled above)
-            if (field.value.trim() === '') continue; 
-            
-            if (!nameRegex.test(field.value)) {
-                alert(`Error: ${field.name} must contain only letters and spaces.`);
-                document.getElementById(field.id).focus(); 
-                
-                const description = `FAILED: Client creation failed due to invalid characters in ${field.name} field.`;
-                logUserAction(actionType, description);
-                return; // STOP execution
+            if (field.value && field.value.trim() !== '') { 
+                if (!nameRegex.test(field.value)) {
+                    alert(`Error: ${field.name} must contain only letters and spaces.`);
+                    document.getElementById(field.id).focus(); 
+                    
+                    const description = `FAILED: Client creation failed due to invalid characters in ${field.name} field.`;
+                    logUserAction(actionType, description);
+                    return; // STOP execution
+                }
             }
         }
         // 🛑 END NAME FIELDS CONSTRAINT CHECK 🛑
@@ -410,13 +428,9 @@ document.addEventListener('DOMContentLoaded', function() {
         
         // 🛑 YEARS IN JOB FORMAT CHECK 🛑
         if (yearsInJob !== '') {
-            
-            // Regex for flexible "X year(s), Y month(s)" format.
             const durationRegex = /^\s*(?:(\d+)\s*year(s)?\s*(?:,\s*)?|(\d+)\s*year(s)?\s*)?\s*(?:(\d+)\s*month(s)?)?\s*$/i;
-
             const match = yearsInJob.match(durationRegex);
             
-            // Check if format is invalid or if it contains text but no numbers were captured
             if (!match || (!match[1] && !match[3] && !match[4])) {
                 alert('Error: "Years in Job" must be in the format "X year(s), Y month(s)". Only use whole numbers. Examples: "1 year, 6 months", "3 years", or "9 months".');
                 document.getElementById('yearsInJob').focus();
@@ -438,8 +452,7 @@ document.addEventListener('DOMContentLoaded', function() {
         // 🛑 END YEARS IN JOB CHECK 🛑
 
 
-        // 🛑 DOCUMENT REQUIREMENTS CHECK 🛑
-        // Requires BOTH checks to be true.
+        // 🛑 DOCUMENT REQUIREMENTS CHECK (Checkboxes) 🛑
         if (!barangayClearanceCheck.checked || !hasValidIdCheck.checked) {
             alert('Error: Client must provide BOTH the Barangay Clearance/Certificate AND a Valid ID.'); 
             
@@ -447,9 +460,25 @@ document.addEventListener('DOMContentLoaded', function() {
             logUserAction(actionType, description);
             return; 
         }
+
+        // 🛑 FILE UPLOAD CHECK (Files must be selected if checked) 🛑
+        if (barangayClearanceCheck.checked && barangayClearanceFile.files.length === 0) {
+            alert('Error: "Barangay Clearance & Certificate" is checked, but the file is missing.');
+            barangayClearanceLabel.focus();
+            const description = 'FAILED: Client creation failed - Barangay Clearance checked but no file uploaded.';
+            logUserAction(actionType, description);
+            return;
+        }
+
+        if (hasValidIdCheck.checked && validIdFile.files.length === 0) {
+            alert('Error: "Valid ID" is checked, but the file is missing.');
+            validIdLabel.focus();
+            const description = 'FAILED: Client creation failed - Valid ID checked but no file uploaded.';
+            logUserAction(actionType, description);
+            return;
+        }
         
-        // 🛑 NEW: VALID ID TYPE CHECK 🛑
-        // If the Valid ID checkbox is checked, a Valid ID Type must be selected.
+        // 🛑 VALID ID TYPE CHECK 🛑
         if (hasValidIdCheck.checked && (!validIdTypeSelect.value || validIdTypeSelect.value === '')) {
             alert('Error: Since the "Valid ID" checkbox is checked, the "Valid ID Type" must be selected.');
             validIdTypeSelect.focus();
@@ -461,19 +490,11 @@ document.addEventListener('DOMContentLoaded', function() {
         // 🛑 END VALID ID TYPE CHECK 🛑
 
         
-        // 2. Button state change and data finalization
+        // 2. Button state change
         createButton.disabled = true;
         createButton.textContent = 'Creating...';
 
-        data.hasBarangayClearance = barangayClearanceCheck.checked ? 1 : 0;
-        data.hasValidId = hasValidIdCheck.checked ? 1 : 0;
-        data.validIdType = hasValidIdCheck.checked ? validIdTypeSelect.value : null;
-
-        // Clean up temporary form fields not needed for the PHP handler
-        delete data.validId;
-        delete data.barangayClearance;
-        
-        // 3. DUPLICATE NAME CHECK (LName, FName, MName only)
+        // 3. DUPLICATE NAME CHECK
         const isDuplicate = await checkDuplicateClient(data);
         
         if (isDuplicate) {
@@ -489,19 +510,25 @@ document.addEventListener('DOMContentLoaded', function() {
 
 
         // 4. Final Submission
+        
+        // Append required data to FormData for the PHP handler
+        // These are boolean/selection values not automatically captured by FormData(form)
+        formData.append('hasBarangayClearance', barangayClearanceCheck.checked ? 1 : 0);
+        formData.append('hasValidId', hasValidIdCheck.checked ? 1 : 0);
+        formData.append('validIdType', hasValidIdCheck.checked ? validIdTypeSelect.value : null);
+
         try {
+            // 🚨 CRITICAL: Use FormData and omit Content-Type header for file uploads 🚨
             const response = await fetch('PHP/clientcreationform_handler.php', {
                 method: 'POST',
-                headers: {
-                    'Content-Type': 'application/json'
-                },
-                body: JSON.stringify(data)
+                body: formData 
+                // Omit headers to let the browser set the correct multipart/form-data boundary
             });
 
             const result = await response.json();
 
             if (response.ok && result.success) {
-                const clientId = result.clientId; // Get the newly created ID
+                const clientId = result.clientId; 
                 
                 // Success Log
                 const description = `SUCCESS: Client created with ID: ${clientId}`;
@@ -509,6 +536,9 @@ document.addEventListener('DOMContentLoaded', function() {
 
                 showTemporaryNotification('Client created successfully! Client ID: ' + clientId); 
                 clientCreationForm.reset();
+                // Reset file labels after form reset
+                barangayClearanceLabel.textContent = 'Click to Add Barangay Clearance Scan';
+                validIdLabel.textContent = 'Click to Add Valid ID Scan';
             } else {
                 // Server Failure Log
                 const description = `FAILED: Server error during client creation. Message: ${result.message}`;

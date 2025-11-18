@@ -1,3 +1,4 @@
+// ledgersview_function.js
 document.addEventListener('DOMContentLoaded', function() {
     // 1. Define Access Rules
     // Map of menu item names to an array of roles that have access.
@@ -6,7 +7,8 @@ document.addEventListener('DOMContentLoaded', function() {
         'Dashboard': ['Admin', 'Manager', 'Loan_Officer'],
         'Client Creation': ['Admin', 'Loan_Officer'],
         'Loan Application': ['Admin', 'Loan_Officer'],
-        'Pending Accounts': ['Admin', 'Manager'],
+        'Pending Accounts': ['Admin', 'Manager'],       
+        'For Release': ['Admin', 'Manager', 'Loan_Officer'],
         'Payment Collection': ['Admin', 'Manager'],
         'Ledger': ['Admin', 'Manager', 'Loan_Officer'],
         'Reports': ['Admin', 'Manager', 'Loan_Officer'],
@@ -125,6 +127,7 @@ document.addEventListener('DOMContentLoaded', function() {
       'clientcreation': 'ClientCreationForm.html',
       'loanapplication': 'LoanApplication.html',
       'pendingaccounts': 'PendingAccount.html',
+      'forrelease': 'ReportsRelease.html',
       'paymentcollection': 'AccountsReceivable.html',
       'ledger': 'Ledgers.html',
       'reports': 'Reports.html',
@@ -408,7 +411,7 @@ function showLoanDetailsModal(loanId) {
       const modalHeader = modal.querySelector('.modal-header'); 
       
       // 1. Set Header Title
-      const headerTitle = document.getElementById('loanModalHeaderTitle');
+      const headerTitle = document.getElementById('modalTitle');
       if (headerTitle) {
             headerTitle.textContent = `Loan Ledger (ID: ${loanId})`;
       }
@@ -427,10 +430,12 @@ function showLoanDetailsModal(loanId) {
       // --- REMOVED DYNAMICALLY CREATING PRINT BUTTON ---
 
       // 3. Fetch both detailed loan data sets concurrently
+      // Fetches ONLY original loan payments (loan_reconstruct_id IS NULL)
       const fetchStandard = fetch(`PHP/ledgersviewfetchloan_handler.php?loanId=${loanId}`).then(res => {
             if (!res.ok) throw new Error(`Standard Ledger fetch failed with status: ${res.status}`);
             return res.json();
       });
+      // Fetches ONLY reconstruction payments (loan_reconstruct_id IS NOT NULL)
       const fetchReconstruct = fetch(`PHP/ledgersviewreconstruct_handler.php?loanId=${loanId}`).then(res => {
             if (!res.ok) throw new Error(`Reconstruction Ledger fetch failed with status: ${res.status}`);
             return res.json();
@@ -445,53 +450,66 @@ function showLoanDetailsModal(loanId) {
                           return;
                   }
 
-                  // Standard Details (used for main summary and ALL payments)
+                  // Standard Payments (Loan: XXX)
                   const standardSchedule = standardDetails.Schedule || {};
-                  // Use the comprehensive payment list from standardDetails
-                  const allPaymentsTableHTML = createPaymentsTable(standardDetails.Payments, 'All Payments (Standard & Reconstruction)');
+                  const standardPaymentsTableHTML = createPaymentsTable(standardDetails.Payments, 'Original Loan Payments');
 
 
-                  // Reconstruction Details (used for secondary summary and specific payments)
+                  // Reconstruction Payments (Recon: YYY)
                   const reconstructSchedule = reconstructDetails.Schedule || {};
             
-            // ** START: CONDITIONAL LOGIC FOR RECONSTRUCTION SECTION **
-            let reconstructionSummaryHTML = '';
-            let reconstructionPaymentsHTML = '';
+                  // ** START: CONDITIONAL LOGIC FOR RECONSTRUCTION SECTION **
+                  let reconstructionPaymentsHTML = '';
 
-            // Check if the Payments array exists and has at least one item
-            const hasReconstructionPayments = Array.isArray(reconstructDetails.Payments) && reconstructDetails.Payments.length > 0;
+                  // Check if the Payments array exists and has at least one item
+                  const hasReconstructionPayments = Array.isArray(reconstructDetails.Payments) && reconstructDetails.Payments.length > 0;
 
-            if (hasReconstructionPayments) {
-                const reconstructPaymentsTableHTML = createPaymentsTable(reconstructDetails.Payments, 'Reconstruction');
+                  if (hasReconstructionPayments) {
+                      const reconstructPaymentsTableHTML = createPaymentsTable(reconstructDetails.Payments, 'Reconstruction');
 
-                // 1. Build the Reconstruction Summary block
-                reconstructionSummaryHTML = `
-                    <hr class="summary-separator">
-                    <div class="summary-section">
-                        <h5>Reconstruction Summary (Separate Table)</h5>
-                        <div class="info-columns">
-                            <div class="info-item">
-                                <span class="info-label">Reconstruction Payments:</span>
-                                <strong class="info-value">${reconstructSchedule['Total_Payments_Recorded'] || '0'}</strong>
-                            </div>
-                            <div class="info-item full-width-item final-balance">
-                                <span class="info-label">Recon Calculated Balance:</span>
-                                <strong class="info-value">PHP ${reconstructSchedule['Final_Calculated_Balance'] || '0.00'}</strong>
-                            </div>
-                        </div>
-                    </div>
-                `;
-                
-                // 2. Build the Reconstruction Payments table block
-                reconstructionPaymentsHTML = `
-                    <div class="payment-history-section reconstruction-payments-table">
-                        <h4 class="section-title-payments">Reconstruction Payments</h4>
-                        ${reconstructPaymentsTableHTML}
-                    </div>
-                `;
-            } 
-            
-            // ** END: CONDITIONAL LOGIC FOR RECONSTRUCTION SECTION **
+                      // 1. Build the Reconstruction Summary block using the new Schedule data
+                      const reconSummaryHTML = `
+                          <hr class="summary-separator">
+                          <div class="info-box simplified-summary">
+                              <h4 class="info-header">Reconstruction Summary (ID: ${reconstructDetails.LoanReconstructId || 'N/A'})</h4>
+                              <div class="summary-section">
+                                  <div class="info-columns">
+                                      <div class="info-item">
+                                          <span class="info-label">Recon Principal:</span>
+                                          <strong class="info-value">PHP ${reconstructSchedule['Reconstruct_Amount'] || 'N/A'}</strong>
+                                      </div>
+                                      <div class="info-item">
+                                          <span class="info-label">Recon Interest Rate:</span>
+                                          <strong class="info-value">${reconstructSchedule['Reconstruct_Interest_Rate'] || 'N/A'}%</strong>
+                                      </div>
+                                      <div class="info-item">
+                                          <span class="info-label">Recon Total Obligation:</span>
+                                          <strong class="info-value">PHP ${reconstructSchedule['Total_Recon_Obligation'] || 'N/A'}</strong>
+                                      </div>
+                                      <div class="info-item">
+                                          <span class="info-label">Recon Payments Recorded:</span>
+                                          <strong class="info-value">${reconstructSchedule['Total_Payments_Recorded'] || '0'}</strong>
+                                      </div>
+                                      <div class="info-item">
+                                          <span class="info-label">Recon Remaining Balance:</span>
+                                          <strong class="info-value">PHP ${reconstructSchedule['Final_Calculated_Balance'] || 'N/A'}</strong>
+                                      </div>
+                                  </div>
+                              </div>
+                          </div>
+                      `;
+
+                      // 2. Build the Reconstruction Payments table block
+                      reconstructionPaymentsHTML = `
+                          ${reconSummaryHTML}
+                          <div class="payment-history-section reconstruction-payments-table">
+                              <h4 class="section-title-payments">Reconstruction Payment History</h4>
+                              ${reconstructPaymentsTableHTML}
+                          </div>
+                      `;
+                  } 
+                  
+                  // ** END: CONDITIONAL LOGIC FOR RECONSTRUCTION SECTION **
 
 
                   // 4. Render the combined view
@@ -514,23 +532,18 @@ function showLoanDetailsModal(loanId) {
                                                       <strong class="info-value">${standardSchedule['Interest_Rate'] || 'N/A'}%</strong>
                                                 </div>
                                                 <div class="info-item">
-                                                      <span class="info-label">Total Payments Recorded:</span>
+                                                      <span class="info-label">Total Payments (Original):</span>
                                                       <strong class="info-value">${standardSchedule['Total_Payments_Recorded'] || '0'}</strong>
-                                                </div>
-                                                <div class="info-item full-width-item final-balance">
-                                                      <span class="info-label">Final Calculated Balance:</span>
-                                                      <strong class="info-value">PHP ${standardSchedule['Final_Calculated_Balance'] || '0.00'}</strong>
                                                 </div>
                                           </div>
                                     </div>
 
-                                    ${reconstructionSummaryHTML}
                               </div>
 
                               
                               <div class="payment-history-section">
-                                    <h4 class="section-title-payments">Payment History</h4>
-                                    ${allPaymentsTableHTML} 
+                                    <h4 class="section-title-payments">Original Loan Payment History (Loan ID: ${loanId})</h4>
+                                    ${standardPaymentsTableHTML} 
                               </div>
 
                               ${reconstructionPaymentsHTML}
@@ -570,7 +583,8 @@ function createPaymentsTable(payments, type) {
         tableRows += `
             <tr>
                 <td>${payment['PaymentDate'] || 'N/A'}</td>
-                <td>${payment['Type'] || 'N/A'}</td> <td class="amount-column">${formattedAmount}</td>
+                <td>${payment['Type'] || 'N/A'}</td> 
+                <td class="amount-column">${formattedAmount}</td>
                 <td class="amount-column">${formattedBalance}</td>
             </tr>
         `;
@@ -582,7 +596,8 @@ function createPaymentsTable(payments, type) {
                 <thead>
                     <tr>
                         <th>Date</th>
-                        <th>Payment Type/ID</th> <th class="amount-column">Amount Paid</th>
+                        <th>Payment Type/ID</th> 
+                        <th class="amount-column">Amount Paid</th>
                         <th class="amount-column">Balance After Payment</th>
                     </tr>
                 </thead>
@@ -647,25 +662,12 @@ function printLoanDetails() {
     const contentToPrint = document.getElementById('modalBodyContent').innerHTML;
 
     // 2. Open a new window/tab for printing
-    // A more modern and robust approach is to directly print the modal content
-    // after styling the main body and the content for print media, but for
-    // simplicity and compatibility, we can use a new window/iframe or
-    // simply rely on CSS media queries.
-
-    // *** RECOMMENDED METHOD: Use CSS Media Queries and window.print() ***
-    
-    // We'll rely on a temporary print wrapper for this method to ensure
-    // only the desired content is printed, especially if the modal is not
-    // positioned at the top of the page.
-
     const printWindow = window.open('', '_blank');
     
     // Construct the print-friendly HTML page
     printWindow.document.write('<html><head><title>Loan Ledger Printout</title>');
     
     // Include necessary styles for tables/layout to look good in print
-    // **NOTE**: You should ideally copy over the relevant CSS styles from your main page
-    // or link your main stylesheet here. For a minimum, include basic structure.
     printWindow.document.write('<style>');
     printWindow.document.write(`
         body { font-family: Arial, sans-serif; margin: 20px; }
@@ -686,12 +688,6 @@ function printLoanDetails() {
     // Write the content to the new window
     printWindow.document.write(contentToPrint);
     
-    // Exclude the modal footer with the buttons from the printout
-    // We can do this by wrapping the *printable* content in the modal in an ID, 
-    // but a quick fix is to remove the footer from the content to print if it was included.
-    // Since we're taking the `modalBodyContent`'s innerHTML, the footer is not included,
-    // which is perfect.
-
     printWindow.document.write('</body></html>');
     printWindow.document.close(); // Close the document writing stream
 
