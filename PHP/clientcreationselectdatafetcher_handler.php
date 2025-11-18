@@ -2,7 +2,7 @@
 // Include the PDO connection function
 require_once 'aadb_connect_handler.php';
 
-// Set content type to application/json
+// Set content type to application/json 
 header('Content-Type: application/json');
 
 if ($_SERVER["REQUEST_METHOD"] !== "POST") {

@@ -18,6 +18,7 @@
                 <li><a href="#" class="nav-link active">Client Creation</a></li>
                 <li><a href="#" class="nav-link">Loan Application</a></li>
                 <li><a href="#" class="nav-link">Pending Accounts</a></li>
+                <li><a href="#" class="nav-link">For Release</a></li>
                 <li><a href="#" class="nav-link">Payment Collection</a></li>
                 <li><a href="#" class="nav-link">Ledger</a></li>
                 <li><a href="#" class="nav-link">Reports</a></li>
@@ -48,9 +49,8 @@
                         <input type="text" id="firstName" name="firstName" class="form-input" required pattern="[A-Za-z\s]+">
                     </div>
                     <div class="form-group">
-                        <label for="middleName" class="form-label">Middle Name *</label>
-                        <input type="text" id="middleName" name="middleName" class="form-input" required pattern="[A-Za-z\s]+">
-                    </div>
+                        <label for="middleName" class="form-label">Middle Name</label>
+                        <input type="text" id="middleName" name="middleName" class="form-input" pattern="[A-Za-z\s]+"> </div>
                     <div class="form-group">
                         <label for="maritalStatus" class="form-label">Marital Status *</label>
                         <select id="maritalStatus" name="maritalStatus" class="form-select" required>
@@ -110,27 +110,46 @@
                         </select>
                     </div>
 
-                    <div class="form-group full-width">
-                        <h2 class="section-title">Requirements *</h2>
-                    </div>
+<form id="clientCreationForm" method="POST" enctype="multipart/form-data"> <section class="form-section">
+        <div class="form-group full-width">
+            <h2 class="section-title">Requirements *</h2>
+        </div>
 
-                    <div class="form-group checkbox-group">
-                        <input type="checkbox" id="barangayClearanceCheck" name="barangayClearanceCheck" class="form-checkbox">
-                        <label for="barangayClearanceCheck" class="form-checkbox-label">Barangay Clearance & Barangay Certificate</label>
-                    </div>
+        <div class="form-group file-upload-group">
+            <div class="form-group checkbox-group">
+            <input type="checkbox" id="barangayClearanceCheck" name="barangayClearanceCheck" class="form-checkbox">
+            <label for="barangayClearanceCheck" class="form-checkbox-label">Barangay Clearance & Certificate *</label>
+            </div>
 
-                    <div class="form-group checkbox-group">
-                        <input type="checkbox" id="hasValidIdCheck" name="hasValidIdCheck" class="form-checkbox">
-                        <label for="hasValidIdCheck" class="form-checkbox-label">Valid ID</label>
-                    </div>
-                    <div class="form-group">
-                        <label for="validIdType" class="form-label">Valid ID Type (If available)</label>
-                        <select id="validIdType" name="validIdType" class="form-select">
-                            <option value="">Select...</option>
-                        </select>
-                    </div>
-                </div>
-            </section>
+            <input type="file" id="barangayClearanceFile" name="barangayClearanceFile" class="hidden-file-input" accept="image/*,application/pdf">
+            
+            <label for="barangayClearanceFile" id="barangayClearanceLabel" class="file-upload-button">
+                Click to Add Barangay Clearance Scan
+            </label>
+        </div>
+ 
+
+        <div class="form-group file-upload-group">
+        <div class="form-group checkbox-group">
+            <input type="checkbox" id="hasValidIdCheck" name="hasValidIdCheck" class="form-checkbox">
+            <label for="hasValidIdCheck" class="form-checkbox-label">Valid ID *</label>
+        </div>
+        <div class="form-group">
+            <label for="validIdType" class="form-label">Valid ID Type (If available) *</label>
+            <select id="validIdType" name="validIdType" class="form-select">
+                <option value="">Select...</option>
+            </select>
+        </div>
+            <input type="file" id="validIdFile" name="validIdFile" class="hidden-file-input" accept="image/*,application/pdf">
+            
+            <label for="validIdFile" id="validIdLabel" class="file-upload-button">
+                Click to Add Valid ID Scan
+            </label>
+        </div>
+
+    </div>
+</section>
+</section>
 
             <div class="form-actions">
                 <button type="submit" id="create-button" class="create-button">

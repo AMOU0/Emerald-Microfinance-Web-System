@@ -18,6 +18,7 @@
                 <li><a href="#" class="nav-link">Client Creation</a></li>
                 <li><a href="#" class="nav-link active">Loan Application</a></li>
                 <li><a href="#" class="nav-link">Pending Accounts</a></li>
+                <li><a href="#" class="nav-link">For Release</a></li>
                 <li><a href="#" class="nav-link">Payment Collection</a></li>
                 <li><a href="#" class="nav-link">Ledger</a></li>
                 <li><a href="#" class="nav-link">Reports</a></li>
@@ -33,20 +34,22 @@
     <main class="main-content">
         <header class="header">
             <h1 class="header-title">Loan Application</h1>
+
+        </header>
+        <div class="main-content-form">
+            <form class="loan-application-container" id="loanApplicationForm">
+                <header class="form-header">
+                    <h2>Loan Application</h2>
             <input type="input" id="clientID" name="clientID" placeholder="Client ID" readonly>
             <div class="client-info-display">
                 <label>Client Name:</label>
                 <span id="displayClientName">Not Selected</span>
             </div>
             <button type="button" class="search-client-button" id="showClientsBtn">Search client</button>
-        </header>
-        <div class="main-content-form">
-            <form class="loan-application-container" id="loanApplicationForm">
-                <header class="form-header">
-                    <h2>Loan Application</h2>
                 </header>
 
                 <section class="form-section">
+                
                     <div id="clientList">
                     </div>
                     <div class="form-group full-width">
@@ -66,8 +69,8 @@
                                    pattern="[a-zA-Z\s]+" title="First Name must contain only letters and spaces.">
                         </div>
                         <div class="form-group">
-                            <label for="guarantorMiddleName" class="form-label">Middle Name *</label>
-                            <input type="text" id="guarantorMiddleName" name="guarantorMiddleName" class="form-input" required
+                            <label for="guarantorMiddleName" class="form-label">Middle Name</label>
+                            <input type="text" id="guarantorMiddleName" name="guarantorMiddleName" class="form-input" 
                                    pattern="[a-zA-Z\s]+" title="Middle Name must contain only letters and spaces.">
                         </div>
                         <div class="form-group full-width">

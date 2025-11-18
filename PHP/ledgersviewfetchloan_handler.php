@@ -4,6 +4,7 @@
 // Include the centralized database connection handler 
 require_once 'aadb_connect_handler.php';
 
+// Set header for JSON response and prevent any output before it
 header('Content-Type: application/json');
 
 if (!isset($_GET['loanId']) || empty($_GET['loanId'])) {
@@ -65,20 +66,20 @@ try {
     // Initial Loan Variables for calculation
     $initialPrincipal = (float)$loanDetails['loan_amount'];
     $annualInterestRate = (float)$loanDetails['interest_rate'];
-    $monthlyInterestRate = ($annualInterestRate / 100) / 12;
-
-    // 2. Fetch Payment History (Ordered chronologically - ASC)
+    
+    // 2. Fetch Payment History (ONLY payments *not* associated with reconstruction)
     $sqlPayments = "
         SELECT 
             amount_paid,
             DATE(date_payed) AS PaymentDate,
             processby AS Method,
-            loan_reconstruct_id -- FIXED: Added to fetch the reconstruct ID (will be NULL)
+            loan_application_id,
+            loan_reconstruct_id 
         FROM 
             payment
         WHERE 
             loan_application_id = :loanId
-            AND loan_reconstruct_id IS NULL  -- Only show payments NOT tied to a loan reconstruction
+            AND loan_reconstruct_id IS NULL -- Only fetch original loan payments
         ORDER BY 
             date_payed ASC  -- Oldest payment on top
     ";
@@ -88,26 +89,28 @@ try {
     $payments = $stmtPayments->fetchAll(PDO::FETCH_ASSOC);
 
     $formattedPayments = [];
-    $currentBalance = $initialPrincipal;
     
-    // 3. Calculate Running Balance After Each Payment
+    // --- Calculate Total Loan Obligation (Principal + Total Simple Interest) ---
+    $totalLoanAmount = $initialPrincipal * (1 + $annualInterestRate / 100); 
+    $currentBalance = $totalLoanAmount; // Start with the total amount to be paid
+    
+    // 3. Calculate Running Balance After Each Payment (Simplified: Total Obligation - Total Paid So Far)
     foreach ($payments as $payment) {
         $paymentAmount = (float)$payment['amount_paid'];
         
-        // Calculate balance just before this payment (Previous Balance + Interest accrued)
-        $balanceWithInterest = $currentBalance * (1 + $monthlyInterestRate);
+        // Apply payment (Simplified running balance based on total obligation)
+        $newBalance = $currentBalance - $paymentAmount;
         
-        // Apply payment
-        $newBalance = $balanceWithInterest - $paymentAmount;
-        
+        // Determine the payment type/ID
+        $typeId = 'Loan: ' . $payment['loan_application_id'];
+
         // Format payment details for response
         $formattedPayments[] = [
             'PaymentDate' => $payment['PaymentDate'],
             'Amount' => number_format($paymentAmount, 2),
             'Method' => $payment['Method'],
             'RemainingBalance' => number_format(max(0, $newBalance), 2),
-            // FIXED: Use the main loan ID for the 'Type' field
-            'Type' => 'Loan: ' . $loanId 
+            'Type' => $typeId 
         ];
         
         // Update the current balance for the next iteration
@@ -138,9 +141,8 @@ try {
         'Payments' => $formattedPayments,
         
         'Schedule' => [
-            'Loan_Amount' => $initialPrincipal,
+            'Loan_Amount' => number_format($initialPrincipal, 2), 
             'Interest_Rate' => $annualInterestRate,
-            'Monthly_Rate' => number_format($monthlyInterestRate * 100, 4) . '%',
             'Total_Payments_Recorded' => count($formattedPayments),
             'Final_Calculated_Balance' => number_format(max(0, $currentBalance), 2)
         ]

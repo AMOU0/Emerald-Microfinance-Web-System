@@ -9,7 +9,7 @@ header('Content-Type: application/json');
 
 try {
     // 1. Establish database connection
-    $pdo = connectDB(); // Uses the function from your aadb_connect_handler.php
+    $pdo = connectDB(); 
 } catch (\Exception $e) {
     exit();
 }
@@ -20,14 +20,12 @@ function getTodayDate() {
     return date('Y-m-d');
 }
 
-// Get dates from the URL query parameters (GET request from JavaScript)
-// Default to today's date if no filter is provided (first load scenario)
 $dateFrom = $_GET['date_from'] ?? getTodayDate();
 $dateTo = $_GET['date_to'] ?? getTodayDate();
 
 // --- 3. Prepare and Execute SQL Query ---
 
-// p = payment table, c = clients table, l = loan_applications table
+// p = payment table, c = clients table, l = loan_applications table, lr = loan_reconstruct table
 $sql = "SELECT
             p.client_id,
             p.loan_application_id AS loan_id,
@@ -36,28 +34,47 @@ $sql = "SELECT
             p.date_payed,
             p.processby,
             
-            -- Subquery to calculate the total amount due (Principal + Flat Interest)
-            (l.loan_amount * (1 + l.interest_rate / 100)) AS total_repayment_due,
+            -- Determine the Total Repayment Due (Original or Reconstructed)
+            -- This sets the total liability against which payments are measured.
+            COALESCE(
+                lr.reconstruct_amount * (1 + lr.interest_rate / 100),
+                l.loan_amount * (1 + l.interest_rate / 100)
+            ) AS total_repayment_due,
             
-            -- Subquery to calculate the SUM of ALL payments made for this specific loan (loan_application_id) 
-            -- up to and including the date of THIS payment (p.date_payed)
+            -- ** FIXED: Cumulative Payments must ONLY include relevant payments **
             (
                 SELECT SUM(p2.amount_paid)
                 FROM payment p2
                 WHERE 
                     p2.loan_application_id = p.loan_application_id
                 AND p2.date_payed <= p.date_payed
+                -- CRITICAL FIX: Only sum payments linked to the SAME loan status (original or reconstructed)
+                AND (
+                    -- If the current payment (p) is reconstructed, only count reconstructed payments (p2)
+                    (p.loan_reconstruct_id IS NOT NULL AND p2.loan_reconstruct_id = p.loan_reconstruct_id)
+                    -- If the current payment (p) is NOT reconstructed, only count original payments (p2)
+                    OR (p.loan_reconstruct_id IS NULL AND p2.loan_reconstruct_id IS NULL)
+                )
             ) AS cumulative_payment_amount,
             
-            -- ** THE CORE CALCULATION **
-            -- Balance after THIS payment = Total Due - (Cumulative Payments Made Up To and Including This Payment)
-            ((l.loan_amount * (1 + l.interest_rate / 100)) - (
-                SELECT SUM(p3.amount_paid)
-                FROM payment p3
-                WHERE 
-                    p3.loan_application_id = p.loan_application_id
-                AND p3.date_payed <= p.date_payed
-            )) AS balance_after_payment
+            -- ** THE FINAL CALCULATION **
+            (
+                COALESCE(
+                    lr.reconstruct_amount * (1 + lr.interest_rate / 100),
+                    l.loan_amount * (1 + l.interest_rate / 100)
+                ) - (
+                    SELECT SUM(p3.amount_paid)
+                    FROM payment p3
+                    WHERE 
+                        p3.loan_application_id = p.loan_application_id
+                    AND p3.date_payed <= p.date_payed
+                    -- CRITICAL FIX: Apply the same condition as above
+                    AND (
+                        (p.loan_reconstruct_id IS NOT NULL AND p3.loan_reconstruct_id = p.loan_reconstruct_id)
+                        OR (p.loan_reconstruct_id IS NULL AND p3.loan_reconstruct_id IS NULL)
+                    )
+                )
+            ) AS balance_after_payment
 
         FROM
             payment p 
@@ -65,19 +82,21 @@ $sql = "SELECT
             clients c ON p.client_id = c.client_ID
         LEFT JOIN
             loan_applications l ON p.loan_application_id = l.loan_application_id
+        LEFT JOIN
+            loan_reconstruct lr ON p.loan_reconstruct_id = lr.loan_reconstruct_id
         WHERE
             p.date_payed BETWEEN :date_from AND :date_to
         ORDER BY
-            p.loan_application_id ASC, -- Ensure payments for the same loan are ordered correctly
+            p.loan_application_id ASC, 
             p.date_payed ASC";
 
 try {
     $stmt = $pdo->prepare($sql);
     
-    // Bind parameters to query from the start of the 'from' day to the end of the 'to' day
+    // Bind parameters
     $stmt->execute([
-        ':date_from' => $dateFrom . ' 00:00:00', // Start of the "From" day
-        ':date_to'   => $dateTo . ' 23:59:59'    // End of the "To" day
+        ':date_from' => $dateFrom . ' 00:00:00',
+        ':date_to'   => $dateTo . ' 23:59:59'    
     ]);
     
     $payments = $stmt->fetchAll();
@@ -91,7 +110,6 @@ try {
 } catch (\PDOException $e) {
     error_log("SQL Query failed: " . $e->getMessage());
     http_response_code(500);
-    // Return the specific SQL error for debugging
     echo json_encode(["success" => false, "message" => "SQL Error: " . $e->getMessage()]);
 }
 ?>

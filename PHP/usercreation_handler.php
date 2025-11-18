@@ -68,7 +68,7 @@ try {
         error_log("User creation failed: " . json_encode($stmt->errorInfo()));
         echo json_encode(['success' => false, 'message' => 'An error occurred during account creation.']);
     }
-
+ 
 } catch (PDOException $e) {
     // Log the specific PDO exception
     error_log("PDO Error in usercreation: " . $e->getMessage());

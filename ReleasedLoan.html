@@ -4,7 +4,6 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Emerald Microfinance | Released Loan</title>
-    <link rel="stylesheet" href="CSS/dashboard_sytle.css">
     <link rel="stylesheet" href="CSS/releasedloan_style.css">
 </head>
 <body>
@@ -18,6 +17,7 @@
                 <li><a href="#" class="nav-link">Client Creation</a></li>
                 <li><a href="#" class="nav-link">Loan Application</a></li>
                 <li><a href="#" class="nav-link">Pending Accounts</a></li>
+                <li><a href="#" class="nav-link">For Release</a></li>
                 <li><a href="#" class="nav-link">Payment Collection</a></li>
                 <li><a href="#" class="nav-link">Ledger</a></li>
                 <li><a href="#" class="nav-link active">Reports</a></li>
@@ -34,33 +34,62 @@
     <main class="main-content">
         <header class="page-header released-header">
             <h1 class="page-title">RELEASED LOAN</h1>
-            <div class="date-box">Date: 11/3/2025</div>
+            <div class="date-box" id="report-date">Date: MM/DD/YYYY</div>
         </header>
 
-        <section class="total-display">
-            <h2 class="total-label">TOTAL AMOUNT RELEASED: <span class="total-value">PHP 0.00</span></h2>
-        </section>
-        
-        <div class="data-table-container">
-            <table class="data-table">
-                <thead>
-<tr>
-            <th class="table-header">Client ID</th>
-            <th class="table-header">Loan ID</th>
-            <th class="table-header">Name</th>
-            <th class="table-header">Principal Amount</th>
-            <th class="table-header">Interest Amount</th>
-            <th class="table-header">Loan Amount</th> 
-            <th class="table-header">Released Amount</th> 
-            <th class="table-header">Date Released</th>
-        </tr>
-                </thead>
-                <tbody id="auditLogTableBody">
+        <div class="reports-content"> 
+            <div class="reports-sidebar">
+                <button class="report-button">Existing Clients</button>
+                <button class="report-button active">Released List</button>
+                <button class="report-button">Collection List</button>
+                <button class="report-button">Overdue</button>
+                <button class="report-button">Due Payments</button>
+                <button class="report-button">Audit Trail</button>
+            </div>
+            
+            <div class="report-viewer">
+                <section class="total-display">
+                    <h2 class="total-label">TOTAL AMOUNT RELEASED: <span class="total-value" id="total-principal-value">PHP 0.00</span></h2>
+                </section>
+                <div class="audit-filters-tools">
+                    <div class="filter-group">
+                        <label for="filter-start-date">Date Range:</label>
+                        <input type="date" id="filter-start-date">
+                    </div>
+                     <div class="filter-group">
+                        <input type="date" id="filter-end-date"> 
+                     </div>
+                    
+                    <div class="filter-group">
+                        <button id="apply-filter-btn" class="apply-filter-button">Apply Filters</button> 
+                    </div>
 
-                    </tbody>
-            </table>
-        </div>
-    </main>
+                    <div class="tools-group">
+                        <button id="export-csv-btn" class="export-button"> 
+                            <i class="icon-download"></i> Export CSV
+                        </button>
+                    </div>
+                </div>
+                <div class="data-table-container">
+                    <table class="data-table">
+                        <thead>
+                            <tr>
+                                <th class="table-header">Client ID</th>
+                                <th class="table-header">Loan ID</th>
+                                <th class="table-header">Name</th>
+                                <th class="table-header">Principal Amount</th>
+                                <th class="table-header">Interest Amount</th>
+                                <th class="table-header">Loan Amount</th> 
+                                <th class="table-header">Released Amount</th> 
+                                <th class="table-header">Date Released</th>
+                            </tr>
+                        </thead>
+                        <tbody id="auditLogTableBody">
+                            </tbody>
+                    </table>
+                </div>
+            </div>
+        </div> </main>
         <script src="JS/releasedloan_function.js"></script>
 </body> 
 </html>

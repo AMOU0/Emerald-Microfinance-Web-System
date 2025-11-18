@@ -7,10 +7,8 @@ require_once 'aadb_connect_handler.php';
 // Use PDO connection from aadb_connect_handler.php
 $pdo = connectDB();
 
-// 🌟 REVISED SQL QUERY 🌟
-// This query uses a Common Table Expression (CTE) to find the single latest active loan 
-// or reconstruction for each client, and then uses correlated subqueries to calculate payments 
-// based on the strict ID-linking rule.
+// 検 REVISED SQL QUERY 検
+// This query now uses the effective start date of the loan/reconstruction to filter payments correctly.
 $sql = "
 -- 1. Find the single latest active loan/reconstruction for each client
 WITH LatestActiveLoan AS (
@@ -18,24 +16,37 @@ WITH LatestActiveLoan AS (
         la.client_ID,
         la.loan_application_id,
         lr.loan_reconstruct_id,
-        -- Effective Principal: Use reconstructed amount if active, otherwise use original loan amount
-        COALESCE(lr.reconstruct_amount, la.loan_amount) AS effective_principal,
-        COALESCE(lr.interest_rate, la.interest_rate) AS effective_rate,
-        la.date_start,
+        
+        -- Effective Principal: Uses reconstruct_amount if active reconstruction exists
+        CASE
+            WHEN lr.loan_reconstruct_id IS NOT NULL THEN COALESCE(lr.reconstruct_amount, 0)
+            -- Otherwise, use the original loan amount.
+            ELSE la.loan_amount
+        END AS effective_principal,
+        
+        -- Effective Interest Rate: Fallback to original rate if reconstructed rate is NULL
+        CASE
+            WHEN lr.loan_reconstruct_id IS NOT NULL THEN COALESCE(lr.interest_rate, la.interest_rate) 
+            -- If it's an original loan (no active reconstruction), use its rate.
+            ELSE la.interest_rate
+        END AS effective_rate,
+        
+        -- 庁 FIX 1: Determine the effective start date (Original or Reconstruction date)
+        CASE
+            WHEN lr.loan_reconstruct_id IS NOT NULL THEN lr.date_start
+            ELSE la.date_start
+        END AS effective_start_date,
+        
         la.payment_frequency,
-        -- Flag to identify if the effective loan is a reconstruction
         (lr.loan_reconstruct_id IS NOT NULL) AS is_reconstructed,
-        -- Use ROW_NUMBER to rank and select only the single latest loan per client
         ROW_NUMBER() OVER (PARTITION BY la.client_ID ORDER BY la.loan_application_id DESC) as rn
     FROM
         loan_applications la
     LEFT JOIN
-        -- Only consider 'active' reconstructions
-        loan_reconstruct lr ON la.loan_application_id = lr.loan_application_id AND lr.status = 'active'
+        -- Include status '1' in the active check
+        loan_reconstruct lr ON la.loan_application_id = lr.loan_application_id AND lr.status IN ('active', '1')
     WHERE
-        -- 💡 UPDATED STATUS CHECK: Only include actively managed applications
         la.status IN ('Approved', 'Released', 'Unpaid') 
-        -- 💡 CRITICAL FIX: Explicitly exclude any loan application marked as 'Paid'
         AND (la.paid IS NULL OR la.paid != 'Paid')
 )
 SELECT
@@ -48,42 +59,36 @@ SELECT
     -- Effective Loan Details
     lal.effective_principal AS principal_loan_amount,
     lal.effective_rate AS applicable_interest_rate,
-    lal.loan_application_id, -- Used for payment filtering
-    lal.loan_reconstruct_id, -- Used for payment filtering
-    lal.is_reconstructed, -- Used for payment filtering
-    lal.date_start,
+    lal.effective_start_date AS date_start, -- Use the effective date here
+    
+    lal.loan_application_id, 
+    lal.loan_reconstruct_id, 
+    lal.is_reconstructed, 
     lal.payment_frequency,
     
-    -- 2. CRITICAL SUBQUERY: Calculate total payments based on the strict ID-linking rule
+    -- 2. 庁 FIX 2: Calculate total payments made ON or AFTER the effective start date.
     (
         SELECT COALESCE(SUM(p.amount_paid), 0)
         FROM payment p
         WHERE p.client_id = c.client_ID 
         AND p.loan_application_id = lal.loan_application_id 
-        AND (
-            -- RULE 1: If Reconstructed, only count payments linked to the RECONSTRUCTION ID
-            (lal.is_reconstructed = 1 AND p.loan_reconstruct_id = lal.loan_reconstruct_id)
-            -- RULE 2: If NOT Reconstructed, only count payments NOT linked to any reconstruction ID
-            OR (lal.is_reconstructed = 0 AND p.loan_reconstruct_id IS NULL)
-        )
+        -- CRITICAL: Only count payments made after the loan or reconstruction started
+        AND p.date_payed >= lal.effective_start_date 
     ) AS total_amount_paid,
     
-    -- 3. Get the last payment date based on the *effective* payments
+    -- 3. Get the last payment date based on filtered payments
     (
         SELECT MAX(p.date_payed)
         FROM payment p
         WHERE p.client_id = c.client_ID 
         AND p.loan_application_id = lal.loan_application_id 
-        AND (
-            (lal.is_reconstructed = 1 AND p.loan_reconstruct_id = lal.loan_reconstruct_id)
-            OR (lal.is_reconstructed = 0 AND p.loan_reconstruct_id IS NULL)
-        )
+        AND p.date_payed >= lal.effective_start_date 
     ) AS last_payment_date
     
 FROM
     clients c
 LEFT JOIN
-    LatestActiveLoan lal ON c.client_ID = lal.client_ID AND lal.rn = 1 -- Only join the single latest active loan
+    LatestActiveLoan lal ON c.client_ID = lal.client_ID AND lal.rn = 1 
 ORDER BY
     c.last_name ASC;
 ";
@@ -102,12 +107,13 @@ try {
 
 if ($result) {
     while($row = $result->fetch(PDO::FETCH_ASSOC)) {
-        $total_principal = $row['principal_loan_amount'] ?? 0;
-        $amount_paid = $row['total_amount_paid'] ?? 0;
-        $interest_rate = $row['applicable_interest_rate'] ?? 0;
+        // Cast values to float for robust math
+        $total_principal = (float)($row['principal_loan_amount'] ?? 0);
+        $amount_paid = (float)($row['total_amount_paid'] ?? 0);
+        $interest_rate = (float)($row['applicable_interest_rate'] ?? 0);
         
         // Calculation: (Principal * (1 + Rate)) - Payments
-        // Formula: (Effective Principal * (1 + Effective Rate/100)) - Total Payments
+        // Example: (1000 * (1 + 20/100)) - Post-Reconstruction Payments
         $total_debt = $total_principal * (1 + ($interest_rate / 100));
         $balance = $total_debt - $amount_paid;
 
@@ -118,11 +124,11 @@ if ($result) {
         } else {
             // Fully Paid, Overpaid, or No Loan: Display the requested status
             $row['balance_display'] = 'PHP 0.00';
-            $row['date_start'] = null; // Clear date_start if no active balance
+            $row['date_start'] = null; 
             $row['payment_frequency'] = null;
         }
 
-        $row['balance'] = $balance; // Raw balance for JS logic
+        $row['balance'] = $balance; 
         
         // Cleanup columns
         unset($row['principal_loan_amount'], $row['total_amount_paid'], $row['applicable_interest_rate'], $row['loan_application_id'], $row['loan_reconstruct_id'], $row['is_reconstructed']);

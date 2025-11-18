@@ -1,9 +1,10 @@
 <?php
-// ledgersviewfetchloan_handler.php
+// reportsexistingclientviewfetchloan_handler.php
 
 // Include the centralized database connection handler 
 require_once 'aadb_connect_handler.php';
 
+// Set header for JSON response and prevent any output before it
 header('Content-Type: application/json');
 
 if (!isset($_GET['loanId']) || empty($_GET['loanId'])) {
@@ -64,21 +65,21 @@ try {
     
     // Initial Loan Variables for calculation
     $initialPrincipal = (float)$loanDetails['loan_amount'];
-    $annualInterestRate = (float)$loanDetails['interest_rate'];
-    $monthlyInterestRate = ($annualInterestRate / 100) / 12;
-
-    // 2. Fetch Payment History (Ordered chronologically - ASC)
+    $annualInterestRate = (float)$loanDetails['interest_rate']; 
+    
+    // 2. Fetch Payment History (ONLY payments *not* associated with reconstruction)
     $sqlPayments = "
         SELECT 
             amount_paid,
             DATE(date_payed) AS PaymentDate,
             processby AS Method,
-            loan_reconstruct_id -- FIXED: Added to fetch the reconstruct ID (will be NULL)
+            loan_application_id,
+            loan_reconstruct_id 
         FROM 
             payment
         WHERE 
             loan_application_id = :loanId
-            AND loan_reconstruct_id IS NULL  -- Only show payments NOT tied to a loan reconstruction
+            AND loan_reconstruct_id IS NULL -- Only fetch original loan payments
         ORDER BY 
             date_payed ASC  -- Oldest payment on top
     ";
@@ -88,30 +89,43 @@ try {
     $payments = $stmtPayments->fetchAll(PDO::FETCH_ASSOC);
 
     $formattedPayments = [];
-    $currentBalance = $initialPrincipal;
     
-    // 3. Calculate Running Balance After Each Payment
+    // --- FIX: Track Principal Balance and Obligation Separately ---
+    $totalLoanObligation = $initialPrincipal * (1 + $annualInterestRate / 100); // Total due (Principal + Interest)
+    $currentPrincipalBalance = $initialPrincipal; // Start with the Principal amount (for user-expected ledger view)
+    $totalInterestCollected = 0.00; // Track interest paid
+    $totalPrincipalCollected = 0.00; // Track principal paid
+    
+    // 3. Calculate Running Balance After Each Payment (Simplified: Against Principal)
     foreach ($payments as $payment) {
         $paymentAmount = (float)$payment['amount_paid'];
         
-        // Calculate balance just before this payment (Previous Balance + Interest accrued)
-        $balanceWithInterest = $currentBalance * (1 + $monthlyInterestRate);
+        // Calculate the total interest due
+        $totalInterest = $totalLoanObligation - $initialPrincipal;
+        $totalInterestToCollect = $totalInterest - $totalInterestCollected;
         
-        // Apply payment
-        $newBalance = $balanceWithInterest - $paymentAmount;
+        // Split payment: Collect remaining interest first, then apply to principal.
+        $interestPayment = min($paymentAmount, $totalInterestToCollect);
+        $principalPayment = $paymentAmount - $interestPayment;
+
+        $currentPrincipalBalance -= $principalPayment; // Reduce principal
+        $totalInterestCollected += $interestPayment; // Add to collected interest
+        $totalPrincipalCollected += $principalPayment; // Add to collected principal
         
+        // Determine the payment type/ID
+        $typeId = 'Loan: ' . $payment['loan_application_id'];
+
         // Format payment details for response
         $formattedPayments[] = [
             'PaymentDate' => $payment['PaymentDate'],
             'Amount' => number_format($paymentAmount, 2),
             'Method' => $payment['Method'],
-            'RemainingBalance' => number_format(max(0, $newBalance), 2),
-            // FIXED: Use the main loan ID for the 'Type' field
-            'Type' => 'Loan: ' . $loanId 
+            // Use currentPrincipalBalance for the RemainingBalance
+            'RemainingBalance' => number_format(max(0, $currentPrincipalBalance), 2),
+            'PrincipalApplied' => number_format($principalPayment, 2),
+            'InterestApplied' => number_format($interestPayment, 2),
+            'Type' => $typeId 
         ];
-        
-        // Update the current balance for the next iteration
-        $currentBalance = $newBalance;
     }
      
     // Combine names for easier display in JavaScript
@@ -129,7 +143,6 @@ try {
         'Frequency' => $loanDetails['payment_frequency'],
         'EndDate' => $loanDetails['date_end'],
         
-        // NEW FIELDS FOR JAVASCRIPT
         'ClientName' => $clientName,
         'GuarantorName' => $guarantorName ?: 'N/A', 
         'GuarantorAddress' => $loanDetails['GuarantorAddress'] ?: 'N/A',
@@ -138,11 +151,13 @@ try {
         'Payments' => $formattedPayments,
         
         'Schedule' => [
-            'Loan_Amount' => $initialPrincipal,
+            'Loan_Amount' => number_format($initialPrincipal, 2), 
+            'Total_Loan_Obligation' => number_format($totalLoanObligation, 2), // Total (P + I)
             'Interest_Rate' => $annualInterestRate,
-            'Monthly_Rate' => number_format($monthlyInterestRate * 100, 4) . '%',
             'Total_Payments_Recorded' => count($formattedPayments),
-            'Final_Calculated_Balance' => number_format(max(0, $currentBalance), 2)
+            'Total_Principal_Paid' => number_format($totalPrincipalCollected, 2),
+            'Total_Interest_Paid' => number_format($totalInterestCollected, 2),
+            'Final_Calculated_Balance' => number_format(max(0, $currentPrincipalBalance), 2) // Remaining Principal
         ]
     ];
 

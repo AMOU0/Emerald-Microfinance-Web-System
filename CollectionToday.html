@@ -4,7 +4,6 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Emerald Microfinance | Collection Today</title>
-    <link rel="stylesheet" href="CSS/dashboard_sytle.css">
     <link rel="stylesheet" href="CSS/collectiontoday_style.css">
 </head>
 <body>
@@ -18,9 +17,10 @@
                 <li><a href="#" class="nav-link">Client Creation</a></li>
                 <li><a href="#" class="nav-link">Loan Application</a></li>
                 <li><a href="#" class="nav-link">Pending Accounts</a></li>
-                <li><a href="#" class="nav-link active">Payment Collection</a></li>
+                <li><a href="#" class="nav-link">For Release</a></li>
+                <li><a href="#" class="nav-link">Payment Collection</a></li>
                 <li><a href="#" class="nav-link">Ledger</a></li>
-                <li><a href="#" class="nav-link">Reports</a></li>
+                <li><a href="#" class="nav-link active">Reports</a></li>
                 <li><a href="#" class="nav-link">Tools</a></li>
             </ul>
         </nav>
@@ -36,11 +36,22 @@
             <h1 class="page-title">COLLECTION TODAY</h1>
             <div class="date-box">Date: 11/3/2025</div>
         </header>
+        <div class="reports-content"> 
+            <div class="reports-sidebar">
+                <button class="report-button">Existing Clients</button>
+                <button class="report-button">Released List</button>
+                <button class="report-button active">Collection List</button>
+                <button class="report-button">Overdue</button>
+                <button class="report-button">Due Payments</button>
+                <button class="report-button">Audit Trail</button>
+            </div>
+            
+            <div class="report-viewer">
 
-        <section class="total-display">
-            <h2 id="current-date-range" hidden></h2>
-            <h2 class="total-label">TOTAL COLLECTION: <span class="total-value">PHP 0.00</span></h2>
-        </section>
+                <section class="total-display">
+                    <h2 id="current-date-range" hidden></h2>
+                    <h2 class="total-label">TOTAL COLLECTION: <span class="total-value">PHP 0.00</span></h2>
+                </section>
 
                             <div class="audit-filters-tools">
                         <div class="filter-group">
@@ -80,6 +91,10 @@
                 </tbody>
             </table>
         </div>
+
+
+        </div>
+
     </main>
             <script src="JS/collectiontoday_function.js"></script>
 </body>
